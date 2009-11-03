@@ -15,13 +15,14 @@ Qt::DropActions SearchModel::supportedDropActions() const
 {
 	return Qt::CopyAction;
 }
-/*
+
 Qt::ItemFlags SearchModel::flags(const QModelIndex &index) const
 {
-	if(index.isValid())
-         return Qt::ItemIsDragEnabled;
-     else
-		 return Qt::NoItemFlags;
+    Qt::ItemFlags defaultFlags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+    if(index.isValid())
+        return Qt::ItemIsDragEnabled | defaultFlags;
+    else
+        return Qt::NoItemFlags;
 }
 
 QStringList SearchModel::mimeTypes() const
@@ -36,20 +37,20 @@ QMimeData *SearchModel::mimeData(const QModelIndexList &indexes) const
 	QMimeData *mimeData = new QMimeData();
 	QByteArray encodedData;
 	QList<QUrl> urlList;
-	QDataStream stream(&encodedData, QIODevice::WriteOnly);
+	QString text;
 
 	foreach (QModelIndex index, indexes) 
 	{
 		if (index.isValid()) 
 		{
-			QString text = data(index, Qt::DisplayRole).toString();
+			text.append( data(index, Qt::DisplayRole).toString() + ";");
 			urlList.append( QUrl( data(index, Qt::UserRole +1).toUrl() ));
-			stream << text;
 		}
 	}
 
-	mimeData->setData("text/uri-list", encodedData);
+	mimeData->setText(text);
 	mimeData->setUrls(urlList);
+        Debug << mimeData->urls();
 	return mimeData;
 }
-*/
+

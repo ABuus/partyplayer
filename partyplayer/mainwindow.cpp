@@ -54,6 +54,7 @@ void mainwindow::insertSearchItem(QStringList item)
 {
 	QStandardItem *m_item = new QStandardItem(item.first());
 	m_item->setData(item.at(1),Qt::ToolTipRole);
-	m_item->setData(item.at(2));
+        m_item->setData(QUrl(item.at(2)), Qt::UserRole +1);
+        Debug << item.at(2);
 	searchModel->appendRow(m_item);
 }

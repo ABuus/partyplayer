@@ -7,6 +7,7 @@
 #include <QList>
 #include <QUrl>
 #include <QDataStream>
+#include "debug.h"
 
 class SearchModel : public QStandardItemModel
 {
@@ -19,11 +20,9 @@ public:
 private:
 protected:
 	Qt::DropActions supportedDropActions() const;
-	/*
 	Qt::ItemFlags flags(const QModelIndex &index) const;
 	QStringList mimeTypes() const;
 	QMimeData * mimeData(const QModelIndexList &indexes) const;
-	*/
 };
 
 #endif // SEARCHMODEL_H

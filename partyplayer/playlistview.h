@@ -19,6 +19,7 @@ public:
 
 private:
 	PlaylistModel *model;
+	void insetItem(QStringList item);
 protected:
 	void dragEnterEvent(QDragEnterEvent *event);
 	void dropEvent(QDropEvent *event);
