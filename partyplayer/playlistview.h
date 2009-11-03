@@ -8,8 +8,8 @@
 #include <QList>
 #include <QUrl>
 // taglib
-#include <taglib/fileref.h>
-#include <taglib/tag.h>
+#include <fileref.h>
+#include <tag.h>
 // My
 #include "playlistmodel.h"
 #include "debug.h"

@@ -33,36 +33,38 @@ void PlaylistView::dropEvent(QDropEvent *event)
 
     if(texts.first().isEmpty())
     {
-	texts.clear();
-	for(int i = 0; i < urls.count(); i++)
-	{
-	    QString url = urls.at(i).toString();
-	    url.remove("file://");
-	    QByteArray ba = url.toLatin1();
-	    const char *file = ba.data();
-	    Debug << file;
-	    TagLib::FileRef f(file);
+		texts.clear();
+		for(int i = 0; i < urls.count(); i++)
+		{
+			QString url = urls.at(i).toLocalFile();
+		    url.remove("file://");
+		    QByteArray ba = url.toLatin1();
+			const char *file = ba.data();
+		    Debug << file;
+		    TagLib::FileRef f(file);
 
-	    if(!f.isNull() && f.tag())
-	    {
-		TagLib::Tag *tag = f.tag();
-		QString title;
-		title.append( QString::fromStdString( tag->artist().to8Bit() ));
-		title.append( " - " );
-		title.append( QString::fromStdString( tag->title().to8Bit() ));
-		title.append( " - " );
-		title.append( QString::fromStdString( tag->album().to8Bit() ));
-		texts << title;
-	    }
-	}
+			if(!f.isNull() && f.tag())
+		    {
+				TagLib::Tag *tag = f.tag();
+				QString title;
+				title.append( QString::fromStdString( tag->artist().toCString() ));
+				Debug << title;
+				title.append( " - " );
+				Debug << title;
+				title.append( QString::fromStdString( tag->title().toCString() ));
+				title.append( " - " );
+				title.append( QString::fromStdString( tag->album().toCString() ));
+				texts << title;
+		    }
+		}
     }
     Debug << texts;
 
     for(int i = 0; i < urls.count(); i++)
     {
-	QStringList row;
-	row << texts.at(i) << urls.at(i).toString();
-	insetItem(row);
+		QStringList row;
+		row << texts.at(i) << urls.at(i).toString();
+		insetItem(row);
     }
 }
 
