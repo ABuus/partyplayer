@@ -14,8 +14,9 @@ QT += xml webkit phonon
 CONFIG += debug
 DEFINES += QT_XML_LIB
 INCLUDEPATH += . \
-    ./GeneratedFiles/Debug
-LIBS += -lphonon -L/usr/lib
+    ./GeneratedFiles/Debug \
+    /usr/include/taglib
+LIBS += -lphonon -ltag -L/usr/lib
 DEPENDPATH += .
 MOC_DIR += ./GeneratedFiles/debug
 OBJECTS_DIR += debug
