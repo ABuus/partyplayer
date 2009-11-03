@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "partyplayer", "partyplayer\partyplayer.vcproj", "{29EC0CD2-3ED4-47F0-BBFD-F500E7AD6EE5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{29EC0CD2-3ED4-47F0-BBFD-F500E7AD6EE5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{29EC0CD2-3ED4-47F0-BBFD-F500E7AD6EE5}.Debug|Win32.Build.0 = Debug|Win32
+		{29EC0CD2-3ED4-47F0-BBFD-F500E7AD6EE5}.Release|Win32.ActiveCfg = Release|Win32
+		{29EC0CD2-3ED4-47F0-BBFD-F500E7AD6EE5}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		QtVersion = qt-everywhere-opensource-src-4.6.0-beta1
+	EndGlobalSection
+EndGlobal
