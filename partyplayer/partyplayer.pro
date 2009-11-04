@@ -10,7 +10,7 @@ message("You are running qmake on a generated .pro file. This may not work!")
 TEMPLATE = app
 TARGET = partyplayer
 DESTDIR = ../Debug
-QT += xml webkit phonon
+QT += network webkit phonon
 CONFIG += debug
 DEFINES += QT_XML_LIB
 INCLUDEPATH += . \

@@ -37,11 +37,13 @@ void PlaylistView::dropEvent(QDropEvent *event)
 		Debug << url.scheme();
 		if(url.scheme() == "file")
 		{
-			QString str = url.toString();
-			str.remove("file:///");
-		    QByteArray ba = str.toLatin1();
+			QString str = url.path();
+#ifdef Q_WS_WIN
+			str = str.right(1);
+#endif
+			QByteArray ba = str.toLatin1();
 			const char *file = ba.data();
-		    Debug << file;
+			Debug << file;
 			TagLib::FileRef f(file);
 
 			if(!f.isNull() && f.tag())
