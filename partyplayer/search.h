@@ -2,10 +2,11 @@
 #define SEARCH_H
 
 #include <QObject>
-#include <QWebPage>
-#include <QWebFrame>
 #include <QUrl>
 #include <QString>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 #include "debug.h"
 
 class Search : public QObject
@@ -18,9 +19,9 @@ public:
 public slots:
 	void query(QString queryString);
 private:
-	QWebPage *webPage;
+	QNetworkAccessManager *netGetter;
 private slots:
-	void queryFinished();
+	void queryFinished(QNetworkReply *reply);
 signals:
 	void newSearch();
 	void newItem(QStringList item);

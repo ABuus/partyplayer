@@ -6,13 +6,12 @@
 Search::Search(QObject *parent)
 	: QObject(parent)
 {
-	webPage = new QWebPage(this);
-	connect(webPage,SIGNAL(loadFinished(bool)),this,SLOT(queryFinished()));
+	netGetter = new QNetworkAccessManager(this);
+	connect(netGetter,SIGNAL(finished( QNetworkReply *)),this,SLOT(queryFinished(QNetworkReply *)));
 }
 
 Search::~Search()
 {
-
 }
 
 void Search::query(QString queryString)
@@ -21,31 +20,33 @@ void Search::query(QString queryString)
 	queryString.replace(" ", "+");
 	QUrl url( "http://gdata.youtube.com/feeds/api/videos?q=" + queryString + "&format=5&key=" + dev_id);
 	Debug << url;
-	webPage->mainFrame()->load(url);
+	netGetter->get(QNetworkRequest(url));
+//	webPage->mainFrame()->load(url);
 }
 
-void Search::queryFinished()
+void Search::queryFinished(QNetworkReply *reply)
 {
-	QString html = webPage->mainFrame()->toHtml();
+	QByteArray ba = reply->readAll();
+	QString html(ba);
 	
 	int entryCount = html.count("entry") / 2;
 
 	int offset = 0;
 	for(int i = 0; i < entryCount; i++)
 	{
-		int entryStart = html.indexOf("entry",offset); //		<entry>
-		int entryEnd = html.indexOf("entry",entryStart +1);//	</entry>
+		int entryStart = html.indexOf("entry",offset);
+		int entryEnd = html.indexOf("entry",entryStart +1);
 		
 		QString entry = html.mid(entryStart,entryEnd - entryStart);
 
-		int titleStart = entry.indexOf("&lt;title type='text'&gt;") + 25; //	<title>
-		int titleEnd = entry.indexOf("&lt;/title&gt;");	//	</title>
+		int titleStart = entry.indexOf("<title type='text'>") + 19;
+		int titleEnd = entry.indexOf("</title>");
 
-		int decStart = entry.indexOf("&lt;media:description type='plain'&gt;") +38; // <media:description type='plain'>
-		int decEnd = entry.indexOf("&lt;/media:description&gt;"); // </media:description>
+		int decStart = entry.indexOf("<media:description type='plain'>") +32;
+		int decEnd = entry.indexOf("</media:description>");
 
-		int urlStart = entry.indexOf("&lt;media:player url='") +22; // <media:player url='
-		int urlEnd = entry.indexOf("'/&gt;", urlStart); // '/>
+		int urlStart = entry.indexOf("<media:player url='") +19;
+		int urlEnd = entry.indexOf("'/>", urlStart);
 
 		QString title = entry.mid(titleStart, (titleEnd - titleStart));
 		QString dec = entry.mid(decStart, (decEnd - decStart));
