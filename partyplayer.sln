@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "partyplayer", "partyplayer\partyplayer.vcproj", "{29EC0CD2-3ED4-47F0-BBFD-F500E7AD6EE5}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Party Player installer", "Party Player installer\Party Player installer.vdproj", "{7FA0EDD9-818E-4038-80D0-E4E914827919}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -13,6 +15,8 @@ Global
 		{29EC0CD2-3ED4-47F0-BBFD-F500E7AD6EE5}.Debug|Win32.Build.0 = Debug|Win32
 		{29EC0CD2-3ED4-47F0-BBFD-F500E7AD6EE5}.Release|Win32.ActiveCfg = Release|Win32
 		{29EC0CD2-3ED4-47F0-BBFD-F500E7AD6EE5}.Release|Win32.Build.0 = Release|Win32
+		{7FA0EDD9-818E-4038-80D0-E4E914827919}.Debug|Win32.ActiveCfg = Debug
+		{7FA0EDD9-818E-4038-80D0-E4E914827919}.Release|Win32.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
