@@ -9,6 +9,9 @@ Player::Player(QObject *parent)
 	webPlayer = new QWebPage(this);
 	webView = new QWebView();
 	webView->setPage(webPlayer);
+	connect(m_mediaObject,SIGNAL(aboutToFinish()),this,SLOT(loadNext()));
+	connect(m_mediaObject,SIGNAL(currentSourceChanged(const Phonon::MediaSource &)),
+		this,SLOT(setCurrentSource(const Phonon::MediaSource &)));
 }
 
 Player::~Player()
@@ -20,17 +23,26 @@ void Player::play(QUrl url, bool localFile)
 {
 	if(localFile)
 	{
-		webPlayer->mainFrame()->setHtml(QString());
-		Debug << "play:" << url.toString();
+		if(m_state = Player::WebState)
+		{
+			webPlayer->mainFrame()->setHtml(QString());
+		}
+
 		m_mediaObject->setCurrentSource(url);
 		m_mediaObject->play();
+		m_state = Player::LocalState;
 	}
 	else
 	{
-		stop();
+		if(m_state = Player::LocalState)
+		{
+			m_mediaObject->stop();
+		}
 		webPlayer->mainFrame()->load(url);
+		m_state = Player::WebState;
 		Debug << url;
 	}
+	emit requestNext();
 }
 
 void Player::next()
@@ -47,4 +59,24 @@ void Player::stop()
 {
 	m_mediaObject->stop();
 	webPlayer->mainFrame()->setHtml(QString());
+}
+
+void Player::loadNext()
+{
+	if(nextIsLocal && m_state == Player::LocalState)
+	{
+		m_mediaObject->enqueue(nextUrl);
+		emit requestNext();
+	}
+}
+
+void Player::setNext(QUrl url,bool localFile)
+{
+	nextUrl = url;
+	nextIsLocal = localFile;
+}
+
+void Player::setCurrentSource(const Phonon::MediaSource &source)
+{
+	emit currentSourceChanged(source.url());
 }

@@ -41,7 +41,10 @@ mainwindow::mainwindow(QWidget *parent, Qt::WFlags flags)
 	connect(searchLineEdit, SIGNAL(returnPressed()), this, SLOT( querySearch()));
 	connect(search, SIGNAL(newSearch()), this, SLOT(clearSearch()));
 	connect(search, SIGNAL(newItem(QStringList)), this,SLOT(insertSearchItem(QStringList)));
-	connect(playlistView,SIGNAL(playRequest(QUrl , bool )),player,SLOT(play(QUrl,bool)));
+	connect(playlistView,SIGNAL(playRequest(QUrl,bool)),player,SLOT(play(QUrl,bool)));
+	connect(playlistView,SIGNAL(nextRequest(QUrl,bool)),player,SLOT(setNext(QUrl,bool)));
+	connect(player,SIGNAL(requestNext()),playlistView,SLOT(findNext()));
+	connect(player,SIGNAL(currentSourceChanged(const QUrl &)),playlistView,SLOT(checkCurrentIndex(const QUrl &)));
 	connect(controlWidget,SIGNAL(stop()),player,SLOT(stop()));
 	connect(controlWidget,SIGNAL(play()),player,SLOT(play()));
 	connect(controlWidget,SIGNAL(pause()),player,SLOT(pause()));

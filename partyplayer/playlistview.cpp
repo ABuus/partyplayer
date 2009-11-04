@@ -28,12 +28,9 @@ void PlaylistView::dropEvent(QDropEvent *event)
     event->acceptProposedAction();
     const QList<QUrl> urls = event->mimeData()->urls();
     
-    Debug << urls.count();
-
 	foreach(QUrl url, urls)
 	{
 		QList<QStandardItem *> row;
-		Debug << url.scheme();
 		if(url.scheme() == "file")
 		{
 			QString str = url.path();
@@ -106,4 +103,38 @@ void PlaylistView::mouseDoubleClickEvent(QMouseEvent *event)
     }
 }
 
+void PlaylistView::findNext()
+{
+	QModelIndex index = currentIndex();
+	if(!index.isValid())
+		return;
+	QModelIndex nextIndex = model->index(index.row() +1,0);
 
+	QUrl url( nextIndex.data(Qt::UserRole +1).toUrl());
+	if(url.scheme() == "http")
+    {
+		emit nextRequest(url,false);
+    }
+    else
+    {
+		Debug << "emitting" << url;
+		emit nextRequest(url,true);
+    }
+}
+
+void PlaylistView::checkCurrentIndex(const QUrl &url)
+{
+	QModelIndex row = currentIndex();
+	QModelIndex index = model->index(row.row(),0);
+	if(!index.isValid())
+		return;
+	int i = url.toString().compare( index.data(Qt::UserRole +1).toString(), Qt::CaseInsensitive);
+	Debug << i << url.toString() << index.data(Qt::UserRole +1).toString();
+	if(i == 0)
+		return;
+	
+	QModelIndex nextIndex = model->index(index.row() +1,0);
+	if(!nextIndex.isValid())
+		return;
+	setCurrentIndex(nextIndex);
+}

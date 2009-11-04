@@ -21,7 +21,9 @@ class PlaylistView : public QTableView
 public:
 	PlaylistView(QWidget *parent);
 	~PlaylistView();
-
+public slots:
+	void findNext();
+	void checkCurrentIndex(const QUrl &);
 private:
 	PlaylistModel *model;
 	void insetItem(QStringList item);
@@ -31,6 +33,7 @@ protected:
 	void dropEvent(QDropEvent *event);
 signals:
 	void playRequest(QUrl url, bool localFile);
+	void nextRequest(QUrl url, bool localFile);
 	
 };
 
