@@ -43,14 +43,15 @@ QMimeData *SearchModel::mimeData(const QModelIndexList &indexes) const
 	{
 		if (index.isValid()) 
 		{
-			text.append( data(index, Qt::DisplayRole).toString() + ";");
+			// this does not support mulit drag.
+			text.append( data(index, Qt::DisplayRole).toString());
 			urlList.append( QUrl( data(index, Qt::UserRole +1).toUrl() ));
 		}
 	}
 
 	mimeData->setText(text);
 	mimeData->setUrls(urlList);
-        Debug << mimeData->urls();
+    Debug << mimeData->urls();
 	return mimeData;
 }
 

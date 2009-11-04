@@ -27,9 +27,8 @@ void PlaylistView::dropEvent(QDropEvent *event)
     Debug << "start";
     event->acceptProposedAction();
     const QList<QUrl> urls = event->mimeData()->urls();
-    QStringList texts = event->mimeData()->text().split(";");
-
-    Debug << urls.count() << texts.first().isEmpty();
+    
+    Debug << urls.count();
 
 	foreach(QUrl url, urls)
 	{
@@ -38,10 +37,10 @@ void PlaylistView::dropEvent(QDropEvent *event)
 		if(url.scheme() == "file")
 		{
 			QString str = url.path();
-#ifdef Q_WS_WIN
-			str = str.right(1);
-#endif
 			QByteArray ba = str.toLatin1();
+#ifdef Q_WS_WIN // remove "/" in "/C:\..."
+			ba = ba.right(ba.size() -1);
+#endif
 			const char *file = ba.data();
 			Debug << file;
 			TagLib::FileRef f(file);
@@ -56,17 +55,24 @@ void PlaylistView::dropEvent(QDropEvent *event)
 				QStandardItem *track = new QStandardItem( tag->track() );
 				QStandardItem *directory = new QStandardItem( url.path() );
 				QStandardItem *length = new QStandardItem( QString::fromStdString( tag->album().toCString() ));
+				artist->setData(url,Qt::UserRole +1);
 				row << artist << title << year << album << track << directory << length;
 				model->appendRow(row);
+				return;
 		    }
 			else
 			{
 				Debug << "Tag read error";
+				return;
 			}
 		}
 		else if(url.scheme() == "http")
 		{
-
+			QStandardItem *title = new QStandardItem(event->mimeData()->text());
+			title->setData(url, Qt::UserRole +1);
+			row << title;
+			model->appendRow(row);
+			return;
 		}
 		else
 		{
@@ -87,15 +93,16 @@ void PlaylistView::mouseDoubleClickEvent(QMouseEvent *event)
 {
     QModelIndex index = indexAt(event->pos());
     if(!index.isValid())
-	return;
-    QUrl url( model->itemFromIndex(index)->data(Qt::UserRole +1).toUrl());
+		return;
+	QUrl url( model->index(index.row(),0).data(Qt::UserRole +1).toUrl());
     if(url.scheme() == "http")
     {
-	emit playRequest(url,false);
+		emit playRequest(url,false);
     }
     else
     {
-	emit playRequest(url,true);
+		Debug << "emitting" << url;
+		emit playRequest(url,true);
     }
 }
 

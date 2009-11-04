@@ -13,6 +13,7 @@
 #include "search.h"
 #include "searchmodel.h"
 #include "controlwidget.h"
+#include "player.h"
 
 class mainwindow : public QMainWindow, public Ui::mainwindowClass
 {
@@ -27,6 +28,7 @@ private:
 	QFileSystemModel *fileSysModel;
 	ControlWidget *controlWidget;
 	SearchModel *searchModel;
+	Player *player;
 private slots:
 	void querySearch();
 	void clearSearch();

@@ -10,7 +10,6 @@
 // taglib
 #include <fileref.h>
 #include <tag.h>
-#include <id3v2tag.h>
 // My
 #include "playlistmodel.h"
 #include "debug.h"
