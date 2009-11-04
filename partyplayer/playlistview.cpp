@@ -1,7 +1,7 @@
 #include "playlistview.h"
 
 PlaylistView::PlaylistView(QWidget *parent)
-	: QListView(parent)
+	: QTableView(parent)
 {
 	model = new PlaylistModel(this);
 	setModel(model);
@@ -31,41 +31,46 @@ void PlaylistView::dropEvent(QDropEvent *event)
 
     Debug << urls.count() << texts.first().isEmpty();
 
-    if(texts.first().isEmpty())
-    {
-		texts.clear();
-		for(int i = 0; i < urls.count(); i++)
+	foreach(QUrl url, urls)
+	{
+		QList<QStandardItem *> row;
+		Debug << url.scheme();
+		if(url.scheme() == "file")
 		{
-			QString url = urls.at(i).toLocalFile();
-		    url.remove("file://");
-		    QByteArray ba = url.toLatin1();
+			QString str = url.toString();
+			str.remove("file:///");
+		    QByteArray ba = str.toLatin1();
 			const char *file = ba.data();
 		    Debug << file;
-		    TagLib::FileRef f(file);
+			TagLib::FileRef f(file);
 
 			if(!f.isNull() && f.tag())
 		    {
 				TagLib::Tag *tag = f.tag();
-				QString title;
-				title.append( QString::fromStdString( tag->artist().toCString() ));
-				Debug << title;
-				title.append( " - " );
-				Debug << title;
-				title.append( QString::fromStdString( tag->title().toCString() ));
-				title.append( " - " );
-				title.append( QString::fromStdString( tag->album().toCString() ));
-				texts << title;
+				QStandardItem *artist = new QStandardItem( QString::fromStdString( tag->artist().toCString() ));
+				QStandardItem *title = new QStandardItem( QString::fromStdString( tag->title().toCString() ));
+				QStandardItem *year = new QStandardItem( tag->year() );
+				QStandardItem *album = new QStandardItem( QString::fromStdString( tag->album().toCString() ));
+				QStandardItem *track = new QStandardItem( tag->track() );
+				QStandardItem *directory = new QStandardItem( url.path() );
+				QStandardItem *length = new QStandardItem( QString::fromStdString( tag->album().toCString() ));
+				row << artist << title << year << album << track << directory << length;
+				model->appendRow(row);
 		    }
+			else
+			{
+				Debug << "Tag read error";
+			}
 		}
-    }
-    Debug << texts;
+		else if(url.scheme() == "http")
+		{
 
-    for(int i = 0; i < urls.count(); i++)
-    {
-		QStringList row;
-		row << texts.at(i) << urls.at(i).toString();
-		insetItem(row);
-    }
+		}
+		else
+		{
+			Debug << "unsupported content:" << url;
+		}
+	}
 }
 
 void PlaylistView::insetItem(QStringList item)

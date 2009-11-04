@@ -2,7 +2,7 @@
 #define PLAYLISTVIEW_H
 
 //Qt
-#include <QListView>
+#include <QTableView>
 #include <QDragEnterEvent>
 #include <QMimeData>
 #include <QList>
@@ -10,11 +10,12 @@
 // taglib
 #include <fileref.h>
 #include <tag.h>
+#include <id3v2tag.h>
 // My
 #include "playlistmodel.h"
 #include "debug.h"
 
-class PlaylistView : public QListView
+class PlaylistView : public QTableView
 {
 	Q_OBJECT
 

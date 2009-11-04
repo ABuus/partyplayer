@@ -3,7 +3,9 @@
 PlaylistModel::PlaylistModel(QObject *parent)
 	: QStandardItemModel(parent)
 {
-
+	QStringList headerLabels;
+	headerLabels << tr("Artist") << tr("Title") << tr("Year") << tr("Album") << tr("Track") << tr("Directory") << tr("Length");
+	setHorizontalHeaderLabels(headerLabels);
 }
 
 PlaylistModel::~PlaylistModel()
