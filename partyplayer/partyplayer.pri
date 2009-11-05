@@ -12,7 +12,8 @@ HEADERS += ./controlwidget.h \
     ./playlistview.h \
     ./search.h \
     ./searchmodel.h \
-    ./searchview.h
+    ./searchview.h \
+    ./webplayer.h
 
 #Source files
 SOURCES += ./controlwidget.cpp \
@@ -23,7 +24,8 @@ SOURCES += ./controlwidget.cpp \
     ./playlistview.cpp \
     ./search.cpp \
     ./searchmodel.cpp \
-    ./searchview.cpp
+    ./searchview.cpp \
+    ./webplayer.cpp
 
 #Forms
 FORMS += ./controlwidget.ui \
