@@ -7,6 +7,7 @@ PlaylistView::PlaylistView(QWidget *parent)
 	setModel(model);
 	setAcceptDrops(true);
 	setDropIndicatorShown(true);
+	setDragDropMode( QAbstractItemView::DragDrop );
 }
 
 PlaylistView::~PlaylistView()
@@ -24,13 +25,13 @@ void PlaylistView::dragEnterEvent(QDragEnterEvent *event)
 
 void PlaylistView::dropEvent(QDropEvent *event)
 {
-    Debug << "start";
     event->acceptProposedAction();
     const QList<QUrl> urls = event->mimeData()->urls();
-    
+	Debug << "insert count" << urls.count();
 	foreach(QUrl url, urls)
 	{
 		QList<QStandardItem *> row;
+		Debug << url;
 		if(url.scheme() == "file")
 		{
 			QString str = url.path();
@@ -41,26 +42,34 @@ void PlaylistView::dropEvent(QDropEvent *event)
 			const char *file = ba.data();
 			Debug << file;
 			TagLib::FileRef f(file);
-
+			
 			if(!f.isNull() && f.tag())
 		    {
 				TagLib::Tag *tag = f.tag();
+				TagLib::AudioProperties *ap = f.audioProperties();
 				QStandardItem *artist = new QStandardItem( QString::fromStdString( tag->artist().toCString() ));
 				QStandardItem *title = new QStandardItem( QString::fromStdString( tag->title().toCString() ));
-				QStandardItem *year = new QStandardItem( tag->year() );
+				QStandardItem *year = new QStandardItem( QString::number( tag->year() ));
 				QStandardItem *album = new QStandardItem( QString::fromStdString( tag->album().toCString() ));
-				QStandardItem *track = new QStandardItem( tag->track() );
+				QStandardItem *track = new QStandardItem( QString::number(tag->track()) );
 				QStandardItem *directory = new QStandardItem( url.path() );
-				QStandardItem *length = new QStandardItem( QString::fromStdString( tag->album().toCString() ));
+				int time = ap->length();
+				int min = ap->length() / 60;
+				int sec = ap->length() % 60;
+				QString strSec = QString::number(sec);
+				if(sec < 10)
+				{
+					strSec.prepend("0");
+				}
+				QString timeStr( QString::number(min) + ":" + strSec );
+				QStandardItem *length = new QStandardItem( timeStr );
 				artist->setData(url,Qt::UserRole +1);
 				row << artist << title << year << album << track << directory << length;
 				model->appendRow(row);
-				return;
 		    }
 			else
 			{
 				Debug << "Tag read error";
-				return;
 			}
 		}
 		else if(url.scheme() == "http")
@@ -69,7 +78,6 @@ void PlaylistView::dropEvent(QDropEvent *event)
 			title->setData(url, Qt::UserRole +1);
 			row << title;
 			model->appendRow(row);
-			return;
 		}
 		else
 		{

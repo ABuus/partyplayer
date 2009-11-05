@@ -56,26 +56,25 @@ QMimeData *PlaylistModel::mimeData(const QModelIndexList &indexes) const
 bool PlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
     Debug << data->urls() << data->text();
-    if (action == Qt::IgnoreAction)
-	return true;
+    if(action == Qt::IgnoreAction)
+		return true;
 
-    if (!data->hasFormat("application/vnd.text.list"))
+    if(!data->hasFormat("application/vnd.text.list"))
     {
-	Debug << "return formats";
-	return false;
+		Debug << "return formats";
+		return false;
     }
 
     if (column > 0)
-	return false;
+		return false;
     int beginRow;
 
     if (row != -1)
-	beginRow = row;
-
+		beginRow = row;
     else if (parent.isValid())
-	beginRow = parent.row();
+		beginRow = parent.row();
     else
-	beginRow = rowCount(QModelIndex());
+		beginRow = rowCount(QModelIndex());
 
     QByteArray encodedData = data->data("application/vnd.text.list");
     QDataStream stream(&encodedData, QIODevice::ReadOnly);
@@ -84,17 +83,17 @@ bool PlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
 
     while (!stream.atEnd())
     {
-	QString text;
-	stream >> text;
-	newItems << text;
-	++rows;
+		QString text;
+		stream >> text;
+		newItems << text;
+		++rows;
     }
     insertRows(beginRow, rows, QModelIndex());
     foreach (QString text, newItems)
     {
-	QModelIndex idx = index(beginRow, 0, QModelIndex());
-	setData(idx, text);
-	beginRow++;
+		QModelIndex idx = index(beginRow, 0, QModelIndex());
+		setData(idx, text);
+		beginRow++;
     }
 
     return true;

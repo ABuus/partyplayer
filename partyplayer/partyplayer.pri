@@ -7,21 +7,23 @@
 HEADERS += ./controlwidget.h \
     ./debug.h \
     ./mainwindow.h \
+    ./player.h \
     ./playlistmodel.h \
     ./playlistview.h \
     ./search.h \
-    ./searchview.h \
-    ./searchmodel.h
+    ./searchmodel.h \
+    ./searchview.h
 
 #Source files
 SOURCES += ./controlwidget.cpp \
     ./main.cpp \
     ./mainwindow.cpp \
+    ./player.cpp \
     ./playlistmodel.cpp \
     ./playlistview.cpp \
     ./search.cpp \
-    ./searchview.cpp \
-    ./searchmodel.cpp
+    ./searchmodel.cpp \
+    ./searchview.cpp
 
 #Forms
 FORMS += ./controlwidget.ui \

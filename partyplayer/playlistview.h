@@ -7,9 +7,11 @@
 #include <QMimeData>
 #include <QList>
 #include <QUrl>
+#include <QTime>
 // taglib
 #include <fileref.h>
 #include <tag.h>
+#include <audioproperties.h>
 // My
 #include "playlistmodel.h"
 #include "debug.h"
