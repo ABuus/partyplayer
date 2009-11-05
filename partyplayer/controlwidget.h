@@ -11,6 +11,7 @@ class ControlWidget : public QWidget, public Ui::ControlWidgetClass
 public:
 	ControlWidget(QWidget *parent = 0);
 	~ControlWidget();
+public slots:
 	void setPlayState( bool playing );
 private:
 	bool playState; // true playing, false pause

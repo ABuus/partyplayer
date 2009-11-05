@@ -53,9 +53,9 @@ void PlaylistView::dropEvent(QDropEvent *event)
 				QStandardItem *album = new QStandardItem( QString::fromStdString( tag->album().toCString() ));
 				QStandardItem *track = new QStandardItem( QString::number(tag->track()) );
 				QStandardItem *directory = new QStandardItem( url.path() );
-				int time = ap->length();
-				int min = ap->length() / 60;
-				int sec = ap->length() % 60;
+				const int time = ap->length();
+				const int min = time / 60;
+				const int sec = time % 60;
 				QString strSec = QString::number(sec);
 				if(sec < 10)
 				{
@@ -74,9 +74,28 @@ void PlaylistView::dropEvent(QDropEvent *event)
 		}
 		else if(url.scheme() == "http")
 		{
-			QStandardItem *title = new QStandardItem(event->mimeData()->text());
-			title->setData(url, Qt::UserRole +1);
-			row << title;
+			QStringList strList = event->mimeData()->text().split(":");
+			QStandardItem *artist = new QStandardItem(strList.takeFirst());
+			QStandardItem *title = new QStandardItem( QString() );
+			QStandardItem *year = new QStandardItem( QString() );
+			QStandardItem *album = new QStandardItem( QString());
+			QStandardItem *track = new QStandardItem( QString() );
+			QStandardItem *directory = new QStandardItem( "YouTube" );
+
+			const int time = strList.first().toInt();
+			const int min = time / 60;
+			const int sec = time % 60;
+			QString strSec = QString::number(sec);
+			if(sec < 10)
+			{
+				strSec.prepend("0");
+			}
+			QString timeStr( QString::number(min) + ":" + strSec );
+			QStandardItem *length = new QStandardItem( timeStr );
+		
+			artist->setData(url, Qt::UserRole +1);
+			artist->setData(time, Qt::UserRole +2);
+			row << artist << title << year << album << track << directory << length;
 			model->appendRow(row);
 		}
 		else
@@ -100,48 +119,46 @@ void PlaylistView::mouseDoubleClickEvent(QMouseEvent *event)
     if(!index.isValid())
 		return;
 	QUrl url( model->index(index.row(),0).data(Qt::UserRole +1).toUrl());
-    if(url.scheme() == "http")
-    {
-		emit playRequest(url,false);
-    }
-    else
-    {
-		Debug << "emitting" << url;
-		emit playRequest(url,true);
-    }
+	emit playRequest(url);
 }
 
-void PlaylistView::findNext()
+QUrl PlaylistView::next()
+{
+	QModelIndex index = currentIndex();
+	if(!index.isValid())
+		return QUrl();
+	QModelIndex nextIndex = model->index(index.row() +1,0);
+	if(!nextIndex.isValid())
+		return QUrl();
+	QUrl url( nextIndex.data(Qt::UserRole +1).toUrl());
+	return url;
+}
+
+QUrl PlaylistView::previous()
+{
+	QModelIndex index = currentIndex();
+	QModelIndex previousIndex = model->index(index.row() -1,0);
+	QUrl url( previousIndex.data(Qt::UserRole +1).toUrl());
+	return url;
+}
+
+void PlaylistView::selectNext()
 {
 	QModelIndex index = currentIndex();
 	if(!index.isValid())
 		return;
 	QModelIndex nextIndex = model->index(index.row() +1,0);
-
-	QUrl url( nextIndex.data(Qt::UserRole +1).toUrl());
-	if(url.scheme() == "http")
-    {
-		emit nextRequest(url,false);
-    }
-    else
-    {
-		Debug << "emitting" << url;
-		emit nextRequest(url,true);
-    }
+	if(!nextIndex.isValid())
+		return;
+	setCurrentIndex(nextIndex);
 }
 
-void PlaylistView::checkCurrentIndex(const QUrl &url)
+void PlaylistView::selectPrevious()
 {
-	QModelIndex row = currentIndex();
-	QModelIndex index = model->index(row.row(),0);
+	QModelIndex index = currentIndex();
 	if(!index.isValid())
 		return;
-	int i = url.toString().compare( index.data(Qt::UserRole +1).toString(), Qt::CaseInsensitive);
-	Debug << i << url.toString() << index.data(Qt::UserRole +1).toString();
-	if(i == 0)
-		return;
-	
-	QModelIndex nextIndex = model->index(index.row() +1,0);
+	QModelIndex nextIndex = model->index(index.row() -1,0);
 	if(!nextIndex.isValid())
 		return;
 	setCurrentIndex(nextIndex);

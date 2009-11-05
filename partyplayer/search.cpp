@@ -45,18 +45,25 @@ void Search::queryFinished(QNetworkReply *reply)
 		int decStart = entry.indexOf("<media:description type='plain'>") +32;
 		int decEnd = entry.indexOf("</media:description>");
 
-		int urlStart = entry.indexOf("<media:player url='") +19;
-		int urlEnd = entry.indexOf("'/>", urlStart);
+		int urlStart = entry.indexOf("<media:content url='") +20;
+		int urlEnd = entry.indexOf("' ", urlStart);
+
+		int durationStart = entry.indexOf("<yt:duration seconds='") +22;
+		int durationEnd = entry.indexOf("'/>", durationStart);
 
 		QString title = entry.mid(titleStart, (titleEnd - titleStart));
 		QString dec = entry.mid(decStart, (decEnd - decStart));
 		QString url = entry.mid(urlStart, (urlEnd - urlStart));
+		QString duration = entry.mid(durationStart, (durationEnd - durationStart));
 
-//		Debug << "\n" << title << "\n" << dec << "\n" << url;
+		title.replace("&amp;","&");
+		dec.replace("&amp;","&");
+		
+//		Debug << "\nTitle:" << title << "\ndescirption:" << dec << "\nurl:" << url << "\nduration:" << duration;
 
 		offset = entryEnd + 1; // offset to next entry
 		QStringList item;
-		item << title << dec << url;
+		item << title << dec << url << duration;
 		emit newItem(item);
 	}
 }

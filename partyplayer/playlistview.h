@@ -23,19 +23,21 @@ class PlaylistView : public QTableView
 public:
 	PlaylistView(QWidget *parent);
 	~PlaylistView();
-public slots:
-	void findNext();
-	void checkCurrentIndex(const QUrl &);
-private:
 	PlaylistModel *model;
+public slots:
+	QUrl next();
+	QUrl previous();
+//	void checkCurrentIndex(const QUrl &);
+	void selectNext();
+	void selectPrevious();
+private:
 	void insetItem(QStringList item);
 	void mouseDoubleClickEvent( QMouseEvent * event );
 protected:
 	void dragEnterEvent(QDragEnterEvent *event);
 	void dropEvent(QDropEvent *event);
 signals:
-	void playRequest(QUrl url, bool localFile);
-	void nextRequest(QUrl url, bool localFile);
+	void playRequest(QUrl url);
 	
 };
 

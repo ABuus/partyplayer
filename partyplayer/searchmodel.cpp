@@ -37,6 +37,7 @@ QMimeData *SearchModel::mimeData(const QModelIndexList &indexes) const
 	QMimeData *mimeData = new QMimeData();
 	QByteArray encodedData;
 	QList<QUrl> urlList;
+	QList<int> durationList;
 	QString text;
 
 	foreach (QModelIndex index, indexes) 
@@ -46,6 +47,8 @@ QMimeData *SearchModel::mimeData(const QModelIndexList &indexes) const
 			// this does not support mulit drag.
 			text.append( data(index, Qt::DisplayRole).toString());
 			urlList.append( QUrl( data(index, Qt::UserRole +1).toUrl() ));
+			text.append(":");
+			text.append( QString::number( data(index, Qt::UserRole +2).toInt() ) );
 		}
 	}
 

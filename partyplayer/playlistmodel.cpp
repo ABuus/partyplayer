@@ -42,13 +42,14 @@ QMimeData *PlaylistModel::mimeData(const QModelIndexList &indexes) const
 
      QDataStream stream(&encodedData, QIODevice::WriteOnly);
 
-     foreach (QModelIndex index, indexes) {
-         if (index.isValid()) {
+     foreach (QModelIndex index, indexes) 
+	 {
+		if (index.isValid()) 
+		{
              QString text = data(index, Qt::DisplayRole).toString();
              stream << text;
          }
      }
-
      mimeData->setData("application/vnd.text.list", encodedData);
      return mimeData;
  }
