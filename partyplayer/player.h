@@ -2,10 +2,16 @@
 #define PLAYER_H
 
 #include <QObject>
+#ifdef Q_WS_WIN
 #include <Phonon/MediaObject>
 #include <Phonon/MediaSource>
 #include <Phonon/AudioOutput>
 #include <Phonon/VideoWidget>
+#elif defined Q_WS_X11
+#include <mediaobject.h>
+#include <mediasource.h>
+#include <audiooutput.h>
+#endif
 #include <QUrl>
 #include <QWebView>
 #include <QTimer>
