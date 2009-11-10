@@ -32,6 +32,7 @@ void PlaylistView::dropEvent(QDropEvent *event)
 	{
 		QList<QStandardItem *> row;
 		Debug << url;
+		// create addFile(QUrl url)
 		if(url.scheme() == "file")
 		{
 			QString str = url.path();
@@ -69,9 +70,15 @@ void PlaylistView::dropEvent(QDropEvent *event)
 		    }
 			else
 			{
+				// foreach() addFile()
 				Debug << "Tag read error";
+				QStandardItem *artist = new QStandardItem( "Tag read error" );
+				artist->setData(url,Qt::UserRole +1);
+				row << artist;
+				model->appendRow(row);
 			}
 		}
+		// addLink()
 		else if(url.scheme() == "http")
 		{
 			QStringList strList = event->mimeData()->text().split(":");

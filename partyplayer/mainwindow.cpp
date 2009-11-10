@@ -14,6 +14,10 @@ mainwindow::mainwindow(QWidget *parent, Qt::WFlags flags)
 	// player
 	player = new Player(this);
 	player->setPlaylist(playlistView);
+//	videoContainer->addWidget(player->videoWidget());
+	webView = new QWebView(this);
+	player->setWebView(webView);
+	videoContainer->addWidget(webView);
 
 	// control widget
 	controlWidget = new ControlWidget(this);

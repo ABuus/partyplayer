@@ -8,8 +8,12 @@ Player::Player(QObject *parent)
 	webTimer->setSingleShot(true);
 	m_audioOutput = new AudioOutput(Phonon::MusicCategory,this);
 	m_mediaObject = createPlayer(Phonon::MusicCategory);
+//	m_videoWidget = new VideoWidget(); // impl: setVideoWidget() MEM LEAK!!!
+//	m_videoWidget->hide();
 	createPath(m_mediaObject,m_audioOutput);
-	webView = new WebPlayer();
+//	createPath(m_mediaObject,m_videoWidget);
+//	m_webView = new QWebView(); // impl setWebView() MEM LEAK!!!
+//	m_webView->hide();
 	connect(m_mediaObject,SIGNAL(aboutToFinish()),this,SLOT(enqueueNext()));
 	connect(m_mediaObject,SIGNAL(currentSourceChanged(const Phonon::MediaSource &)),this,SIGNAL(requestNext()));
 	connect(m_mediaObject,SIGNAL(stateChanged(Phonon::State , Phonon::State )),this,SLOT(emitPlayingState( Phonon::State )));
@@ -37,9 +41,11 @@ void Player::play(QUrl url)
 	{
 		if(m_state = Player::WebState)
 		{
-			webView->hide();
-			webView->setHtml(QString());
+			m_webView->hide();
+			m_webView->setHtml(QString());
+//			m_videoWidget->show();
 		}
+		Debug << url;
 		m_mediaObject->setCurrentSource(url);
 		m_mediaObject->play();
 		m_state = Player::LocalState;
@@ -48,19 +54,19 @@ void Player::play(QUrl url)
 	{
 		if(m_state = Player::LocalState)
 		{
-			webView->show();
+//			m_videoWidget->hide();
+			m_webView->show();
 			m_mediaObject->stop();
 		}
 		QModelIndex temp = m_playlist->currentIndex();
 		QModelIndex index = m_playlist->model->index( temp.row(), 0);
-		const int time = index.data(Qt::UserRole +2).toInt();  // temp buffer time
-		webView->load(url);
+		const int time = index.data(Qt::UserRole +2).toInt() +2;  // 2 = load time offset do we need some buffering??
+		m_webView->load(url);
 		
 		webTimer->setInterval(time * 1000);
 		webTimer->start();
 		m_state = Player::WebState;
 		Debug << url;
-		webView->start();
 	}
 }
 
@@ -81,7 +87,7 @@ void Player::previous()
 void Player::stop()
 {
 	m_mediaObject->stop();
-	webView->setHtml(QString());
+	m_webView->setHtml(QString());
 }
 
 void Player::enqueueNext()

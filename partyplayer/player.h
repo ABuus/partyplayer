@@ -5,11 +5,12 @@
 #include <Phonon/MediaObject>
 #include <Phonon/MediaSource>
 #include <Phonon/AudioOutput>
+#include <Phonon/VideoWidget>
 #include <QUrl>
+#include <QWebView>
 #include <QTimer>
 #include "playlistview.h"
 #include "debug.h"
-#include "webplayer.h"
 
 using namespace Phonon;
 
@@ -20,7 +21,10 @@ public:
 	Player(QObject *parent);
 	~Player();
 	Phonon::MediaObject * mediaObject() { return m_mediaObject; };
+	QWebView * webView() { return m_webView; };
+//	Phonon::VideoWidget * videoWidget() { return m_videoWidget; };
 	void setPlaylist(PlaylistView *playlist) { m_playlist = playlist; };
+	void setWebView(QWebView *webView) { m_webView = webView; };
 	enum State { NoState, WebState, LocalState };
 public slots:
 	void play(QUrl url);
@@ -33,7 +37,8 @@ public slots:
 private:
 	AudioOutput *m_audioOutput;
 	MediaObject *m_mediaObject;
-	WebPlayer *webView;
+	QWebView *m_webView;
+//	VideoWidget *m_videoWidget;
 	State m_state;
 	PlaylistView *m_playlist;
 	QTimer *webTimer;

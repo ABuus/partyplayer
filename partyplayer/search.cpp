@@ -28,12 +28,45 @@ void Search::queryFinished(QNetworkReply *reply)
 {
 	QByteArray ba = reply->readAll();
 	QString html(ba);
-	
-	int entryCount = html.count("entry") / 2;
 
-	int offset = 0;
+	QDomDocument doc;
+	doc.setContent(html);
+	QDomElement docElem = doc.documentElement();
+	QDomNodeList nodeList = docElem.elementsByTagName("entry");
+
+	for(int i = 0; i < nodeList.count(); i++)
+	{
+		QDomElement entry = nodeList.at(i).toElement();
+		QString title = entry.elementsByTagName("title").at(0).firstChild().nodeValue();
+		QString description = entry.elementsByTagName("media:description").at(0).firstChild().nodeValue();
+		
+		QString id = entry.elementsByTagName("id").at(0).firstChild().nodeValue();
+		id.remove("http://gdata.youtube.com/feeds/api/videos/");
+
+		// mg is a media:group see http://code.google.com/apis/youtube/2.0/reference.html#youtube_data_api_tag_media:group
+		QDomElement mg = entry.elementsByTagName("media:group").at(0).toElement();
+		QString duration = mg.elementsByTagName("yt:duration").at(0).toElement().attributeNode("seconds").value();
+		Debug << title << description << id << duration;
+
+		// http://code.google.com/apis/youtube/player_parameters.html
+		// there are more parameters to be supported eg hd
+		QString url("http://www.youtube.com/v/");
+		url.append(id);
+		url.append("?autoplay=1"); // start playing on load
+		url.append("&iv_load_policy=3"); 
+		url.append("&showinfo=0&");
+		url.append("enablejsapi=1"); // enables JavaScript control layer
+		
+		QStringList item;
+		item << title << description << url << duration;
+		emit newItem(item);
+	}
+/*
 	for(int i = 0; i < entryCount; i++)
 	{
+		
+		Debug << "entry count" << 
+
 		int entryStart = html.indexOf("entry",offset);
 		int entryEnd = html.indexOf("entry",entryStart +1);
 		
@@ -44,17 +77,23 @@ void Search::queryFinished(QNetworkReply *reply)
 
 		int decStart = entry.indexOf("<media:description type='plain'>") +32;
 		int decEnd = entry.indexOf("</media:description>");
-
-		int urlStart = entry.indexOf("<media:content url='") +20;
-		int urlEnd = entry.indexOf("' ", urlStart);
+		
+		int idStart = entry.indexOf("<yt:videoid>") +11;
+		int idEnd = entry.indexOf("</yt:videoid>", idStart);
 
 		int durationStart = entry.indexOf("<yt:duration seconds='") +22;
 		int durationEnd = entry.indexOf("'/>", durationStart);
 
 		QString title = entry.mid(titleStart, (titleEnd - titleStart));
 		QString dec = entry.mid(decStart, (decEnd - decStart));
-		QString url = entry.mid(urlStart, (urlEnd - urlStart));
+		QString id = entry.mid(idStart, (idEnd - idStart));
 		QString duration = entry.mid(durationStart, (durationEnd - durationStart));
+
+		// http://code.google.com/apis/youtube/player_parameters.html
+		// there are more parameters to be supported eg hd
+		QString url("http://www.youtube.com/v/");
+		url.append(id);
+		url.append("?autoplay=1&iv_load_policy=3&showinfo=0");
 
 		title.replace("&amp;","&");
 		dec.replace("&amp;","&");
@@ -66,4 +105,6 @@ void Search::queryFinished(QNetworkReply *reply)
 		item << title << dec << url << duration;
 		emit newItem(item);
 	}
+	*/
 }
+

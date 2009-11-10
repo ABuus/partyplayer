@@ -8,6 +8,7 @@
 #include <QFileSystemModel>
 #include <QDesktopServices>
 #include <QStandardItemModel>
+#include <QWebView>
 #include "debug.h"
 #include "ui_mainwindow.h"
 #include "search.h"
@@ -29,6 +30,7 @@ private:
 	ControlWidget *controlWidget;
 	SearchModel *searchModel;
 	Player *player;
+	QWebView *webView;
 private slots:
 	void querySearch();
 	void clearSearch();
