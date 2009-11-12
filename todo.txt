@@ -1,0 +1,9 @@
+before 0.1
+playing != selected
+playlist internal drag drop
+settings interface
+m3u support
+drop indicator playlist
+
+after 0.1
+look into gstreamer for better codec support

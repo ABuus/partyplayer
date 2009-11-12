@@ -6,14 +6,11 @@ Player::Player(QObject *parent)
 	m_state = Player::NoState;
 	webTimer = new QTimer(this);
 	webTimer->setSingleShot(true);
+
 	m_audioOutput = new AudioOutput(Phonon::MusicCategory,this);
 	m_mediaObject = createPlayer(Phonon::MusicCategory);
-//	m_videoWidget = new VideoWidget(); // impl: setVideoWidget() MEM LEAK!!!
-//	m_videoWidget->hide();
 	createPath(m_mediaObject,m_audioOutput);
-//	createPath(m_mediaObject,m_videoWidget);
-//	m_webView = new QWebView(); // impl setWebView() MEM LEAK!!!
-//	m_webView->hide();
+
 	connect(m_mediaObject,SIGNAL(aboutToFinish()),this,SLOT(enqueueNext()));
 	connect(m_mediaObject,SIGNAL(currentSourceChanged(const Phonon::MediaSource &)),this,SIGNAL(requestNext()));
 	connect(m_mediaObject,SIGNAL(stateChanged(Phonon::State , Phonon::State )),this,SLOT(emitPlayingState( Phonon::State )));
@@ -27,7 +24,6 @@ Player::~Player()
 
 void Player::play(QUrl url)
 {
-	Debug << "player state" << m_state;
 	bool localFile = false;
 	if(url.scheme() == "http")
     {
@@ -41,11 +37,9 @@ void Player::play(QUrl url)
 	{
 		if(m_state = Player::WebState)
 		{
-			m_webView->hide();
-			m_webView->setHtml(QString());
-//			m_videoWidget->show();
+			m_webView->load(QUrl("http://www.youtube.com/apiplayer?version=3"));
 		}
-		Debug << url;
+		Debug << "Local File: " << url.toString();;
 		m_mediaObject->setCurrentSource(url);
 		m_mediaObject->play();
 		m_state = Player::LocalState;
@@ -54,8 +48,6 @@ void Player::play(QUrl url)
 	{
 		if(m_state = Player::LocalState)
 		{
-//			m_videoWidget->hide();
-			m_webView->show();
 			m_mediaObject->stop();
 		}
 		QModelIndex temp = m_playlist->currentIndex();
@@ -112,3 +104,4 @@ void Player::emitPlayingState(Phonon::State pState)
 	else if(pState == Phonon::PausedState || pState == Phonon::StoppedState)
 		emit playStateChanged(false);
 }
+

@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QtGui/QMainWindow>
+#include <QApplication>
+#include <QSettings>
+#include <QObject>
 #include <QWebPage>
 #include <QWebFrame>
 #include <QUrl>
@@ -9,6 +12,7 @@
 #include <QDesktopServices>
 #include <QStandardItemModel>
 #include <QWebView>
+#include <QAction>
 #include "debug.h"
 #include "ui_mainwindow.h"
 #include "search.h"
@@ -16,13 +20,13 @@
 #include "controlwidget.h"
 #include "player.h"
 
-class mainwindow : public QMainWindow, public Ui::mainwindowClass
+class MainWindow : public QMainWindow, public Ui::mainWindowClass
 {
 	Q_OBJECT
 
 public:
-	mainwindow(QWidget *parent = 0, Qt::WFlags flags = 0);
-	~mainwindow();
+	MainWindow(QWidget *parent = 0, Qt::WFlags flags = 0);
+	~MainWindow();
 
 private:
 	Search *search;
@@ -31,10 +35,12 @@ private:
 	SearchModel *searchModel;
 	Player *player;
 	QWebView *webView;
+	QList<int> oldVSplitter;
 private slots:
 	void querySearch();
 	void clearSearch();
 	void insertSearchItem(QStringList);
+	void setVideoMode(QAction *);
 signals:
 	void preformSearch(QString text);
 };

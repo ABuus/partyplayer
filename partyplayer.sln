@@ -5,6 +5,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "partyplayer", "partyplayer\
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Party Player installer", "Party Player installer\Party Player installer.vdproj", "{7FA0EDD9-818E-4038-80D0-E4E914827919}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A70D69F0-8AC4-4623-B867-F33E41C633CA}"
+	ProjectSection(SolutionItems) = preProject
+		todo.txt = todo.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32

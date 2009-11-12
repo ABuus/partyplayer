@@ -27,83 +27,20 @@ void PlaylistView::dropEvent(QDropEvent *event)
 {
     event->acceptProposedAction();
     const QList<QUrl> urls = event->mimeData()->urls();
-	Debug << "insert count" << urls.count();
 	foreach(QUrl url, urls)
 	{
-		QList<QStandardItem *> row;
-		Debug << url;
-		// create addFile(QUrl url)
+		Debug << url.scheme();
 		if(url.scheme() == "file")
 		{
-			QString str = url.path();
-			QByteArray ba = str.toLatin1();
-#ifdef Q_WS_WIN // remove "/" in "/C:\..."
-			ba = ba.right(ba.size() -1);
-#endif
-			const char *file = ba.data();
-			Debug << file;
-			TagLib::FileRef f(file);
-			
-			if(!f.isNull() && f.tag())
-		    {
-				TagLib::Tag *tag = f.tag();
-				TagLib::AudioProperties *ap = f.audioProperties();
-				QStandardItem *artist = new QStandardItem( QString::fromStdString( tag->artist().toCString() ));
-				QStandardItem *title = new QStandardItem( QString::fromStdString( tag->title().toCString() ));
-				QStandardItem *year = new QStandardItem( QString::number( tag->year() ));
-				QStandardItem *album = new QStandardItem( QString::fromStdString( tag->album().toCString() ));
-				QStandardItem *track = new QStandardItem( QString::number(tag->track()) );
-				QStandardItem *directory = new QStandardItem( url.path() );
-				const int time = ap->length();
-				const int min = time / 60;
-				const int sec = time % 60;
-				QString strSec = QString::number(sec);
-				if(sec < 10)
-				{
-					strSec.prepend("0");
-				}
-				QString timeStr( QString::number(min) + ":" + strSec );
-				QStandardItem *length = new QStandardItem( timeStr );
-				artist->setData(url,Qt::UserRole +1);
-				row << artist << title << year << album << track << directory << length;
-				model->appendRow(row);
-		    }
-			else
-			{
-				// foreach() addFile()
-				Debug << "Tag read error";
-				QStandardItem *artist = new QStandardItem( "Tag read error" );
-				artist->setData(url,Qt::UserRole +1);
-				row << artist;
-				model->appendRow(row);
-			}
+			insertFile(url.toString(),rowAt(event->pos().y()));   
 		}
-		// addLink()
 		else if(url.scheme() == "http")
 		{
 			QStringList strList = event->mimeData()->text().split(":");
-			QStandardItem *artist = new QStandardItem(strList.takeFirst());
-			QStandardItem *title = new QStandardItem( QString() );
-			QStandardItem *year = new QStandardItem( QString() );
-			QStandardItem *album = new QStandardItem( QString());
-			QStandardItem *track = new QStandardItem( QString() );
-			QStandardItem *directory = new QStandardItem( "YouTube" );
-
-			const int time = strList.first().toInt();
-			const int min = time / 60;
-			const int sec = time % 60;
-			QString strSec = QString::number(sec);
-			if(sec < 10)
-			{
-				strSec.prepend("0");
-			}
-			QString timeStr( QString::number(min) + ":" + strSec );
-			QStandardItem *length = new QStandardItem( timeStr );
-		
-			artist->setData(url, Qt::UserRole +1);
-			artist->setData(time, Qt::UserRole +2);
-			row << artist << title << year << album << track << directory << length;
-			model->appendRow(row);
+			const QString title = strList.first();
+			const int time = strList.at(1).toInt();
+			int row = rowAt(event->pos().y());
+			insertYTItem(url,title,time,row);
 		}
 		else
 		{
@@ -112,13 +49,6 @@ void PlaylistView::dropEvent(QDropEvent *event)
 	}
 }
 
-void PlaylistView::insetItem(QStringList item)
-{
-    QStandardItem *m_item = new QStandardItem(item.first());
-    m_item->setData(QUrl(item.at(1)), Qt::UserRole +1);
-    Debug << m_item->data(Qt::UserRole +1);
-    model->appendRow(m_item);
-}
 
 void PlaylistView::mouseDoubleClickEvent(QMouseEvent *event)
 {
@@ -169,4 +99,108 @@ void PlaylistView::selectPrevious()
 	if(!nextIndex.isValid())
 		return;
 	setCurrentIndex(nextIndex);
+}
+
+void PlaylistView::insertYTItem(const QUrl url, const QString title, const int time, int row)
+{
+	if(row == -1)
+	{
+		row = model->rowCount();
+	}
+	QList<QStandardItem *> rowItem;
+	QStandardItem *artist = new QStandardItem(title);
+	QStandardItem *m_title = new QStandardItem( QString() );
+	QStandardItem *year = new QStandardItem( QString() );
+	QStandardItem *album = new QStandardItem( QString());
+	QStandardItem *track = new QStandardItem( QString() );
+	QStandardItem *directory = new QStandardItem( "YouTube" );
+
+	const int min = time / 60;
+	const int sec = time % 60;
+	QString strSec = QString::number(sec);
+	if(sec < 10)
+	{
+		strSec.prepend("0");
+	}
+	QString timeStr( QString::number(min) + ":" + strSec );
+	QStandardItem *length = new QStandardItem( timeStr );
+
+	artist->setData(url, Qt::UserRole +1);
+	artist->setData(time, Qt::UserRole +2);
+	rowItem << artist << m_title << year << album << track << directory << length;
+	model->insertRow(row,rowItem);
+}
+
+void PlaylistView::insertFile(const QString file, int row)
+{
+	if(row == -1)
+	{
+		row = model->rowCount();
+	}
+
+	QByteArray ba = file.toLatin1();
+	if(ba.startsWith("file:///"))
+		ba.remove(0,7);	
+#ifdef Q_WS_WIN // remove "/" in "/C:\..."
+	if(ba.startsWith("/"))
+		ba = ba.right(ba.size() -1);
+#endif
+
+	const char *tFile = ba.data();
+
+	Debug << file << tFile;
+	QList<QStandardItem *> rowItem;
+	TagLib::FileRef f(tFile);
+	if(!f.isNull() && f.tag())
+    {
+		TagLib::Tag *tag = f.tag();
+		TagLib::AudioProperties *ap = f.audioProperties();
+		QStandardItem *artist = new QStandardItem( QString::fromStdString( tag->artist().toCString() ));
+		QStandardItem *title = new QStandardItem( QString::fromStdString( tag->title().toCString() ));
+		QStandardItem *year = new QStandardItem( QString::number( tag->year() ));
+		QStandardItem *album = new QStandardItem( QString::fromStdString( tag->album().toCString() ));
+		QStandardItem *track = new QStandardItem( QString::number(tag->track()) );
+		QStandardItem *directory = new QStandardItem( file );
+		const int time = ap->length();
+		const int min = time / 60;
+		const int sec = time % 60;
+		QString strSec = QString::number(sec);
+		if(sec < 10)
+		{
+			strSec.prepend("0");
+		}
+		QString timeStr( QString::number(min) + ":" + strSec );
+		QStandardItem *length = new QStandardItem( timeStr );
+		artist->setData(file,Qt::UserRole +1);
+		rowItem << artist << title << year << album << track << directory << length;
+		model->insertRow(row,rowItem);
+	}
+	else
+	{
+		QFileInfo fi(tFile);
+		if(fi.isDir())
+		{
+			Debug << "dir insert";
+			insertDir(QUrl(file),row);
+		}
+		else
+			Debug << "unsuported content";
+	}
+}
+
+void PlaylistView::insertDir(const QUrl url, int row)
+{
+	QFileInfo info(url.toLocalFile());
+	if(!info.isDir())
+	{
+		Debug << "error not a directory";
+		return;
+	}
+	QDir dir(url.toLocalFile());
+	QFileInfoList files = dir.entryInfoList(QDir::Files);
+	foreach(QFileInfo fi,files)
+	{
+		insertFile(fi.absoluteFilePath(),row);
+		row++;	
+	}
 }

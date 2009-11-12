@@ -28,10 +28,10 @@ public:
 	~Player();
 	Phonon::MediaObject * mediaObject() { return m_mediaObject; };
 	QWebView * webView() { return m_webView; };
-//	Phonon::VideoWidget * videoWidget() { return m_videoWidget; };
 	void setPlaylist(PlaylistView *playlist) { m_playlist = playlist; };
 	void setWebView(QWebView *webView) { m_webView = webView; };
 	enum State { NoState, WebState, LocalState };
+	//enum VideoMode { AudioOnly, VideoWidget, FullScreen };
 public slots:
 	void play(QUrl url);
 	void play() { m_mediaObject->play(); };
@@ -44,7 +44,6 @@ private:
 	AudioOutput *m_audioOutput;
 	MediaObject *m_mediaObject;
 	QWebView *m_webView;
-//	VideoWidget *m_videoWidget;
 	State m_state;
 	PlaylistView *m_playlist;
 	QTimer *webTimer;

@@ -96,6 +96,5 @@ bool PlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
 		setData(idx, text);
 		beginRow++;
     }
-
     return true;
 }

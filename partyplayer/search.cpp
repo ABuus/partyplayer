@@ -48,14 +48,18 @@ void Search::queryFinished(QNetworkReply *reply)
 		QString duration = mg.elementsByTagName("yt:duration").at(0).toElement().attributeNode("seconds").value();
 		Debug << title << description << id << duration;
 
+		
 		// http://code.google.com/apis/youtube/player_parameters.html
 		// there are more parameters to be supported eg hd
 		QString url("http://www.youtube.com/v/");
 		url.append(id);
+		
 		url.append("?autoplay=1"); // start playing on load
 		url.append("&iv_load_policy=3"); 
 		url.append("&showinfo=0&");
 		url.append("enablejsapi=1"); // enables JavaScript control layer
+		
+		
 		
 		QStringList item;
 		item << title << description << url << duration;

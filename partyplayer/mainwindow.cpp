@@ -1,9 +1,12 @@
 #include "mainwindow.h"
 
-mainwindow::mainwindow(QWidget *parent, Qt::WFlags flags)
+MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags)
 {
 	// this
+	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
+	restoreGeometry(settings.value("mainwindow/geometry").toByteArray());
+	restoreState(settings.value("mainwindow/windowState").toByteArray());
 	setupUi(this);
 
 	// youtube searcher
@@ -14,7 +17,6 @@ mainwindow::mainwindow(QWidget *parent, Qt::WFlags flags)
 	// player
 	player = new Player(this);
 	player->setPlaylist(playlistView);
-//	videoContainer->addWidget(player->videoWidget());
 	webView = new QWebView(this);
 	player->setWebView(webView);
 	videoContainer->addWidget(webView);
@@ -36,7 +38,11 @@ mainwindow::mainwindow(QWidget *parent, Qt::WFlags flags)
 	fileView->expand(musicIndex);
 	fileView->setCurrentIndex(musicIndex);
 	fileView->scrollTo(musicIndex,QAbstractItemView::PositionAtCenter);
-	
+
+	//videoSplitter
+	webView->hide();
+	Audio_Only->trigger();
+
 	// websettings to ensure we can play youtube vids
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled,true);
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled,true);
@@ -47,7 +53,6 @@ mainwindow::mainwindow(QWidget *parent, Qt::WFlags flags)
 	connect(search, SIGNAL(newSearch()), this, SLOT(clearSearch()));
 	connect(search, SIGNAL(newItem(QStringList)), this,SLOT(insertSearchItem(QStringList)));
 	connect(playlistView,SIGNAL(playRequest(QUrl)),player,SLOT(play(QUrl)));
-//	connect(playlistView,SIGNAL(nextRequest(QUrl,bool)),player,SLOT(setNext(QUrl,bool)));
 	connect(player,SIGNAL(playStateChanged(bool)),controlWidget,SLOT(setPlayState(bool)));
 
 	connect(controlWidget,SIGNAL(stop()),player,SLOT(stop()));
@@ -55,24 +60,28 @@ mainwindow::mainwindow(QWidget *parent, Qt::WFlags flags)
 	connect(controlWidget,SIGNAL(pause()),player,SLOT(pause()));
 	connect(controlWidget,SIGNAL(back()),player,SLOT(previous()));
 	connect(controlWidget,SIGNAL(forward()),player,SLOT(next()));
+
+	connect(menuMode,SIGNAL(triggered(QAction *)),this,SLOT(setVideoMode(QAction *)));
 }
 
-mainwindow::~mainwindow()
+MainWindow::~MainWindow()
 {
-	
+	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
+	settings.setValue("mainwindow/geometry",saveGeometry());
+	settings.setValue("mainwindow/windowState", saveState());
 }
 
-void mainwindow::querySearch()
+void MainWindow::querySearch()
 {
 	emit preformSearch( searchLineEdit->text() );
 }
 
-void mainwindow::clearSearch()
+void MainWindow::clearSearch()
 {
 	searchModel->clear();
 }
 
-void mainwindow::insertSearchItem(QStringList item)
+void MainWindow::insertSearchItem(QStringList item)
 {
 	QStandardItem *m_item = new QStandardItem(item.first());
 	m_item->setData(item.at(1),Qt::ToolTipRole);
@@ -80,4 +89,29 @@ void mainwindow::insertSearchItem(QStringList item)
 	m_item->setData(item.at(3), Qt::UserRole +2);
 	Debug << item.at(2);
 	searchModel->appendRow(m_item);
+}
+
+void MainWindow::setVideoMode(QAction *a)
+{
+	if(a->objectName() == "Audio_Only")
+	{
+		oldVSplitter = videoSplitter->sizes();
+		webView->hide();
+		QList<int> i;
+		i << 0 << ( oldVSplitter.at(0) + oldVSplitter.at(1) );
+		videoSplitter->setSizes(i);
+		a->setChecked(true);
+	}
+	else if(a->objectName() == "Video")
+	{
+		if(oldVSplitter.isEmpty())
+		{
+			int h = ( videoSplitter->sizes().at(0) + videoSplitter->sizes().at(1) ) / 2;
+			Debug << h;
+			oldVSplitter << h << h;
+		}
+		videoSplitter->setSizes(oldVSplitter);
+		webView->show();
+		a->setChecked(true);
+	}
 }

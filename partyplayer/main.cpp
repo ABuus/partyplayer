@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 	a.setOrganizationName("BuusSW");
 	QString style(loadStyle());
 	a.setStyleSheet(style);
-	mainwindow w;
+	MainWindow w;
 	w.show();
 	return a.exec();
 }
