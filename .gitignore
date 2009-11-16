@@ -29,4 +29,6 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 qrc_*
 ui_*
-*.vdproj
+*.vcproj
+Makefile
+
