@@ -8,14 +8,19 @@ Player::Player(QObject *parent)
 	webTimer->setSingleShot(true);
 
 	m_audioOutput = new AudioOutput(Phonon::MusicCategory,this);
+	m_audioOutput->setMuted(false);
+	m_audioOutput->setVolume(1.0);
 	m_mediaObject = new MediaObject(this);
 	m_mediaObject = createPlayer(Phonon::MusicCategory);
 	createPath(m_mediaObject,m_audioOutput);
+	m_mediaObject->setTickInterval(1000);
 
 	connect(m_mediaObject,SIGNAL(aboutToFinish()),this,SLOT(enqueueNext()));
 	connect(m_mediaObject,SIGNAL(currentSourceChanged(const Phonon::MediaSource &)),this,SIGNAL(requestNext()));
 	connect(m_mediaObject,SIGNAL(stateChanged(Phonon::State , Phonon::State )),this,SLOT(emitPlayingState( Phonon::State )));
 	connect(webTimer,SIGNAL(timeout()),this,SLOT(next()));
+	connect(m_mediaObject,SIGNAL(tick(qint64)),this,SIGNAL(timeChanged(qint64)));
+	connect(m_mediaObject,SIGNAL(totalTimeChanged(qint64)),this,SIGNAL(totalTimeChanged(qint64)));
 }
 
 Player::~Player()
@@ -39,8 +44,8 @@ void Player::play(const QUrl url)
 		{
 			m_webView->load(QUrl("http://www.youtube.com/apiplayer?version=3"));
 		}
-		Debug << "Local File: " << url.toString();;
-		m_mediaObject->setCurrentSource(url);
+		Debug << "Local File: " << url.toLocalFile();
+		m_mediaObject->setCurrentSource(url.toLocalFile());
 		m_mediaObject->play();
 		m_state = Player::LocalState;
 	}
@@ -105,6 +110,7 @@ void Player::enqueueNext()
 
 void Player::emitPlayingState(Phonon::State pState)
 {
+	Debug << "Phonon State changed" << pState;
 	if(pState == Phonon::PlayingState)
 		emit playStateChanged(true);
 	else if(pState == Phonon::PausedState || pState == Phonon::StoppedState)

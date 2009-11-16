@@ -64,6 +64,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	connect(controlWidget,SIGNAL(pause()),player,SLOT(pause()));
 	connect(controlWidget,SIGNAL(back()),player,SLOT(previous()));
 	connect(controlWidget,SIGNAL(forward()),player,SLOT(next()));
+	connect(player,SIGNAL(timeChanged(qint64)),controlWidget,SLOT(setTime(qint64)));
+	connect(player,SIGNAL(totalTimeChanged(qint64)),controlWidget,SLOT(setTotalTime(qint64)));
 
 	connect(menuMode,SIGNAL(triggered(QAction *)),this,SLOT(setVideoMode(QAction *)));
 }

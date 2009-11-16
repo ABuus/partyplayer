@@ -28,7 +28,6 @@ public:
 	~Player();
 	Phonon::MediaObject * mediaObject() { return m_mediaObject; };
 	QWebView * webView() { return m_webView; };
-//	void setPlaylist(PlaylistView *playlist) { m_playlist = playlist; };
 	void setWebView(QWebView *webView) { m_webView = webView; };
 	enum State { NoState, WebState, LocalState };
 	//enum VideoMode { AudioOnly, VideoWidget, FullScreen };
@@ -45,7 +44,6 @@ private:
 	MediaObject *m_mediaObject;
 	QWebView *m_webView;
 	State m_state;
-//	PlaylistView *m_playlist;
 	QTimer *webTimer;
 private slots:
 	void emitPlayingState( Phonon::State pState );
@@ -53,6 +51,8 @@ signals:
 	void requestNext();
 	void currentSourceChanged(const QUrl &url);
 	void playStateChanged(bool playing);
+	void timeChanged(qint64 newTime);
+	void totalTimeChanged(qint64 newTotalTime);
 };
 
 #endif // PLAYER_H

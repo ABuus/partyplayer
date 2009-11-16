@@ -48,20 +48,26 @@
        </item>
       </layout>
      </item>
-     <item>
-      <widget class="Phonon::SeekSlider" name="seekSlider"/>
-     </item>
     </layout>
+   </item>
+   <item row="1" column="0">
+    <widget class="QSlider" name="slider">
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="singleStep">
+      <number>5</number>
+     </property>
+     <property name="sliderPosition">
+      <number>100</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>Phonon::SeekSlider</class>
-   <extends>QWidget</extends>
-   <header location="global">phonon/seekslider.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
