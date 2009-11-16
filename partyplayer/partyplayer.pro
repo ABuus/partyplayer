@@ -6,10 +6,11 @@ CONFIG += debug
 DEFINES += QT_XML_LIB
 INCLUDEPATH += . \
     ./GeneratedFiles/Debug \
-unix:INCLUDEPATH += /usr/include/taglib 
-win32:INCLUDEPATH += ../taglib-1.5-msvc-bin/include/taglib \
-	..
-LIBS += -lphonon -ltag 
+    ..
+unix:INCLUDEPATH += /usr/include/taglib \
+	/usr/include/taglib
+win32:INCLUDEPATH += ../taglib-1.5-msvc-bin/include/taglib 
+LIBS += -lphonon -ltag -lplaylist -L../Debug 
 unix:LIBS += -L/usr/lib
 DEPENDPATH += .
 MOC_DIR += ./GeneratedFiles/debug

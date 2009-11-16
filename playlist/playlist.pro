@@ -3,11 +3,17 @@ TARGET = playlist
 DESTDIR = ../Debug
 CONFIG += debug
 DEFINES += PLAYLIST_LIB
+
+#INCLUDEPATH
 INCLUDEPATH += . \
-    ./GeneratedFiles/Debug \
+    ./GeneratedFiles/Debug
 win32:INCLUDEPATH += ../taglib/taglib
+unix:INCLUDEPATH += /usr/include/taglib
+
+#LIBS
 unix:LIBS += -ltag
 win32:LIBS += ../taglib-1.5-msvc-bin/lib/tag.lib
+
 DEPENDPATH += .
 MOC_DIR += ./GeneratedFiles/debug
 OBJECTS_DIR += debug

@@ -3,7 +3,11 @@
 
 #include <QWidget>
 #include <QPushButton>
+#ifdef Q_WS_WIN
 #include <SeekSlider>
+#else
+#include <seekslider.h>
+#endif
 #include "ui_controlwidget.h"
 
 class ControlWidget : public QWidget , public Ui::controlWidget

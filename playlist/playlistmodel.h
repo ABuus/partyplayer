@@ -16,7 +16,7 @@ class PlaylistModel : public QStandardItemModel
 public:
 	PlaylistModel(QObject *parent);
 	~PlaylistModel();
-	Qt::DropActions PlaylistModel::supportedDropActions() const;
+	Qt::DropActions supportedDropActions() const;
 	Qt::ItemFlags flags(const QModelIndex &index) const;
 	QStringList mimeTypes() const;
 	QMimeData * mimeData(const QModelIndexList &indexes) const;
