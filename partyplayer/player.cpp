@@ -8,6 +8,7 @@ Player::Player(QObject *parent)
 	webTimer->setSingleShot(true);
 
 	m_audioOutput = new AudioOutput(Phonon::MusicCategory,this);
+	m_mediaObject = new MediaObject(this);
 	m_mediaObject = createPlayer(Phonon::MusicCategory);
 	createPath(m_mediaObject,m_audioOutput);
 
@@ -19,7 +20,6 @@ Player::Player(QObject *parent)
 
 Player::~Player()
 {
-	delete m_mediaObject;
 }
 
 void Player::play(const QUrl url)

@@ -7,12 +7,12 @@ DEFINES += PLAYLIST_LIB
 #INCLUDEPATH
 INCLUDEPATH += . \
     ./GeneratedFiles/Debug
-win32:INCLUDEPATH += ../taglib/taglib
+win32:INCLUDEPATH += C:/dev/include/taglib
 unix:INCLUDEPATH += /usr/include/taglib
 
 #LIBS
 unix:LIBS += -ltag
-win32:LIBS += ../taglib-1.5-msvc-bin/lib/tag.lib
+win32:LIBS += C:/dev/lib/tag.lib
 
 DEPENDPATH += .
 MOC_DIR += ./GeneratedFiles/debug

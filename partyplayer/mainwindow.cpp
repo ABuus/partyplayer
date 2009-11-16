@@ -14,16 +14,16 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	searchModel = new SearchModel(this);
 	searchView->setModel(searchModel);
 	
-	// control widget
-	controlWidget = new ControlWidget(this);
-	controlLayout->addWidget(controlWidget);
-	controlWidget->seekSlider->setMediaObject( player->mediaObject() );
-
 	// player
 	player = new Player(this);
 	webView = new QWebView(this);
 	player->setWebView(webView);
 	videoContainer->addWidget(webView);
+
+	// control widget
+	controlWidget = new ControlWidget(this);
+	controlLayout->addWidget(controlWidget);
+//	controlWidget->seekSlider->setMediaObject( player->mediaObject() );
 
 	// file system widget
 	fileSysModel = new QFileSystemModel(this);
