@@ -3,9 +3,11 @@
 
 #include <QStandardItemModel>
 #include <QMimeData>
-#include <QStringList>
+#include <QModelIndex>
 #include <QUrl>
-#include "debug.h"
+#include <QDebug>
+
+#include "playlistitem.h"
 
 class PlaylistModel : public QStandardItemModel
 {
@@ -14,15 +16,12 @@ class PlaylistModel : public QStandardItemModel
 public:
 	PlaylistModel(QObject *parent);
 	~PlaylistModel();
-
-private:
-	void addItem(QStandardItem item);
-protected:
-	Qt::DropActions supportedDropActions() const;
+	Qt::DropActions PlaylistModel::supportedDropActions() const;
 	Qt::ItemFlags flags(const QModelIndex &index) const;
 	QStringList mimeTypes() const;
 	QMimeData * mimeData(const QModelIndexList &indexes) const;
-	bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
+private:
+	
 };
 
 #endif // PLAYLISTMODEL_H

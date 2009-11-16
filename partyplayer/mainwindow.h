@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+// Qt
 #include <QtGui/QMainWindow>
 #include <QApplication>
 #include <QSettings>
@@ -10,15 +11,18 @@
 #include <QUrl>
 #include <QFileSystemModel>
 #include <QDesktopServices>
-#include <QStandardItemModel>
 #include <QWebView>
 #include <QAction>
+// playlist
+#include "playlist/playlist.h"
+// self
 #include "debug.h"
 #include "ui_mainwindow.h"
 #include "search.h"
 #include "searchmodel.h"
 #include "controlwidget.h"
 #include "player.h"
+
 
 class MainWindow : public QMainWindow, public Ui::mainWindowClass
 {
@@ -29,6 +33,7 @@ public:
 	~MainWindow();
 
 private:
+	Playlist *m_playlist;
 	Search *search;
 	QFileSystemModel *fileSysModel;
 	ControlWidget *controlWidget;

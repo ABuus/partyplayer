@@ -14,9 +14,9 @@
    <string>Party Player</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_4">
+   <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QSplitter" name="splitter_2">
+     <widget class="QSplitter" name="splitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -125,25 +125,8 @@
        <widget class="QWidget" name="gridLayoutWidget">
         <layout class="QGridLayout" name="videoContainer"/>
        </widget>
-       <widget class="PlaylistView" name="playlistView">
-        <property name="editTriggers">
-         <set>QAbstractItemView::NoEditTriggers</set>
-        </property>
-        <property name="selectionMode">
-         <enum>QAbstractItemView::SingleSelection</enum>
-        </property>
-        <property name="selectionBehavior">
-         <enum>QAbstractItemView::SelectRows</enum>
-        </property>
-        <property name="showGrid">
-         <bool>false</bool>
-        </property>
-        <property name="gridStyle">
-         <enum>Qt::NoPen</enum>
-        </property>
-        <attribute name="verticalHeaderVisible">
-         <bool>false</bool>
-        </attribute>
+       <widget class="QWidget" name="gridLayoutWidget_2">
+        <layout class="QGridLayout" name="playlistContainer"/>
        </widget>
       </widget>
      </widget>
@@ -239,11 +222,6 @@
    <class>SearchView</class>
    <extends>QListView</extends>
    <header>searchview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>PlaylistView</class>
-   <extends>QTableView</extends>
-   <header>playlistview.h</header>
   </customwidget>
  </customwidgets>
  <resources>

@@ -22,7 +22,7 @@ Player::~Player()
 	delete m_mediaObject;
 }
 
-void Player::play(QUrl url)
+void Player::play(const QUrl url)
 {
 	bool localFile = false;
 	if(url.scheme() == "http")
@@ -50,12 +50,12 @@ void Player::play(QUrl url)
 		{
 			m_mediaObject->stop();
 		}
-		QModelIndex temp = m_playlist->currentIndex();
-		QModelIndex index = m_playlist->model->index( temp.row(), 0);
-		const int time = index.data(Qt::UserRole +2).toInt() +2;  // 2 = load time offset do we need some buffering??
+//		QModelIndex temp = m_playlist->currentIndex();
+//		QModelIndex index = m_playlist->model->index( temp.row(), 0);
+//		const int time = index.data(Qt::UserRole +2).toInt() +2;  // 2 = load time offset do we need some buffering??
 		m_webView->load(url);
 		
-		webTimer->setInterval(time * 1000);
+//		webTimer->setInterval(time * 1000);
 		webTimer->start();
 		m_state = Player::WebState;
 		Debug << url;
@@ -64,16 +64,20 @@ void Player::play(QUrl url)
 
 void Player::next()
 {
+	/*
 	QUrl url = m_playlist->next();
 	play(url);
 	m_playlist->selectNext();
+	*/
 }
 
 void Player::previous()
 {
+/*
 	QUrl url = m_playlist->previous();
 	play(url);
 	m_playlist->selectPrevious();
+*/
 }
 
 void Player::stop()
@@ -84,6 +88,7 @@ void Player::stop()
 
 void Player::enqueueNext()
 {
+	/*
 	QUrl url = m_playlist->next();
 	if(url.scheme() == "file" && m_state == Player::LocalState)
 	{
@@ -94,6 +99,7 @@ void Player::enqueueNext()
 		play(url);
 	}
 	m_playlist->selectNext();
+	*/
 }
 
 

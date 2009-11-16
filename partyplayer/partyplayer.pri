@@ -8,8 +8,6 @@ HEADERS += ./controlwidget.h \
     ./debug.h \
     ./mainwindow.h \
     ./player.h \
-    ./playlistmodel.h \
-    ./playlistview.h \
     ./search.h \
     ./searchmodel.h \
     ./searchview.h
@@ -19,8 +17,6 @@ SOURCES += ./controlwidget.cpp \
     ./main.cpp \
     ./mainwindow.cpp \
     ./player.cpp \
-    ./playlistmodel.cpp \
-    ./playlistview.cpp \
     ./search.cpp \
     ./searchmodel.cpp \
     ./searchview.cpp

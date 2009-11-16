@@ -5,6 +5,11 @@ ControlWidget::ControlWidget(QWidget *parent)
 {
 	setupUi(this);
 	playState = false;
+	backButton = new QPushButton(this);
+	playButton = new QPushButton(this);
+	stopButton = new QPushButton(this);
+	forwardButton = new QPushButton(this);
+	seekSlider = new Phonon::SeekSlider(this);
 	
 //	setStyleSheet("QToolButton {width:60px; height:60; border:none;}");
 	connect(playButton,SIGNAL(clicked()),this,SLOT(playClicked()));

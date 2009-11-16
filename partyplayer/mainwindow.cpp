@@ -13,19 +13,18 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	search = new Search(this);
 	searchModel = new SearchModel(this);
 	searchView->setModel(searchModel);
-
-	// player
-	player = new Player(this);
-	player->setPlaylist(playlistView);
-	webView = new QWebView(this);
-	player->setWebView(webView);
-	videoContainer->addWidget(webView);
-
+	
 	// control widget
 	controlWidget = new ControlWidget(this);
 	controlLayout->addWidget(controlWidget);
 	controlWidget->seekSlider->setMediaObject( player->mediaObject() );
-	
+
+	// player
+	player = new Player(this);
+	webView = new QWebView(this);
+	player->setWebView(webView);
+	videoContainer->addWidget(webView);
+
 	// file system widget
 	fileSysModel = new QFileSystemModel(this);
 	fileView->setModel(fileSysModel);
@@ -43,6 +42,11 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	webView->hide();
 	Audio_Only->trigger();
 
+	//playlist
+	m_playlist = new Playlist(this);
+	videoSplitter->addWidget(m_playlist);
+	m_playlist->show();
+
 	// websettings to ensure we can play youtube vids
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled,true);
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled,true);
@@ -52,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	connect(searchLineEdit, SIGNAL(returnPressed()), this, SLOT( querySearch()));
 	connect(search, SIGNAL(newSearch()), this, SLOT(clearSearch()));
 	connect(search, SIGNAL(newItem(QStringList)), this,SLOT(insertSearchItem(QStringList)));
-	connect(playlistView,SIGNAL(playRequest(QUrl)),player,SLOT(play(QUrl)));
+	connect(m_playlist,SIGNAL(playRequest(const QUrl &)),player,SLOT(play(const QUrl &)));
 	connect(player,SIGNAL(playStateChanged(bool)),controlWidget,SLOT(setPlayState(bool)));
 
 	connect(controlWidget,SIGNAL(stop()),player,SLOT(stop()));

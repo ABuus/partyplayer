@@ -2,19 +2,26 @@
 #define CONTROLWIDGET_H
 
 #include <QWidget>
+#include <QPushButton>
+#include <SeekSlider>
 #include "ui_controlwidget.h"
 
-class ControlWidget : public QWidget, public Ui::ControlWidgetClass
+class ControlWidget : public QWidget , public Ui::controlWidget
 {
 	Q_OBJECT
 
 public:
 	ControlWidget(QWidget *parent = 0);
 	~ControlWidget();
+	Phonon::SeekSlider *seekSlider;
 public slots:
 	void setPlayState( bool playing );
 private:
 	bool playState; // true playing, false pause
+	QPushButton *playButton;
+	QPushButton *stopButton;
+	QPushButton *backButton;
+	QPushButton *forwardButton;
 private slots:
 	void playClicked();
 signals:

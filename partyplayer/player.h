@@ -15,7 +15,7 @@
 #include <QUrl>
 #include <QWebView>
 #include <QTimer>
-#include "playlistview.h"
+
 #include "debug.h"
 
 using namespace Phonon;
@@ -28,12 +28,12 @@ public:
 	~Player();
 	Phonon::MediaObject * mediaObject() { return m_mediaObject; };
 	QWebView * webView() { return m_webView; };
-	void setPlaylist(PlaylistView *playlist) { m_playlist = playlist; };
+//	void setPlaylist(PlaylistView *playlist) { m_playlist = playlist; };
 	void setWebView(QWebView *webView) { m_webView = webView; };
 	enum State { NoState, WebState, LocalState };
 	//enum VideoMode { AudioOnly, VideoWidget, FullScreen };
 public slots:
-	void play(QUrl url);
+	void play(const QUrl url);
 	void play() { m_mediaObject->play(); };
 	void stop();
 	void pause() { m_mediaObject->pause(); };
@@ -45,7 +45,7 @@ private:
 	MediaObject *m_mediaObject;
 	QWebView *m_webView;
 	State m_state;
-	PlaylistView *m_playlist;
+//	PlaylistView *m_playlist;
 	QTimer *webTimer;
 private slots:
 	void emitPlayingState( Phonon::State pState );
