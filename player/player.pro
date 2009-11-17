@@ -8,15 +8,19 @@ message("You are running qmake on a generated .pro file. This may not work!")
 
 
 TEMPLATE = lib
-TARGET = playlist
+TARGET = player
 DESTDIR = ../Debug
-CONFIG += staticlib
-DEFINES += QT_LARGEFILE_SUPPORT PLAYLIST_LIB
-INCLUDEPATH += . \
-    ./GeneratedFiles/Debug \
-    ../../../../../../../../dev/include/taglib \
-    $(QTDIR)/mkspecs/win32-msvc2008 \
+CONFIG += debug
+DEFINES += PLAYER_LIB
+INCLUDEPATH += ../../../../../../../../gstreamer/lib/glib-2.0/include \
+    ../../../../../../../../gstreamer/include/glib-2.0 \
+    ../../../../../../../../gstreamer/include/libxml2 \
+    ../../../../../../../../gstreamer/include/gstreamer-0.10 \
+    . \
     ./GeneratedFiles/Debug
+LIBS += -lC:/gstreamer/lib/gstreamer \
+    -lC:/gstreamer/lib/glib-2.0 \
+    -lC:/gstreamer/lib/gobject-2.0
 DEPENDPATH += .
 MOC_DIR += ./GeneratedFiles/debug
 OBJECTS_DIR += debug
@@ -24,4 +28,4 @@ UI_DIR += .
 RCC_DIR += ./GeneratedFiles
 
 #Include file(s)
-include(playlist.pri)
+include(player.pri)

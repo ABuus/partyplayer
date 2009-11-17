@@ -64,7 +64,7 @@ void PlaylistModel::setRowData(int row, const QVariant &value, int role)
 {
 	for(int i = 0; i < columnCount(); i++)
 	{
-		qDebug() << "setting data at" << i << "to" << value;
+	//	qDebug() << "setting data at" << i << "to" << value;
 		setData( createIndex(row,i), value, role);
 	}
 }

@@ -15,13 +15,16 @@
 #include <QAction>
 // playlist
 #include "playlist/playlistview.h"
+// player
+#include "player/player.h"
 // self
 #include "debug.h"
 #include "ui_mainwindow.h"
 #include "search.h"
 #include "searchmodel.h"
 #include "controlwidget.h"
-#include "player.h"
+// #include "player.h"
+
 
 
 class MainWindow : public QMainWindow, public Ui::mainWindowClass

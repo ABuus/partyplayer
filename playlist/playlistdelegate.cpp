@@ -7,7 +7,7 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 	QStyleOptionViewItemV4 opt(option);
 	QRect rect = opt.rect;
 
-	// draw background if selected
+	// draw background if playing !NOT WORKING!
 	if(index.data(Playlist::PlayRole).toBool())
 	{
 		qDebug() << "paint playing";

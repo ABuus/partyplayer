@@ -7,7 +7,6 @@
 HEADERS += ./controlwidget.h \
     ./debug.h \
     ./mainwindow.h \
-    ./player.h \
     ./search.h \
     ./searchmodel.h \
     ./searchview.h
@@ -16,7 +15,6 @@ HEADERS += ./controlwidget.h \
 SOURCES += ./controlwidget.cpp \
     ./main.cpp \
     ./mainwindow.cpp \
-    ./player.cpp \
     ./search.cpp \
     ./searchmodel.cpp \
     ./searchview.cpp
@@ -26,4 +24,4 @@ FORMS += ./controlwidget.ui \
     ./mainwindow.ui
 
 #Resource file(s)
-RESOURCES += ./mainwindow.qrc
+RESOURCES += mainwindow.qrc

@@ -5,16 +5,13 @@ ControlWidget::ControlWidget(QWidget *parent)
 {
 	setupUi(this);
 	playState = false;
-/*
-	backButton = new QPushButton(this);
-	playButton = new QPushButton(this);
-	stopButton = new QPushButton(this);
-	forwardButton = new QPushButton(this);
-	seekSlider = new Phonon::SeekSlider(this);
-*/	
-//	setStyleSheet("QToolButton {width:60px; height:60; border:none;}");
-
-	playButton->setIconSize(QSize(60,60));
+	
+	setStyleSheet("QToolButton {border:none;}");
+	QSize icoSize(60,60);
+	playButton->setIconSize(icoSize);
+	backButton->setIconSize(icoSize);
+	stopButton->setIconSize(icoSize);
+	forwardButton->setIconSize(icoSize);
 
 	playButton->setIcon(QIcon(":/mainwindow/play.png"));
 	backButton->setIcon(QIcon(":/mainwindow/back.png"));

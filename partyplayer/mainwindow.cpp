@@ -19,16 +19,18 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	playlistContainer->addWidget(m_playlist);
 	m_playlist->show();
 
-	// player
+	// player OLD
+/*
 	player = new Player(this);
 	player->setPlaylist(m_playlist);
+*/
 	webView = new QWebView(this);
 	// websettings to ensure we can play youtube vids
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled,true);
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled,true);
 	webView->show();
 	webView->load(QUrl("http://www.youtube.com/apiplayer?version=3"));
-	player->setWebView(webView);
+//	player->setWebView(webView);
 	videoContainer->addWidget(webView);
 
 	// control widget
@@ -54,9 +56,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	connect(searchLineEdit, SIGNAL(returnPressed()), this, SLOT( querySearch()));
 	connect(search, SIGNAL(newSearch()), this, SLOT(clearSearch()));
 	connect(search, SIGNAL(newItem(QStringList)), this,SLOT(insertSearchItem(QStringList)));
-	connect(m_playlist,SIGNAL(playRequest(const QUrl &)),player,SLOT(play(const QUrl &)));
-	connect(player,SIGNAL(playStateChanged(bool)),controlWidget,SLOT(setPlayState(bool)));
-
+//	connect(m_playlist,SIGNAL(playRequest(const QUrl &)),player,SLOT(play(const QUrl &)));
+//	connect(player,SIGNAL(playStateChanged(bool)),controlWidget,SLOT(setPlayState(bool)));
+/*
 	connect(controlWidget,SIGNAL(stop()),player,SLOT(stop()));
 	connect(controlWidget,SIGNAL(play()),player,SLOT(play()));
 	connect(controlWidget,SIGNAL(pause()),player,SLOT(pause()));
@@ -64,8 +66,12 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	connect(controlWidget,SIGNAL(forward()),player,SLOT(next()));
 	connect(player,SIGNAL(timeChanged(qint64)),controlWidget,SLOT(setTime(qint64)));
 	connect(player,SIGNAL(totalTimeChanged(qint64)),controlWidget,SLOT(setTotalTime(qint64)));
-
+*/
 	connect(menuMode,SIGNAL(triggered(QAction *)),this,SLOT(setVideoMode(QAction *)));
+
+	player = new Player();
+	// test
+	connect(m_playlist,SIGNAL(playRequest(const QUrl &)),player,SLOT(playUrl(const QUrl &)));
 }
 
 MainWindow::~MainWindow()
@@ -73,6 +79,7 @@ MainWindow::~MainWindow()
 	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
 	settings.setValue("mainwindow/geometry",saveGeometry());
 	settings.setValue("mainwindow/windowState", saveState());
+	delete player;
 }
 
 void MainWindow::querySearch()
