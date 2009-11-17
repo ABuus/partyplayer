@@ -43,7 +43,7 @@ void Playlist::mouseMoveEvent(QMouseEvent *event)
 	QList<QUrl> urls;
 	QModelIndex index = indexAt(startDragPos);
 	QStandardItem *item = m_model->itemFromIndex(index);
-	urls << model()->data(index,Qt::UserRole).toUrl();
+	urls << model()->data(index,Qt::UserRole + 1).toUrl();
 	QDrag *drag = new QDrag(this);
 	QMimeData *mimeData = new QMimeData;
 	mimeData->setUrls(urls);
@@ -57,6 +57,11 @@ void Playlist::mouseMoveEvent(QMouseEvent *event)
 
 void Playlist::dropEvent(QDropEvent *event)
 {
+	QString ytText;
+	if(event->source()->objectName() == "searchView")
+	{
+		ytText = event->mimeData()->text();
+	}
 	int row = indexAt(event->pos()).row();
 	if(row == -1)
 	{
@@ -69,12 +74,19 @@ void Playlist::dropEvent(QDropEvent *event)
 	QList<QUrl> urls = event->mimeData()->urls();
 	foreach(QUrl url, urls)
 	{
+		if(url.toLocalFile().endsWith(".m3u", Qt::CaseInsensitive))
+		{
+			addM3U(url,row);
+			continue;
+		}
 		QList<QStandardItem *> rowItem;
-		PlaylistItem *item = new PlaylistItem(url.toString());
+		PlaylistItem *item = new PlaylistItem(url.toString(), ytText);
+		if(!item->isValid())
+			continue;
 		for(int i = 0; i < m_model->columnCount(); i++)
 		{
 			QStandardItem *stdItem = new QStandardItem(item->value(i).toString());
-			stdItem->setData(url,Qt::UserRole);
+			stdItem->setData(url,Qt::UserRole +1 );
 			rowItem << stdItem;
 		}
 		m_model->insertRow(row,rowItem);
@@ -86,5 +98,53 @@ void Playlist::dropEvent(QDropEvent *event)
 
 void Playlist::mouseDoubleClickEvent(QMouseEvent *event)
 {
-	playRequest(m_model->data(indexAt(event->pos()),Qt::UserRole).toUrl());
+	QModelIndex index = indexAt(event->pos());
+	playRequest(m_model->data(index,Qt::UserRole +1).toUrl());
+}
+
+QUrl Playlist::next()
+{
+	return QUrl();
+}
+
+void Playlist::addM3U(QUrl url,int row)
+{
+	QFile file(url.toLocalFile());
+	if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+	{
+		qDebug() << "Error: fopen" << url.toString();
+		return;
+	}
+	while(!file.atEnd())
+	{
+		QByteArray line = file.readLine();
+		if(line.startsWith("#"))
+			continue;
+		else
+		{
+			QString filePath = url.toLocalFile();
+			filePath.remove(filePath.lastIndexOf("/"),filePath.size());
+			if(line.endsWith("\n"))
+				line.chop(1);
+
+			QList<QStandardItem *> rowItem;
+			QUrl url("file:///" + filePath + "/" + line);
+			PlaylistItem *item = new PlaylistItem(url);
+			if(!item->isValid())
+			{
+				qDebug() << "Error: invalid file" << url;
+				continue;
+			}
+			for(int i = 0; i < m_model->columnCount(); i++)
+			{
+				QStandardItem *stdItem = new QStandardItem(item->value(i).toString());
+				stdItem->setData(url,Qt::UserRole +1 );
+				rowItem << stdItem;
+			}
+			m_model->insertRow(row,rowItem);
+			row++;
+			delete item;
+		}
+	}
+	selectRow(row -1 );
 }

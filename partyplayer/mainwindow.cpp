@@ -14,9 +14,20 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	searchModel = new SearchModel(this);
 	searchView->setModel(searchModel);
 	
+	//playlist
+	m_playlist = new Playlist(this);
+	playlistContainer->addWidget(m_playlist);
+	m_playlist->show();
+
 	// player
 	player = new Player(this);
+	player->setPlaylist(m_playlist);
 	webView = new QWebView(this);
+	// websettings to ensure we can play youtube vids
+	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled,true);
+	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled,true);
+	webView->show();
+	webView->load(QUrl("http://www.youtube.com/apiplayer?version=3"));
 	player->setWebView(webView);
 	videoContainer->addWidget(webView);
 
@@ -37,19 +48,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	fileView->expand(musicIndex);
 	fileView->setCurrentIndex(musicIndex);
 	fileView->scrollTo(musicIndex,QAbstractItemView::PositionAtCenter);
-
-	//videoSplitter
-	webView->hide();
-	Audio_Only->trigger();
-
-	//playlist
-	m_playlist = new Playlist(this);
-	videoSplitter->addWidget(m_playlist);
-	m_playlist->show();
-
-	// websettings to ensure we can play youtube vids
-	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled,true);
-	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled,true);
 	
 	// connections
 	connect(this, SIGNAL( preformSearch( QString )), search, SLOT( query( QString )));

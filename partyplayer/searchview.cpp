@@ -6,6 +6,7 @@ SearchView::SearchView(QWidget *parent)
 	setSelectionMode(QAbstractItemView::ExtendedSelection);
 	setDragEnabled(true);
 	setAcceptDrops(false);
+	setObjectName("SearchView");
 }
 
 SearchView::~SearchView()

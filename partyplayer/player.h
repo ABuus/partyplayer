@@ -8,15 +8,16 @@
 #include <Phonon/AudioOutput>
 #include <Phonon/VideoWidget>
 #elif defined Q_WS_X11
-#include <mediaobject.h>
-#include <mediasource.h>
-#include <audiooutput.h>
+#include <phonon/mediaobject.h>
+#include <phonon/mediasource.h>
+#include <phonon/audiooutput.h>
 #endif
 #include <QUrl>
 #include <QWebView>
 #include <QTimer>
 
 #include "debug.h"
+#include "playlist/playlist.h"
 
 using namespace Phonon;
 
@@ -29,6 +30,7 @@ public:
 	Phonon::MediaObject * mediaObject() { return m_mediaObject; };
 	QWebView * webView() { return m_webView; };
 	void setWebView(QWebView *webView) { m_webView = webView; };
+	void setPlaylist(Playlist *playlist) { m_playlist = playlist; };
 	enum State { NoState, WebState, LocalState };
 	//enum VideoMode { AudioOnly, VideoWidget, FullScreen };
 public slots:
@@ -45,6 +47,7 @@ private:
 	QWebView *m_webView;
 	State m_state;
 	QTimer *webTimer;
+	Playlist *m_playlist;
 private slots:
 	void emitPlayingState( Phonon::State pState );
 signals:

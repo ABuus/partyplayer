@@ -12,7 +12,10 @@ Player::Player(QObject *parent)
 	m_audioOutput->setVolume(1.0);
 	m_mediaObject = new MediaObject(this);
 	m_mediaObject = createPlayer(Phonon::MusicCategory);
-	createPath(m_mediaObject,m_audioOutput);
+	if(!createPath(m_mediaObject,m_audioOutput).isValid())
+	{
+		Debug << "ERROR: Path not valid";
+	}
 	m_mediaObject->setTickInterval(1000);
 
 	connect(m_mediaObject,SIGNAL(aboutToFinish()),this,SLOT(enqueueNext()));
@@ -29,6 +32,7 @@ Player::~Player()
 
 void Player::play(const QUrl url)
 {
+	Debug << url.scheme();
 	bool localFile = false;
 	if(url.scheme() == "http")
     {
@@ -44,8 +48,8 @@ void Player::play(const QUrl url)
 		{
 			m_webView->load(QUrl("http://www.youtube.com/apiplayer?version=3"));
 		}
-		Debug << "Local File: " << url.toLocalFile();
-		m_mediaObject->setCurrentSource(url.toLocalFile());
+		Debug << "Local File: " << QString(url.toEncoded());
+		m_mediaObject->setCurrentSource(QString(url.toEncoded()));
 		m_mediaObject->play();
 		m_state = Player::LocalState;
 	}
@@ -59,7 +63,7 @@ void Player::play(const QUrl url)
 //		QModelIndex index = m_playlist->model->index( temp.row(), 0);
 //		const int time = index.data(Qt::UserRole +2).toInt() +2;  // 2 = load time offset do we need some buffering??
 		m_webView->load(url);
-		
+		m_webView->show();
 //		webTimer->setInterval(time * 1000);
 		webTimer->start();
 		m_state = Player::WebState;
@@ -93,7 +97,6 @@ void Player::stop()
 
 void Player::enqueueNext()
 {
-	/*
 	QUrl url = m_playlist->next();
 	if(url.scheme() == "file" && m_state == Player::LocalState)
 	{
@@ -103,8 +106,7 @@ void Player::enqueueNext()
 	{
 		play(url);
 	}
-	m_playlist->selectNext();
-	*/
+//	m_playlist->selectNext();
 }
 
 
@@ -115,5 +117,7 @@ void Player::emitPlayingState(Phonon::State pState)
 		emit playStateChanged(true);
 	else if(pState == Phonon::PausedState || pState == Phonon::StoppedState)
 		emit playStateChanged(false);
+	else if(pState == Phonon::ErrorState)
+		Debug << m_mediaObject->errorString();
 }
 
