@@ -14,6 +14,8 @@ ControlWidget::ControlWidget(QWidget *parent)
 */	
 //	setStyleSheet("QToolButton {width:60px; height:60; border:none;}");
 
+	playButton->setIconSize(QSize(60,60));
+
 	playButton->setIcon(QIcon(":/mainwindow/play.png"));
 	backButton->setIcon(QIcon(":/mainwindow/back.png"));
 	stopButton->setIcon(QIcon(":/mainwindow/stop.png"));

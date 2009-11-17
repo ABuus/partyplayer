@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	searchView->setModel(searchModel);
 	
 	//playlist
-	m_playlist = new Playlist(this);
+	m_playlist = new Playlist::PlaylistView(this);
 	playlistContainer->addWidget(m_playlist);
 	m_playlist->show();
 

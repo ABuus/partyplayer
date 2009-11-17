@@ -14,7 +14,7 @@
 #include <QWebView>
 #include <QAction>
 // playlist
-#include "playlist/playlist.h"
+#include "playlist/playlistview.h"
 // self
 #include "debug.h"
 #include "ui_mainwindow.h"
@@ -33,7 +33,7 @@ public:
 	~MainWindow();
 
 private:
-	Playlist *m_playlist;
+	Playlist::PlaylistView *m_playlist;
 	Search *search;
 	QFileSystemModel *fileSysModel;
 	ControlWidget *controlWidget;

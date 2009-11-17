@@ -1,10 +1,13 @@
-#include "playlist.h"
+#include "playlistview.h"
 
-Playlist::Playlist(QWidget *parent)
+using namespace Playlist;
+
+PlaylistView::PlaylistView(QWidget *parent)
 	: QTableView(parent)
 {
+	// model
 	m_model = new PlaylistModel(this);
-	setModel(m_model);
+	setModel(m_model);	
 	setShowGrid(false);
 	setSortingEnabled(true);
 	setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -13,26 +16,27 @@ Playlist::Playlist(QWidget *parent)
 	setAcceptDrops(true);
 	setDropIndicatorShown(true);
 	setDragDropMode(QAbstractItemView::DragDrop);
+	setItemDelegate(new PlaylistDelegate(this));
 }
 
-Playlist::~Playlist()
+PlaylistView::~PlaylistView()
 {
 
 }
 
-void Playlist::dragMoveEvent(QDragMoveEvent *event)
+void PlaylistView::dragMoveEvent(QDragMoveEvent *event)
 {
 	event->accept();
 }
 
-void Playlist::mousePressEvent(QMouseEvent *event)
+void PlaylistView::mousePressEvent(QMouseEvent *event)
 {
 	if(event->button() == Qt::LeftButton)
 		startDragPos = event->pos();
 	QTableView::mousePressEvent(event);
 }
 
-void Playlist::mouseMoveEvent(QMouseEvent *event)
+void PlaylistView::mouseMoveEvent(QMouseEvent *event)
 {
 	QPoint moved = event->pos() - startDragPos;
 	if(moved.manhattanLength() < 3)
@@ -55,7 +59,7 @@ void Playlist::mouseMoveEvent(QMouseEvent *event)
 	}
 }
 
-void Playlist::dropEvent(QDropEvent *event)
+void PlaylistView::dropEvent(QDropEvent *event)
 {
 	QString ytText;
 	if(event->source()->objectName() == "searchView")
@@ -90,24 +94,26 @@ void Playlist::dropEvent(QDropEvent *event)
 			rowItem << stdItem;
 		}
 		m_model->insertRow(row,rowItem);
+		setRowHeight(row,ROW_HEIGHT);
 		row++;
 		delete item;
 	}
 	selectRow(row -1 );
 }
 
-void Playlist::mouseDoubleClickEvent(QMouseEvent *event)
+void PlaylistView::mouseDoubleClickEvent(QMouseEvent *event)
 {
 	QModelIndex index = indexAt(event->pos());
-	playRequest(m_model->data(index,Qt::UserRole +1).toUrl());
+	playRequest(m_model->data(index,Playlist::UrlRole).toUrl());
+	m_model->setRowData(index.row(),true,Playlist::PlayRole); // HERTIL
 }
 
-QUrl Playlist::next()
+QUrl PlaylistView::next()
 {
 	return QUrl();
 }
 
-void Playlist::addM3U(QUrl url,int row)
+void PlaylistView::addM3U(QUrl url,int row)
 {
 	QFile file(url.toLocalFile());
 	if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -142,6 +148,7 @@ void Playlist::addM3U(QUrl url,int row)
 				rowItem << stdItem;
 			}
 			m_model->insertRow(row,rowItem);
+			setRowHeight(row,ROW_HEIGHT);
 			row++;
 			delete item;
 		}

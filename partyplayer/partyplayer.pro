@@ -12,7 +12,7 @@ win32:INCLUDEPATH += C:/dev/include/taglib
 unix:INCLUDEPATH += /usr/include/taglib
 
 #LIBS
-LIBS += -lphonon -ltag -lplaylist -L../Debug 
+LIBS += -lphonon -lplaylist -L../Debug 
 win32:LIBS += C:/dev/lib/tag.lib
 unix:LIBS += -ltag -L/usr/lib
 

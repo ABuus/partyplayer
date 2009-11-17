@@ -2,6 +2,7 @@ TEMPLATE = lib
 TARGET = playlist
 DESTDIR = ../Debug
 CONFIG += debug
+win32:CONFIG += staticlib
 DEFINES += PLAYLIST_LIB
 
 #INCLUDEPATH

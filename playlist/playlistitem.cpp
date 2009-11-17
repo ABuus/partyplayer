@@ -1,5 +1,7 @@
 #include "playlistitem.h"
 
+using namespace Playlist;
+
 PlaylistItem::PlaylistItem(const QUrl url, const QString ytText)
 {
 	m_isValid = false;
@@ -43,8 +45,6 @@ QVariant PlaylistItem::value( int column )
 			return m_title;
 		case PlaylistItem::Album:
 			return m_album;
-		case PlaylistItem::Place:
-			return m_place;
 		case PlaylistItem::Year:
 			return m_year;
 		case PlaylistItem::Track:
@@ -53,6 +53,8 @@ QVariant PlaylistItem::value( int column )
 			return m_length;
 		case PlaylistItem::Bitrate:
 			return m_bitrate;
+		case PlaylistItem::Place:
+			return m_place;
 		default:
 			return QVariant();
 	}

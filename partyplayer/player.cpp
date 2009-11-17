@@ -48,8 +48,8 @@ void Player::play(const QUrl url)
 		{
 			m_webView->load(QUrl("http://www.youtube.com/apiplayer?version=3"));
 		}
-		Debug << "Local File: " << QString(url.toEncoded());
-		m_mediaObject->setCurrentSource(QString(url.toEncoded()));
+		Debug << "Local File: " << QString(url.toLocalFile());
+		m_mediaObject->setCurrentSource(QString(url.toLocalFile()));
 		m_mediaObject->play();
 		m_state = Player::LocalState;
 	}

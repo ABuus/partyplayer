@@ -6,8 +6,10 @@
 #include <QModelIndex>
 #include <QUrl>
 #include <QDebug>
-
+#include "playlist_global.h"
 #include "playlistitem.h"
+
+namespace Playlist {
 
 class PlaylistModel : public QStandardItemModel
 {
@@ -20,8 +22,11 @@ public:
 	Qt::ItemFlags flags(const QModelIndex &index) const;
 	QStringList mimeTypes() const;
 	QMimeData * mimeData(const QModelIndexList &indexes) const;
+	void setRowData(int row, const QVariant &value, int role);
 private:
 	
 };
+
+}; // namespace Playlist
 
 #endif // PLAYLISTMODEL_H

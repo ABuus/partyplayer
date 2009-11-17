@@ -10,6 +10,8 @@
 #include <tag.h>
 #include <audioproperties.h>
 
+namespace Playlist {
+
 class PlaylistItem
 {
 public:
@@ -30,11 +32,11 @@ public:
 		Artist = 0,
 		Title,
 		Album,
-		Place,
 		Year,
 		Track,
 		Length,
-		Bitrate
+		Bitrate,
+		Place
 	};
 private:
 	QString m_artist;
@@ -50,5 +52,7 @@ private:
 	bool localFile(const QString &file);
 	void youtubeFile(const QUrl &url, const QString ytText);
 };
+
+}; // namespace Playlist
 
 #endif // PLAYLISTITEM_H
