@@ -16,8 +16,8 @@ win32:INCLUDEPATH += c:/gstreamer/lib/glib-2.0/include \
     . \
     ./GeneratedFiles/Debug
 win32:LIBS += C:/gstreamer/lib/gstreamer.lib \
-    -lC:/gstreamer/lib/glib-2.0.lib \
-    -lC:/gstreamer/lib/gobject-2.0.lib
+    C:/gstreamer/lib/glib-2.0.lib \
+    C:/gstreamer/lib/gobject-2.0.lib
 
 unix:INCLUDEPATH += /usr/include/gstreamer-0.10 \
 	/usr/include/glib-2.0 \

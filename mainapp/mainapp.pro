@@ -30,10 +30,14 @@ unix:LIBS += -L$(DESTDIR) \
 	-lplaylist \
 	-lplayer 
 
-win32:LIBS += -lC:/dev/lib/tag.lib \
-	-lC:/gstreamer/lib/gstreamer.lib \
-	-lC:/gstreamer/lib/glib-2.0.lib \
-	-lC:/gstreamer/lib/gobject-2.0.lib
+win32:LIBS += -L../debug \
+	-L../release \
+	C:/dev/lib/tag.lib \
+	C:/gstreamer/lib/gstreamer.lib \
+	C:/gstreamer/lib/glib-2.0.lib \
+	C:/gstreamer/lib/gobject-2.0.lib \
+	-lplaylist \
+	-lplayer
 DEPENDPATH += .
 MOC_DIR += debug
 OBJECTS_DIR += debug
