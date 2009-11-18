@@ -7,11 +7,12 @@
 #include <QUrl>
 #include <QDebug>
 #include "playlist_global.h"
+#include "playlist_export.h"
 #include "playlistitem.h"
 
 namespace Playlist {
 
-class PlaylistModel : public QStandardItemModel
+class PLAYLIST_EXPORT PlaylistModel : public QStandardItemModel
 {
 	Q_OBJECT
 

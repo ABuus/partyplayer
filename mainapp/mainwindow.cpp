@@ -69,7 +69,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 */
 	connect(menuMode,SIGNAL(triggered(QAction *)),this,SLOT(setVideoMode(QAction *)));
 
-	player = new Player();
+	player = new Player(this);
 	// test
 	connect(m_playlist,SIGNAL(playRequest(const QUrl &)),player,SLOT(playUrl(const QUrl &)));
 }
@@ -79,7 +79,6 @@ MainWindow::~MainWindow()
 	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
 	settings.setValue("mainwindow/geometry",saveGeometry());
 	settings.setValue("mainwindow/windowState", saveState());
-	delete player;
 }
 
 void MainWindow::querySearch()

@@ -7,10 +7,11 @@
 #include <QModelIndex>
 #include <QDebug>
 #include "playlist_global.h"
+#include "playlist_export.h"
 
 namespace Playlist {
 
-class PlaylistDelegate : public QStyledItemDelegate
+class PLAYLIST_EXPORT PlaylistDelegate : public QStyledItemDelegate
 {
 	Q_OBJECT
 

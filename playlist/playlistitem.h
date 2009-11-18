@@ -9,10 +9,11 @@
 #include <fileref.h>
 #include <tag.h>
 #include <audioproperties.h>
+#include "playlist_export.h"
 
 namespace Playlist {
 
-class PlaylistItem
+class PLAYLIST_EXPORT PlaylistItem
 {
 public:
 	PlaylistItem(const QUrl url, const QString ytText = 0);

@@ -1,27 +1,31 @@
 #ifndef PLAYLIST_GLOBAL_H
 #define PLAYLIST_GLOBAL_H
+ 
+#include <QtGlobal>
+#include "playlist_export.h"
 
 namespace Playlist {
 
-enum ColumnData 
-{
-	Artist = 1,
-	Title,
-	Album,
-	Year,
-	Track,
-	Length,
-	Bitrate,
-	Place
-};
-
-enum ItemRole {
-	UrlRole = Qt::UserRole + 1, // contains the url
-	PlayRole					// bool true if playing false if not
-};
-
 #define ROW_HEIGHT 22
+
+	enum PLAYLIST_EXPORT ColunmData {
+		Artist = 1,
+		Title,
+		Album,
+		Year,
+		Track,
+		Length,
+		Bitrate,
+		Place
+	};
+
+	enum PLAYLIST_EXPORT ItemRole {
+		UrlRole = Qt::UserRole +1,
+		PlayRole
+	};
+
+	void Q_DECL_EXPORT registerTypes();
 
 }; // namespace Playlist
 
-#endif //PLAYLIST_GLOBAL_H
+#endif // PLAYLIST_GLOBAL_H

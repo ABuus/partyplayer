@@ -8,7 +8,8 @@ HEADERS += ./playlist_global.h \
     ./playlistdelegate.h \
     ./playlistitem.h \
     ./playlistmodel.h \
-    ./playlistview.h
+    ./playlistview.h \
+    ./playlist_export.h
 
 #Source files
 SOURCES += ./playlistdelegate.cpp \

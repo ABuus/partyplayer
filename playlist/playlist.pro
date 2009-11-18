@@ -8,7 +8,7 @@ DESTDIR = ../debug
 DESTDIR = ../release
 }
 
-win32:CONFIG += staticlib
+#win32:CONFIG += staticlib
 
 DEFINES += QT_LARGEFILE_SUPPORT PLAYLIST_LIB
 

@@ -9,6 +9,7 @@
 #include <gst/gst.h>
 
 #include "player_global.h"
+#include "messagehandler.h"
 
 class PLAYER_EXPORT Player : public QObject
 {
@@ -16,12 +17,18 @@ class PLAYER_EXPORT Player : public QObject
 public:
 	Player(QObject *parent = 0);
 	~Player();
+	GstElement *pipeline() { return m_pipeline; };
+	MessageHandler *messageHandler() { return m_msgHandler; };
 public slots:
 	void playUrl(const QUrl &url);
 private:
-	static gboolean bus_call(GstBus *bus, GstMessage *msg, gpointer user_data);
+//	static gboolean bus_call(GstBus *bus, GstMessage *msg, gpointer user_data);
+	MessageHandler *m_msgHandler;
 	GstElement *m_pipeline;
+	GstElement *m_sink;
 	GstBus *m_bus;
+	void eos();
+	void changeState(GstMessage *msg);
 };
 
 #endif // PLAYER_H

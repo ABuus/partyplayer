@@ -9,13 +9,14 @@
 #include <QUrl>
 #include <QFile>
 #include "playlist_global.h"
+#include "playlist_export.h"
 #include "playlistmodel.h"
 #include "playlistitem.h"
 #include "playlistdelegate.h"
 
 namespace Playlist {
 
-class PlaylistView : public QTableView
+class PLAYLIST_EXPORT PlaylistView : public QTableView
 {
 	Q_OBJECT
 public:
