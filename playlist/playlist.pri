@@ -4,11 +4,14 @@
 
 
 #Header files
-HEADERS += ./playlist.h \
+HEADERS += ./playlist_global.h \
+    ./playlistdelegate.h \
     ./playlistitem.h \
-    ./playlistmodel.h
+    ./playlistmodel.h \
+    ./playlistview.h
 
 #Source files
-SOURCES += ./playlist.cpp \
+SOURCES += ./playlistdelegate.cpp \
     ./playlistitem.cpp \
-    ./playlistmodel.cpp
+    ./playlistmodel.cpp \
+    ./playlistview.cpp

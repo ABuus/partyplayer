@@ -29,6 +29,11 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 qrc_*
 ui_*
+<<<<<<< HEAD
 *.vcproj
 Makefile
 
+=======
+*.vdproj
+*/Deleted/*
+>>>>>>> cf463fee24d2b001dcfd3dafb784fc6228f6c212

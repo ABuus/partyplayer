@@ -1,9 +1,10 @@
 before 0.1
-playing != selected
-playlist internal drag drop
-settings interface
-m3u support
-drop indicator playlist
+done:	playlist internal drag drop
+		settings interface
+done:	m3u support
+		drop indicator playlist
+		{ playing != selected , PlaylistDelegate draw background if playing }
 
 after 0.1
-look into gstreamer for better codec support
+		look into gstreamer for better codec support
+		youtube jsapi to control videos

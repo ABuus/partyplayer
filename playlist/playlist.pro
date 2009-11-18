@@ -1,18 +1,26 @@
+
 TEMPLATE = lib
 TARGET = playlist
-DESTDIR = ../Debug
-CONFIG += debug
-DEFINES += PLAYLIST_LIB
 
-#INCLUDEPATH
+CONFIG(debug) {
+DESTDIR = ../debug
+} else {
+DESTDIR = ../release
+}
+
+win32:CONFIG += staticlib
+
+DEFINES += QT_LARGEFILE_SUPPORT PLAYLIST_LIB
+
 INCLUDEPATH += . \
     ./GeneratedFiles/Debug
-win32:INCLUDEPATH += C:/dev/include/taglib
+
+win32:INCLUDEPATH += $(QTDIR)/mkspecs/win32-msvc2008 \
+			c:/dev/include/taglib
 unix:INCLUDEPATH += /usr/include/taglib
 
-#LIBS
-unix:LIBS += -ltag
-win32:LIBS += C:/dev/lib/tag.lib
+unix:LIBS += $$system(pkg-config taglib --libs)
+win32:LIBS += c:/dev/lib/tag.lib
 
 DEPENDPATH += .
 MOC_DIR += ./GeneratedFiles/debug

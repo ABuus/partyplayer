@@ -7,20 +7,27 @@
 #include <QPoint>
 #include <QMimeData>
 #include <QUrl>
+#include <QFile>
+#include "playlist_global.h"
 #include "playlistmodel.h"
 #include "playlistitem.h"
+#include "playlistdelegate.h"
 
-class Playlist : public QTableView
+namespace Playlist {
+
+class PlaylistView : public QTableView
 {
 	Q_OBJECT
 public:
-	Playlist(QWidget *parent = 0);
-	~Playlist();
+	PlaylistView(QWidget *parent = 0);
+	~PlaylistView();
+	QUrl next();
 signals:
 	void playRequest(const QUrl url);
 private:
 	PlaylistModel *m_model;
 	QPoint startDragPos;
+	void addM3U(QUrl url, int row);
 protected:
 	void dragMoveEvent(QDragMoveEvent *event);
 	void mousePressEvent(QMouseEvent *event);
@@ -28,5 +35,7 @@ protected:
 	void dropEvent(QDropEvent *event);
 	void mouseDoubleClickEvent(QMouseEvent *event);
 };
+
+}; // namespace Playlist
 
 #endif // PLAYLIST_H

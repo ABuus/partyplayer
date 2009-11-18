@@ -1,9 +1,0 @@
-<RCC>
-  <qresource prefix="mainwindow" >
-    <file alias="pause.png" >images/media-pause-32.png</file>
-    <file alias="stop.png" >images/media-stop-32.png</file>
-    <file alias="play.png" >images/media-play-32.png</file>
-    <file alias="back.png" >images/media-seek-backward-32.png</file>
-    <file alias="forward.png" >images/media-seek-forward-32.png</file>
-  </qresource>
-</RCC>

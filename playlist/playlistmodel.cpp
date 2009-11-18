@@ -1,10 +1,19 @@
 #include "playlistmodel.h"
 
+using namespace Playlist;
+
 PlaylistModel::PlaylistModel(QObject *parent)
 	: QStandardItemModel(parent)
 {
 	QStringList headerLabels;
-	headerLabels << tr("Artist") << tr("Title") << tr("Album") << tr("Directory") << tr("Year")  << tr("Track") << tr("Length")  << tr("Bitrate");
+	headerLabels.insert( Playlist::Artist, tr("Artist") );
+	headerLabels.insert( Playlist::Title, tr("Title") );
+	headerLabels.insert( Playlist::Album, tr("Album") );
+	headerLabels.insert( Playlist::Year, tr("Year") );
+	headerLabels.insert( Playlist::Track, tr("Track") );
+	headerLabels.insert( Playlist::Length, tr("Length") );
+	headerLabels.insert( Playlist::Bitrate, tr("Bitrate") );
+	headerLabels.insert( Playlist::Place, tr("Directory") );
 	setHorizontalHeaderLabels(headerLabels);
 }
 
@@ -49,4 +58,13 @@ QMimeData * PlaylistModel::mimeData(const QModelIndexList &indexes) const
 	}
 	mimeData->setUrls(urls);
 	return mimeData;
+}
+
+void PlaylistModel::setRowData(int row, const QVariant &value, int role)
+{
+	for(int i = 0; i < columnCount(); i++)
+	{
+	//	qDebug() << "setting data at" << i << "to" << value;
+		setData( createIndex(row,i), value, role);
+	}
 }

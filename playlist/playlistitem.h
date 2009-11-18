@@ -10,10 +10,12 @@
 #include <tag.h>
 #include <audioproperties.h>
 
+namespace Playlist {
+
 class PlaylistItem
 {
 public:
-	PlaylistItem(const QUrl url);
+	PlaylistItem(const QUrl url, const QString ytText = 0);
 	~PlaylistItem();
 	QVariant value( int column );
 	QString artist() { return m_artist; };
@@ -25,15 +27,16 @@ public:
 	int length() { return m_length; };
 	int bitrate() { return m_bitrate; };
 	bool isLocal() { return m_localFile; };
+	bool isValid() { return m_isValid; };
 	enum ColumnData {
 		Artist = 0,
 		Title,
 		Album,
-		Place,
 		Year,
 		Track,
 		Length,
-		Bitrate
+		Bitrate,
+		Place
 	};
 private:
 	QString m_artist;
@@ -45,6 +48,11 @@ private:
 	int m_length;
 	int m_bitrate;
 	bool m_localFile;
+	bool m_isValid;
+	bool localFile(const QString &file);
+	void youtubeFile(const QUrl &url, const QString ytText);
 };
+
+}; // namespace Playlist
 
 #endif // PLAYLISTITEM_H
