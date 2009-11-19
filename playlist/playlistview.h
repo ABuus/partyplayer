@@ -26,9 +26,12 @@ public:
 signals:
 	void playRequest(const QUrl url);
 private:
+	void addM3U(QUrl url, int row);
+	void setPlayRow(int row, bool playing = false);
 	PlaylistModel *m_model;
 	QPoint startDragPos;
-	void addM3U(QUrl url, int row);
+	int m_playRow;
+	bool m_dragPlaying;
 protected:
 	void dragMoveEvent(QDragMoveEvent *event);
 	void mousePressEvent(QMouseEvent *event);

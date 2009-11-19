@@ -7,10 +7,9 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 	QStyleOptionViewItemV4 opt(option);
 	QRect rect = opt.rect;
 
-	// draw background if playing !NOT WORKING!
-	if(index.data(Playlist::PlayRole).toBool())
+	// paint background if item is playing
+	if(index.data(PlayRole).toBool())
 	{
-		qDebug() << "paint playing";
 		painter->save();
 		QLinearGradient backgroundGradient(rect.topLeft().x(), rect.topLeft().y() +3, rect.bottomLeft().x(), rect.bottomLeft().y() -3 );
 		backgroundGradient.setColorAt(0.0, QColor(200,200,200));
@@ -27,5 +26,10 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 		painter->setPen(QColor(200,200,200));
 	else
 		painter->setPen(QColor(0,0,0));
-	painter->drawText(rect, Qt::AlignLeft, index.data().toString());
+	rect.adjust(2,2,-2,-2);
+	int column = index.column() +1;
+	if(column < Year || Bitrate < column )
+		painter->drawText(rect, Qt::AlignLeft, index.data().toString());
+	else
+		painter->drawText(rect, Qt::AlignCenter, index.data().toString());
 }
