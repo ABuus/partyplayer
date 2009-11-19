@@ -64,18 +64,20 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	connect(controlWidget,SIGNAL(pause()),player,SLOT(pause()));
 	connect(controlWidget,SIGNAL(back()),player,SLOT(previous()));
 	connect(controlWidget,SIGNAL(forward()),player,SLOT(next()));
-	connect(player,SIGNAL(timeChanged(qint64)),controlWidget,SLOT(setTime(qint64)));
-	connect(player,SIGNAL(totalTimeChanged(qint64)),controlWidget,SLOT(setTotalTime(qint64)));
 */
 	connect(menuMode,SIGNAL(triggered(QAction *)),this,SLOT(setVideoMode(QAction *)));
 
-	player = new Player(this);
 	// test
+	player = new Player();
 	connect(m_playlist,SIGNAL(playRequest(const QUrl &)),player,SLOT(playUrl(const QUrl &)));
+	connect(player,SIGNAL(timeChanged(qint64)),controlWidget,SLOT(setTime(qint64)));
+	connect(player,SIGNAL(totalTimeChanged(qint64)),controlWidget,SLOT(setTotalTime(qint64)));
+
 }
 
 MainWindow::~MainWindow()
 {
+	player->deleteLater();
 	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
 	settings.setValue("mainwindow/geometry",saveGeometry());
 	settings.setValue("mainwindow/windowState", saveState());
