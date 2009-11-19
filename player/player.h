@@ -24,17 +24,22 @@ public slots:
 	void play();
 	void stop();
 	void pause();
+	bool enqueue(const QUrl &url);
+signals:
+	void timeChanged( qint64 pos );
+	void totalTimeChanged( qint64 totalTime );
+	void runningOut();
 private:
 	GstElement *m_pipeline;
+	GstElement *m_newPipeline;
 	GstElement *m_sink;
+	bool m_canRunOut;
 	QTimer m_playTimer;
 	qint64 m_totaltime;
 	private slots:
 	void getTime();
 	void getTotalTime();
-signals:
-	void timeChanged( qint64 pos );
-	void totalTimeChanged( qint64 totalTime );
+	GstElement *createPipeline();
 };
 
 #endif // PLAYER_H

@@ -23,9 +23,6 @@
 #include "search.h"
 #include "searchmodel.h"
 #include "controlwidget.h"
-// #include "player.h"
-
-
 
 class MainWindow : public QMainWindow, public Ui::mainWindowClass
 {
@@ -34,7 +31,6 @@ class MainWindow : public QMainWindow, public Ui::mainWindowClass
 public:
 	MainWindow(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~MainWindow();
-
 private:
 	Playlist::PlaylistView *m_playlist;
 	Search *search;
@@ -49,6 +45,7 @@ private slots:
 	void clearSearch();
 	void insertSearchItem(QStringList);
 	void setVideoMode(QAction *);
+	void fetchNextTrack();
 signals:
 	void preformSearch(QString text);
 };

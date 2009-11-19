@@ -51,12 +51,13 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	fileView->setCurrentIndex(musicIndex);
 	fileView->scrollTo(musicIndex,QAbstractItemView::PositionAtCenter);
 	
+	player = new Player();
+
 	// connections
 	connect(this, SIGNAL( preformSearch( QString )), search, SLOT( query( QString )));
 	connect(searchLineEdit, SIGNAL(returnPressed()), this, SLOT( querySearch()));
 	connect(search, SIGNAL(newSearch()), this, SLOT(clearSearch()));
 	connect(search, SIGNAL(newItem(QStringList)), this,SLOT(insertSearchItem(QStringList)));
-//	connect(m_playlist,SIGNAL(playRequest(const QUrl &)),player,SLOT(play(const QUrl &)));
 //	connect(player,SIGNAL(playStateChanged(bool)),controlWidget,SLOT(setPlayState(bool)));
 /*
 
@@ -65,8 +66,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 */
 	connect(menuMode,SIGNAL(triggered(QAction *)),this,SLOT(setVideoMode(QAction *)));
 
-	// test
-	player = new Player();
+	
 	connect(m_playlist,SIGNAL(playRequest(const QUrl &)),player,SLOT(playUrl(const QUrl &)));
 	connect(player,SIGNAL(timeChanged(qint64)),controlWidget,SLOT(setTime(qint64)));
 	connect(player,SIGNAL(totalTimeChanged(qint64)),controlWidget,SLOT(setTotalTime(qint64)));
@@ -74,6 +74,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	connect(controlWidget,SIGNAL(stop()),player,SLOT(stop()));
 	connect(controlWidget,SIGNAL(play()),player,SLOT(play()));
 	connect(controlWidget,SIGNAL(pause()),player,SLOT(pause()));
+	connect(player,SIGNAL(runningOut()),this,SLOT(fetchNextTrack()));
 }
 
 MainWindow::~MainWindow()
@@ -127,4 +128,10 @@ void MainWindow::setVideoMode(QAction *a)
 		webView->show();
 		a->setChecked(true);
 	}
+}
+
+void MainWindow::fetchNextTrack()
+{
+	QUrl url = m_playlist->next();
+	player->enqueue(url);
 }
