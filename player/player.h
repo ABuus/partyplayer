@@ -21,6 +21,9 @@ public:
 public slots:
 	void playUrl(const QUrl &url);
 	void seek( int time );
+	void play();
+	void stop();
+	void pause();
 private:
 	GstElement *m_pipeline;
 	GstElement *m_sink;

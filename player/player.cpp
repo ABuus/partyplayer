@@ -67,8 +67,25 @@ void Player::getTotalTime()
 
 void Player::seek(int time)
 {
-	// gint64 m_time = time;
 	gst_element_seek(m_pipeline, 1.0, GST_FORMAT_TIME,
 		GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET, time * GST_MSECOND,
-		GST_SEEK_TYPE_NONE,GST_CLOCK_TIME_NONE);
+		GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE);
+}
+
+void Player::play()
+{
+	gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
+	m_playTimer.start();
+}
+
+void Player::stop()
+{
+	gst_element_set_state (m_pipeline, GST_STATE_NULL);
+	m_playTimer.stop();
+}
+
+void Player::pause()
+{
+	gst_element_set_state(m_pipeline, GST_STATE_PAUSED);
+	m_playTimer.stop();
 }

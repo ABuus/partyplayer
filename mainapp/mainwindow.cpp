@@ -59,9 +59,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 //	connect(m_playlist,SIGNAL(playRequest(const QUrl &)),player,SLOT(play(const QUrl &)));
 //	connect(player,SIGNAL(playStateChanged(bool)),controlWidget,SLOT(setPlayState(bool)));
 /*
-	connect(controlWidget,SIGNAL(stop()),player,SLOT(stop()));
-	connect(controlWidget,SIGNAL(play()),player,SLOT(play()));
-	connect(controlWidget,SIGNAL(pause()),player,SLOT(pause()));
+
 	connect(controlWidget,SIGNAL(back()),player,SLOT(previous()));
 	connect(controlWidget,SIGNAL(forward()),player,SLOT(next()));
 */
@@ -73,6 +71,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	connect(player,SIGNAL(timeChanged(qint64)),controlWidget,SLOT(setTime(qint64)));
 	connect(player,SIGNAL(totalTimeChanged(qint64)),controlWidget,SLOT(setTotalTime(qint64)));
 	connect(controlWidget,SIGNAL(seek(int)),player,SLOT(seek(int)));
+	connect(controlWidget,SIGNAL(stop()),player,SLOT(stop()));
+	connect(controlWidget,SIGNAL(play()),player,SLOT(play()));
+	connect(controlWidget,SIGNAL(pause()),player,SLOT(pause()));
 }
 
 MainWindow::~MainWindow()
