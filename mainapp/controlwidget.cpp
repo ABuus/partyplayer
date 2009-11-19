@@ -22,7 +22,7 @@ ControlWidget::ControlWidget(QWidget *parent)
 	connect(stopButton,SIGNAL(clicked()),this,SIGNAL(stop()));
 	connect(backButton,SIGNAL(clicked()),this,SIGNAL(back()));
 	connect(forwardButton,SIGNAL(clicked()),this,SIGNAL(forward()));
-	
+	connect(slider,SIGNAL(sliderMoved(int)), this,SIGNAL(seek(int)));
 }
 
 ControlWidget::~ControlWidget()

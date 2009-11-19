@@ -26,6 +26,7 @@ signals:
 	void stop();
 	void back();
 	void forward();
+	void seek(int value);
 };
 
 #endif // CONTROLWIDGET_H

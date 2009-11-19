@@ -37,21 +37,21 @@ void Player::playUrl(const QUrl &url)
 	const gchar *uri = str.c_str();
 	g_object_set(G_OBJECT(m_pipeline), "uri", uri, NULL);
 	
-
 	gst_element_set_state (m_pipeline, GST_STATE_PLAYING);
-	// get total time
+
+	// get time
 	m_playTimer.start();
 	getTotalTime();
 }
 
 void Player::getTime()
 {
+	
 	GstFormat fmt = GST_FORMAT_TIME;
 	gint64 pos;
 	if( gst_element_query_position(m_pipeline, &fmt, &pos))
 	{
-		emit timeChanged( GST_TIME_AS_SECONDS( pos ) );
-		qDebug() << "pos" << pos;
+		emit timeChanged( GST_TIME_AS_MSECONDS( pos ) );
 	}
 }
 
@@ -62,5 +62,13 @@ void Player::getTotalTime()
 	while(! gst_element_query_duration(m_pipeline, &fmt, &tot))
 	{}
 	m_totaltime = tot;
-	emit totalTimeChanged( GST_TIME_AS_SECONDS( tot ) );
+	emit totalTimeChanged( GST_TIME_AS_MSECONDS( tot ) );
+}
+
+void Player::seek(int time)
+{
+	// gint64 m_time = time;
+	gst_element_seek(m_pipeline, 1.0, GST_FORMAT_TIME,
+		GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET, time * GST_MSECOND,
+		GST_SEEK_TYPE_NONE,GST_CLOCK_TIME_NONE);
 }

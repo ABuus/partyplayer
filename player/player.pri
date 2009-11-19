@@ -5,11 +5,7 @@
 
 #Header files
 HEADERS += ./player.h \
-    ./player_global.h \
-    ./message.h \
-    ./messagehandler.h
+    ./player_global.h
 
 #Source files
-SOURCES += ./player.cpp \
-    ./message.cpp \
-    ./messagehandler.cpp
+SOURCES += ./player.cpp

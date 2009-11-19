@@ -72,7 +72,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	connect(m_playlist,SIGNAL(playRequest(const QUrl &)),player,SLOT(playUrl(const QUrl &)));
 	connect(player,SIGNAL(timeChanged(qint64)),controlWidget,SLOT(setTime(qint64)));
 	connect(player,SIGNAL(totalTimeChanged(qint64)),controlWidget,SLOT(setTotalTime(qint64)));
-
+	connect(controlWidget,SIGNAL(seek(int)),player,SLOT(seek(int)));
 }
 
 MainWindow::~MainWindow()

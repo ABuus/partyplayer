@@ -20,6 +20,7 @@ public:
 	~Player();
 public slots:
 	void playUrl(const QUrl &url);
+	void seek( int time );
 private:
 	GstElement *m_pipeline;
 	GstElement *m_sink;
