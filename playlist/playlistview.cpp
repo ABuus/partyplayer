@@ -134,6 +134,14 @@ QUrl PlaylistView::next()
 	return url;
 }
 
+QUrl PlaylistView::previous()
+{
+	QUrl url = m_model->item(m_playRow -1)->data(UrlRole).toUrl();
+	setPlayRow(m_playRow -1,true);
+	qDebug() << "play previous";
+	return url;
+}
+
 void PlaylistView::addM3U(QUrl url,int row)
 {
 	QFile file(url.toLocalFile());

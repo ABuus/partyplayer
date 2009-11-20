@@ -40,12 +40,16 @@ private:
 	Player *player;
 	QWebView *webView;
 	QList<int> oldVSplitter;
+	bool webState;
 private slots:
 	void querySearch();
 	void clearSearch();
 	void insertSearchItem(QStringList);
 	void setVideoMode(QAction *);
-	void fetchNextTrack();
+	void enqueueNextTrack();
+	void playNextTrack();
+	void playPreviousTrack();
+	void handlePlayRequests(const QUrl &url);
 signals:
 	void preformSearch(QString text);
 };

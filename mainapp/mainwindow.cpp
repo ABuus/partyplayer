@@ -1,7 +1,8 @@
 #include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
-	: QMainWindow(parent, flags)
+	: QMainWindow(parent, flags),
+	webState(false)
 {
 	// this
 	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
@@ -58,23 +59,19 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	connect(searchLineEdit, SIGNAL(returnPressed()), this, SLOT( querySearch()));
 	connect(search, SIGNAL(newSearch()), this, SLOT(clearSearch()));
 	connect(search, SIGNAL(newItem(QStringList)), this,SLOT(insertSearchItem(QStringList)));
-//	connect(player,SIGNAL(playStateChanged(bool)),controlWidget,SLOT(setPlayState(bool)));
-/*
-
-	connect(controlWidget,SIGNAL(back()),player,SLOT(previous()));
-	connect(controlWidget,SIGNAL(forward()),player,SLOT(next()));
-*/
 	connect(menuMode,SIGNAL(triggered(QAction *)),this,SLOT(setVideoMode(QAction *)));
-
-	
-	connect(m_playlist,SIGNAL(playRequest(const QUrl &)),player,SLOT(playUrl(const QUrl &)));
+	connect(m_playlist,SIGNAL(playRequest(const QUrl &)),this,SLOT(handlePlayRequests(const QUrl &)));
 	connect(player,SIGNAL(timeChanged(qint64)),controlWidget,SLOT(setTime(qint64)));
 	connect(player,SIGNAL(totalTimeChanged(qint64)),controlWidget,SLOT(setTotalTime(qint64)));
 	connect(controlWidget,SIGNAL(seek(int)),player,SLOT(seek(int)));
 	connect(controlWidget,SIGNAL(stop()),player,SLOT(stop()));
 	connect(controlWidget,SIGNAL(play()),player,SLOT(play()));
 	connect(controlWidget,SIGNAL(pause()),player,SLOT(pause()));
-	connect(player,SIGNAL(runningOut()),this,SLOT(fetchNextTrack()));
+	connect(player,SIGNAL(runningOut()),this,SLOT(enqueueNextTrack()));
+	connect(controlWidget,SIGNAL(forward()),this,SLOT(playNextTrack()));
+	connect(controlWidget,SIGNAL(back()),this,SLOT(playPreviousTrack()));
+
+//	connect(player,SIGNAL(playStateChanged(bool)),controlWidget,SLOT(setPlayState(bool)));
 }
 
 MainWindow::~MainWindow()
@@ -130,8 +127,87 @@ void MainWindow::setVideoMode(QAction *a)
 	}
 }
 
-void MainWindow::fetchNextTrack()
+void MainWindow::enqueueNextTrack()
 {
 	QUrl url = m_playlist->next();
-	player->enqueue(url);
+	if(url.scheme() == "http")
+	{
+		Debug << "loading http";
+		webView->load(url);
+		webState = true;
+		player->stop();
+	}
+	else
+	{
+		Debug << "loading file";
+		if(webState)
+			webView->load(QUrl("http://www.youtube.com/apiplayer?version=3"));
+		player->enqueue(url);
+	}
+}
+
+void MainWindow::playNextTrack()
+{
+	QUrl url = m_playlist->next();
+	if(url.scheme() == "http")
+	{
+		Debug << "loading http";
+		webView->load(url);
+		webState = true;
+		player->stop();
+	}
+	else
+	{
+		Debug << "loading file";
+		if(webState)
+			webView->load(QUrl("http://www.youtube.com/apiplayer?version=3"));
+		player->playUrl(url);
+	}
+}
+
+void MainWindow::playPreviousTrack()
+{
+	QUrl url = m_playlist->previous();
+	if(url.scheme() == "http")
+	{
+		Debug << "loading http";
+		webView->load(url);
+		webState = true;
+		player->stop();
+	}
+	else
+	{
+		Debug << "loading file";
+		if(webState)
+			webView->load(QUrl("http://www.youtube.com/apiplayer?version=3"));
+		player->playUrl(url);
+	}
+}
+
+void MainWindow::handlePlayRequests(const QUrl &url)
+{
+	Debug << url;
+	if(url.scheme() == "http")
+	{
+		Debug << "loading http";
+		if(actionYouTube_HD->isChecked())
+		{
+			QString str = url.toString();
+			str.append("&hd=1");
+			webView->load(QUrl(str));
+		}
+		else
+		{
+			webView->load(url);
+		}
+		webState = true;
+		player->stop();
+	}
+	else
+	{
+		Debug << "loading file";
+		if(webState)
+			webView->load(QUrl("http://www.youtube.com/apiplayer?version=3"));
+		player->playUrl(url);
+	}
 }

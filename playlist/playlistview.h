@@ -23,6 +23,7 @@ public:
 	PlaylistView(QWidget *parent = 0);
 	~PlaylistView();
 	QUrl next();
+	QUrl previous();
 signals:
 	void playRequest(const QUrl url);
 private:

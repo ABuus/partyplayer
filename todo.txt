@@ -2,9 +2,10 @@ before 0.1
 done:	playlist internal drag drop
 		settings interface
 done:	m3u support
-		drop indicator playlist
-		{ playing != selected , PlaylistDelegate draw background if playing }
+		drop indicator playlist ?? 
+done:	{ playing != selected , PlaylistDelegate draw background if playing }
 
 after 0.1
-		look into gstreamer for better codec support
+done:	look into gstreamer for better codec support
 		youtube jsapi to control videos
+		youtube playlists ( includeing mostpopular )

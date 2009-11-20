@@ -58,6 +58,7 @@ void Search::queryFinished(QNetworkReply *reply)
 		url.append("&iv_load_policy=3"); 
 		url.append("&showinfo=0&");
 		url.append("enablejsapi=1"); // enables JavaScript control layer
+		url.append("?rel=0");
 		
 		
 		
