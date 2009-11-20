@@ -128,7 +128,10 @@ void PlaylistView::mouseDoubleClickEvent(QMouseEvent *event)
 
 QUrl PlaylistView::next()
 {
-	QUrl url = m_model->item(m_playRow +1)->data(UrlRole).toUrl();
+	QStandardItem *item = m_model->item(m_playRow +1);
+	if(item == 0)
+		return QUrl();
+	QUrl url = item->data(UrlRole).toUrl();
 	setPlayRow(m_playRow +1,true);
 	qDebug() << "play next";
 	return url;

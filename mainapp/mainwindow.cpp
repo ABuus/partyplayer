@@ -47,6 +47,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	fileView->setColumnHidden(3,true);
 	fileView->setColumnHidden(4,true);
 	fileSysModel->setRootPath(QDir::rootPath());
+
+	// this does not seem to work
 	QModelIndex musicIndex = fileSysModel->index(QDesktopServices::storageLocation(QDesktopServices::MusicLocation));	
 	fileView->expand(musicIndex);
 	fileView->setCurrentIndex(musicIndex);
