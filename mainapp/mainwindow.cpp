@@ -1,3 +1,22 @@
+/*
+** This file is part of the Party Player application.
+** Copyright (C) 2009  Anders Buus
+**
+** This program is free software; you can redistribute it and/or
+** modify it under the terms of the GNU General Public License
+** as published by the Free Software Foundation; either version 2
+** of the License, or (at your option) any later version.
+** 
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+** 
+** You should have received a copy of the GNU General Public License
+** along with this program; if not, write to the Free Software
+** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
 #include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
@@ -26,13 +45,11 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled,true);
 	webView->show();
 	webView->load(QUrl("http://www.youtube.com/apiplayer?version=3"));
-//	player->setWebView(webView);
 	videoContainer->addWidget(webView);
 
 	// control widget
 	controlWidget = new ControlWidget(this);
 	controlLayout->addWidget(controlWidget);
-//	controlWidget->seekSlider->setMediaObject( player->mediaObject() );
 
 	// file system widget
 	fileSysModel = new QFileSystemModel(this);

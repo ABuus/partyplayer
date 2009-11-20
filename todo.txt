@@ -18,6 +18,7 @@ done:	look into gstreamer for better codec support
 		collection ( webcollection ?? ) 
 		webinterface
 		context menu´s
+		QSinleApplication ?? open add files to playlist if open to running PP instance
 		
 						### bugs ###
 		player running out -> controllwidget slider = 0 -> user press play -> bad things happens
