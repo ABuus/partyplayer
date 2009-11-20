@@ -20,6 +20,7 @@
 #include "mainwindow.h"
 // Qt solutions
 #include <3rdparty/qtsingleapplication/src/qtsingleapplication.h>
+#include <QDebug>
 
 
 int main(int argc, char *argv[])
@@ -28,17 +29,22 @@ int main(int argc, char *argv[])
 	app.setApplicationName("PartyPlayer");
 	app.setOrganizationName("BuusSW");
 	
+	QString message = app.arguments().join("* *");
+	qDebug() << app.arguments().count() -1;
 	if(app.isRunning())
 	{
-		bool sucess = false;
-		QString message = app.arguments().join("* *");
-		sucess = app.sendMessage(message);
-		return sucess;
+		app.sendMessage(message);
+		return 0;
 	}
 	
 	MainWindow win;
+	win.handleApplicationMessage(message);
+
 	QObject::connect(&app,SIGNAL(messageReceived(const QString&)),
 					&win,SLOT(handleApplicationMessage(const QString &)));
+
+	app.setActivationWindow(&win, false);
+	QObject::connect(&win, SIGNAL(needToShow()), &app, SLOT(activateWindow()));
 	win.show();
 	return app.exec();
 }

@@ -88,10 +88,12 @@ void PlaylistView::mouseMoveEvent(QMouseEvent *event)
 void PlaylistView::dropEvent(QDropEvent *event)
 {
 	QString ytText;
+	if(!event->mimeData()->hasUrls())
+		event->ignore();
 	/* this is not good, try dragging from FF */
-	if(event->source()->objectName() == "searchView")
+	if(event->mimeData()->hasFormat("application/yt-partyplayer"))
 	{
-		ytText = event->mimeData()->text();
+		ytText = event->mimeData()->data("application/yt-partyplayer");
 	}
 	int row = indexAt(event->pos()).row();
 	if(row == -1)
@@ -107,46 +109,23 @@ void PlaylistView::dropEvent(QDropEvent *event)
 	{
 		if(url.scheme() == "file")
 		{
-			addFile(url.toString());
+			addFile(url.toString(),row);
 			continue;
 		}
 		else if(url.scheme() == "http")
 		{
-			addUrl(url);
+			addUrl(url,ytText,row);
 			continue;
 		}
+		/* addDirectory() */
 		else
 		{
+			
 			// unsuported
 			continue;
 		}
-		if(url.toLocalFile().endsWith(".m3u", Qt::CaseInsensitive))
-		{
-			addM3U(url,row);
-			continue;
-		}
-		QList<QStandardItem *> rowItem;
-		PlaylistItem *item = new PlaylistItem(url.toString(), ytText);
-		if(!item->isValid())
-			continue;
-		for(int i = 0; i < m_model->columnCount(); i++)
-		{
-			QStandardItem *stdItem = new QStandardItem(item->value(i).toString());
-			stdItem->setData(url,Qt::UserRole +1 );
-			rowItem << stdItem;
-		}
-		m_model->insertRow(row,rowItem);
-		if(m_dragPlaying)
-		{
-			setPlayRow(row,true);
-			setRowHeight(row,ROW_HEIGHT);
-			return;
-		}
-		setRowHeight(row,ROW_HEIGHT);
-		row++;
-		delete item;
 	}
-	selectRow(row -1 );
+	selectRow(row);
 }
 
 void PlaylistView::mouseDoubleClickEvent(QMouseEvent *event)
@@ -198,28 +177,8 @@ bool PlaylistView::addM3U(QUrl url,int row)
 			filePath.remove(filePath.lastIndexOf("/"),filePath.size());
 			if(line.endsWith("\n"))
 				line.chop(1);
-
-			QList<QStandardItem *> rowItem;
 			QUrl url("file:///" + filePath + "/" + line);
-			addFile(url.toString());
-			/*
-			PlaylistItem *item = new PlaylistItem(url);
-			if(!item->isValid())
-			{
-				qDebug() << "Error: invalid file" << url;
-				continue;
-			}
-			for(int i = 0; i < m_model->columnCount(); i++)
-			{
-				QStandardItem *stdItem = new QStandardItem(item->value(i).toString());
-				stdItem->setData(url,UrlRole );
-				rowItem << stdItem;
-			}
-			m_model->insertRow(row,rowItem);
-			setRowHeight(row,ROW_HEIGHT);
-			row++;
-			delete item;
-			*/
+			addFile(url.toString(),++row);
 		}
 	}
 	selectRow(row -1 );
@@ -247,15 +206,21 @@ void PlaylistView::setPlayRow(int row, bool playing)
 	}
 }
 
-bool PlaylistView::addFile(const QString &file)
+bool PlaylistView::addFile(const QString &file, int row)
 {
+	QUrl url(file);
+	if(row == -1)
+	{
+		row = m_model->rowCount();
+	}
 	if(url.toLocalFile().endsWith(".m3u", Qt::CaseInsensitive))
 	{
 		return addM3U(url,row);
 	}
 	else
 	{
-		PlaylistItem *item = new PlaylistItem(QUrl(file));
+		QList<QStandardItem *> rowItem;
+		PlaylistItem *item = new PlaylistItem(url);
 		if(!item->isValid())
 		{
 			qDebug() << "Error: invalid file" << url;
@@ -269,9 +234,33 @@ bool PlaylistView::addFile(const QString &file)
 		}
 		m_model->insertRow(row,rowItem);
 		setRowHeight(row,ROW_HEIGHT);
-		row++;
 		delete item;
 		return true;
 	}
 	return false;
+}
+
+bool PlaylistView::addUrl(QUrl url, QString ytText, int row)
+{
+	if(row == -1)
+	{
+		row = m_model->rowCount();
+	}
+	QList<QStandardItem *> rowItem;
+	PlaylistItem *item = new PlaylistItem(url,ytText);
+	if(!item->isValid())
+	{
+		qDebug() << "Error: invalid file" << url;
+		return false;
+	}
+	for(int i = 0; i < m_model->columnCount(); i++)
+	{
+		QStandardItem *stdItem = new QStandardItem(item->value(i).toString());
+		stdItem->setData(url,UrlRole );
+		rowItem << stdItem;
+	}
+	m_model->insertRow(row,rowItem);
+	setRowHeight(row,ROW_HEIGHT);
+	delete item;
+	return true;
 }

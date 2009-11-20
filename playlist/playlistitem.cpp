@@ -110,5 +110,8 @@ void PlaylistItem::youtubeFile(const QUrl &url, const QString ytText)
 	m_artist = strs.first();
 	m_title = strs.last();
 	m_place = url.toString();
+	m_year = 0;
+	m_bitrate = 0;
+	m_track = 0;
 	m_localFile = false;
 }

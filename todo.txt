@@ -21,4 +21,5 @@ done:	look into gstreamer for better codec support
 		QSinleApplication ?? open add files to playlist if open to running PP instance
 		
 						### bugs ###
+		QSingleApplication as dll( reason: LGPL violation ) 
 		player running out -> controllwidget slider = 0 -> user press play -> bad things happens

@@ -50,6 +50,8 @@ class MainWindow : public QMainWindow, public Ui::mainWindowClass
 public:
 	MainWindow(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~MainWindow();
+public slots:
+	void handleApplicationMessage(const QString &);
 private:
 	Playlist::PlaylistView *m_playlist;
 	Search *search;
@@ -69,9 +71,10 @@ private slots:
 	void playNextTrack();
 	void playPreviousTrack();
 	void handlePlayRequests(const QUrl &url);
-	void handleApplicationMessage(const QString &);
+
 signals:
 	void preformSearch(QString text);
+	void needToShow();
 };
 
 #endif // MAINWINDOW_H

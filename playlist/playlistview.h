@@ -43,11 +43,12 @@ public:
 	~PlaylistView();
 	QUrl next();
 	QUrl previous();
-	bool addFile(const QString &file);
+	bool addFile(const QString &file, int row); // if row = -1 item id added at bottom
 signals:
 	void playRequest(const QUrl url);
 private:
-	bool addM3U(QUrl url, int row);
+	bool addM3U(QUrl url, int row); // if row = -1 item id added at bottom
+	bool addUrl(QUrl url, QString ytText, int row);	// if row = -1 item id added at bottom
 	void setPlayRow(int row, bool playing = false);
 	PlaylistModel *m_model;
 	QPoint startDragPos;

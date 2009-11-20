@@ -232,8 +232,12 @@ void MainWindow::handleApplicationMessage(const QString &msg)
 {
 	qDebug() << "message recived by new App instance" << msg;
 	QStringList files = msg.split("* *");
+	files.removeFirst();
+	int row = -1;
 	foreach(QString file, files)
 	{
-		m_playlist->addFile(file);
+		file.prepend("file:///");
+		m_playlist->addFile(file,row++);
 	}
+	emit needToShow();
 }
