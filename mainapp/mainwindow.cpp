@@ -20,11 +20,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	playlistContainer->addWidget(m_playlist);
 	m_playlist->show();
 
-	// player OLD
-/*
-	player = new Player(this);
-	player->setPlaylist(m_playlist);
-*/
 	webView = new QWebView(this);
 	// websettings to ensure we can play youtube vids
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled,true);
