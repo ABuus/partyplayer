@@ -69,6 +69,7 @@ private slots:
 	void playNextTrack();
 	void playPreviousTrack();
 	void handlePlayRequests(const QUrl &url);
+	void handleApplicationMessage(const QString &);
 signals:
 	void preformSearch(QString text);
 };

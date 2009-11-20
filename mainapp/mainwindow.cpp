@@ -225,3 +225,15 @@ void MainWindow::handlePlayRequests(const QUrl &url)
 		player->playUrl(url);
 	}
 }
+
+/* handles incomming messeges from QSingleApplication see main.cpp */
+
+void MainWindow::handleApplicationMessage(const QString &msg)
+{
+	qDebug() << "message recived by new App instance" << msg;
+	QStringList files = msg.split("* *");
+	foreach(QString file, files)
+	{
+		m_playlist->addFile(file);
+	}
+}

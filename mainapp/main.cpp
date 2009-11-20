@@ -18,17 +18,28 @@
 */
 
 #include "mainwindow.h"
-#include <QtGui/QApplication>
-#include "debug.h"
+// Qt solutions
+#include <3rdparty/qtsingleapplication/src/qtsingleapplication.h>
 
 
 int main(int argc, char *argv[])
 {
-	QApplication a(argc, argv);
-	a.setApplicationName("PartyPlayer");
-	a.setOrganizationName("BuusSW");
-	MainWindow w;
-	w.show();
-	return a.exec();
+	QtSingleApplication app(argc, argv);
+	app.setApplicationName("PartyPlayer");
+	app.setOrganizationName("BuusSW");
+	
+	if(app.isRunning())
+	{
+		bool sucess = false;
+		QString message = app.arguments().join("* *");
+		sucess = app.sendMessage(message);
+		return sucess;
+	}
+	
+	MainWindow win;
+	QObject::connect(&app,SIGNAL(messageReceived(const QString&)),
+					&win,SLOT(handleApplicationMessage(const QString &)));
+	win.show();
+	return app.exec();
 }
 

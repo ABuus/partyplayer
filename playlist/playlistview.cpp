@@ -105,6 +105,21 @@ void PlaylistView::dropEvent(QDropEvent *event)
 	QList<QUrl> urls = event->mimeData()->urls();
 	foreach(QUrl url, urls)
 	{
+		if(url.scheme() == "file")
+		{
+			addFile(url.toString());
+			continue;
+		}
+		else if(url.scheme() == "http")
+		{
+			addUrl(url);
+			continue;
+		}
+		else
+		{
+			// unsuported
+			continue;
+		}
 		if(url.toLocalFile().endsWith(".m3u", Qt::CaseInsensitive))
 		{
 			addM3U(url,row);
@@ -164,13 +179,13 @@ QUrl PlaylistView::previous()
 	return url;
 }
 
-void PlaylistView::addM3U(QUrl url,int row)
+bool PlaylistView::addM3U(QUrl url,int row)
 {
 	QFile file(url.toLocalFile());
 	if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
 	{
 		qDebug() << "Error: fopen" << url.toString();
-		return;
+		return false;
 	}
 	while(!file.atEnd())
 	{
@@ -186,6 +201,8 @@ void PlaylistView::addM3U(QUrl url,int row)
 
 			QList<QStandardItem *> rowItem;
 			QUrl url("file:///" + filePath + "/" + line);
+			addFile(url.toString());
+			/*
 			PlaylistItem *item = new PlaylistItem(url);
 			if(!item->isValid())
 			{
@@ -202,9 +219,11 @@ void PlaylistView::addM3U(QUrl url,int row)
 			setRowHeight(row,ROW_HEIGHT);
 			row++;
 			delete item;
+			*/
 		}
 	}
 	selectRow(row -1 );
+	return true;
 }
 
 void PlaylistView::setPlayRow(int row, bool playing)
@@ -226,4 +245,33 @@ void PlaylistView::setPlayRow(int row, bool playing)
 	{
 		m_playRow = row;
 	}
+}
+
+bool PlaylistView::addFile(const QString &file)
+{
+	if(url.toLocalFile().endsWith(".m3u", Qt::CaseInsensitive))
+	{
+		return addM3U(url,row);
+	}
+	else
+	{
+		PlaylistItem *item = new PlaylistItem(QUrl(file));
+		if(!item->isValid())
+		{
+			qDebug() << "Error: invalid file" << url;
+			return false;
+		}
+		for(int i = 0; i < m_model->columnCount(); i++)
+		{
+			QStandardItem *stdItem = new QStandardItem(item->value(i).toString());
+			stdItem->setData(url,UrlRole );
+			rowItem << stdItem;
+		}
+		m_model->insertRow(row,rowItem);
+		setRowHeight(row,ROW_HEIGHT);
+		row++;
+		delete item;
+		return true;
+	}
+	return false;
 }
