@@ -33,9 +33,10 @@ void Player::playUrl(const QUrl &url)
 	if(!url.isValid())
 	{
 		qDebug() << "invalid url:" << url.toString();
+		m_playTimer.stop();
 		return;
 	}
-	gst_element_set_state (m_pipeline, GST_STATE_NULL);
+	gst_element_set_state(m_pipeline, GST_STATE_NULL);
 	std::string str = std::string(url.toString().toAscii().data());
 	const gchar * uri = str.c_str();
 	g_object_set(G_OBJECT(m_pipeline), "uri", uri, NULL);
@@ -54,6 +55,7 @@ void Player::getTime()
 	if( gst_element_query_position(m_pipeline, &fmt, &pos))
 	{
 		emit timeChanged( GST_TIME_AS_MSECONDS( pos ) );
+		// check if we are running out
 		if( ( GST_TIME_AS_MSECONDS( m_totaltime ) - GST_TIME_AS_MSECONDS( pos ) ) < 1000 )
 		{
 			if(m_canRunOut)
@@ -63,6 +65,7 @@ void Player::getTime()
 				emit runningOut();
 			}
 		}
+		// check if we are at end
 		if( ( GST_TIME_AS_MSECONDS( m_totaltime ) - GST_TIME_AS_MSECONDS( pos ) ) == 0 )
 		{
 			qDebug() << "### play next ###";
@@ -120,12 +123,15 @@ bool Player::enqueue(const QUrl &url)
 	qDebug() << "### enqueue next ###";
 	if(url.isValid())
 	{
+		qDebug() << "valid url:" << url;
 		m_newPipeline = createPipeline();
 		std::string str = std::string(url.toString().toAscii().data());
 		const gchar * uri = str.c_str();
 		g_object_set(G_OBJECT(m_newPipeline), "uri", uri, NULL);
 		return true;
 	}
+	emit timeChanged(0);
+	m_playTimer.stop();
 	return false;
 }
 
