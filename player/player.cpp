@@ -30,12 +30,11 @@ Player::Player(QObject *parent)
 	// initialize gstreamer
 	gst_init(NULL, NULL);
 	// connect elements
-//	m_pipeline = gst_element_factory_make("playbin", "player");
 	m_pipeline = createPipeline();
 	m_sink = gst_element_factory_make("autoaudiosink", "player");
 	gst_element_link(GST_ELEMENT( m_pipeline), m_sink);
-	g_timeout_add (200, 0, m_pipeline);
-	m_playTimer.setInterval(200);
+	g_timeout_add (TIMER_INTERVAL, 0, m_pipeline);
+	m_playTimer.setInterval(TIMER_INTERVAL);
 	connect(&m_playTimer,SIGNAL(timeout()), this, SLOT( getTime()));
 }
 
@@ -158,6 +157,6 @@ GstElement * Player::createPipeline()
 {
 	GstElement *pipeline = gst_element_factory_make("playbin", "player");
 	gst_element_link(GST_ELEMENT( m_pipeline), m_sink);
-	g_timeout_add (200, 0, pipeline);
+	g_timeout_add (TIMER_INTERVAL, 0, pipeline);
 	return pipeline;
 }
