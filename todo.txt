@@ -1,11 +1,23 @@
-before 0.1
+						### before 0.1 ###
 done:	playlist internal drag drop
 		settings interface
 done:	m3u support
 		drop indicator playlist ?? 
 done:	{ playing != selected , PlaylistDelegate draw background if playing }
-
-after 0.1
+		resize webweiw, playlist and files on startup
+		drop dir on playlist
+		icon ;-)
+		reload playlisst on startup
+		save a playlist
+		
+						### after 0.1 ###
 done:	look into gstreamer for better codec support
 		youtube jsapi to control videos
 		youtube playlists ( includeing mostpopular )
+		CD playback
+		collection ( webcollection ?? ) 
+		webinterface
+		context menu´s
+		
+						### bugs ###
+		player running out -> controllwidget slider = 0 -> user press play -> bad things happens
