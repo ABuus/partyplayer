@@ -23,10 +23,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags),
 	webState(false)
 {
-	// this
-	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
-	restoreGeometry(settings.value("mainwindow/geometry").toByteArray());
-	restoreState(settings.value("mainwindow/windowState").toByteArray());
 	setupUi(this);
 
 	// youtube searcher
@@ -68,6 +64,14 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	
 	player = new Player();
 
+	// restore geometry and states
+	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
+	restoreGeometry(settings.value("mainwindow/geometry").toByteArray());
+	restoreState(settings.value("mainwindow/windowState").toByteArray());
+	webView->restoreGeometry(settings.value("mainwindow/webView").toByteArray());
+	m_playlist->restoreGeometry(settings.value("mainwindow/playlist").toByteArray());
+	videoSplitter->restoreGeometry(settings.value("mainwindow/videoSplitter").toByteArray());
+
 	// connections
 	connect(this, SIGNAL( preformSearch( QString )), search, SLOT( query( QString )));
 	connect(searchLineEdit, SIGNAL(returnPressed()), this, SLOT( querySearch()));
@@ -94,6 +98,9 @@ MainWindow::~MainWindow()
 	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
 	settings.setValue("mainwindow/geometry",saveGeometry());
 	settings.setValue("mainwindow/windowState", saveState());
+	settings.setValue("mainwindow/playlist", videoSplitter->saveGeometry());
+	settings.setValue("mainwindow/webView", videoSplitter->saveGeometry());
+	settings.setValue("mainwindow/videoSplitter", videoSplitter->saveGeometry());
 }
 
 void MainWindow::querySearch()

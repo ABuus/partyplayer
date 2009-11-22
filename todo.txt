@@ -9,6 +9,9 @@ done:	{ playing != selected , PlaylistDelegate draw background if playing }
 		icon ;-)
 		reload playlisst on startup
 		save a playlist
+		clear playlist
+		fix play button toggle
+		create webplayer with timer, and make a binding class with Player
 		
 						### after 0.1 ###
 done:	look into gstreamer for better codec support
@@ -23,3 +26,4 @@ done:	look into gstreamer for better codec support
 						### bugs ###
 		QSingleApplication as dll( reason: LGPL violation ) 
 		player running out -> controllwidget slider = 0 -> user press play -> bad things happens
+		internal drag/drop in playlistview of ytvideos is not working

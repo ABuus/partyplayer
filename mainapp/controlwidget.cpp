@@ -33,9 +33,9 @@ ControlWidget::ControlWidget(QWidget *parent)
 	forwardButton->setIconSize(icoSize);
 
 	playButton->setIcon(QIcon(":/mainwindow/play.png"));
-	backButton->setIcon(QIcon(":/mainwindow/back.png"));
+	backButton->setIcon(QIcon(":/mainwindow/reverse.png"));
 	stopButton->setIcon(QIcon(":/mainwindow/stop.png"));
-	forwardButton->setIcon(QIcon(":/mainwindow/forward.png"));
+	forwardButton->setIcon(QIcon(":/mainwindow/next.png"));
 
 	connect(playButton,SIGNAL(clicked()),this,SLOT(playClicked()));
 	connect(stopButton,SIGNAL(clicked()),this,SIGNAL(stop()));

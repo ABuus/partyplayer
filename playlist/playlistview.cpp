@@ -152,6 +152,8 @@ QUrl PlaylistView::next()
 
 QUrl PlaylistView::previous()
 {
+	if(m_playRow == 0 || m_playRow == -1)
+		return QUrl();
 	QUrl url = m_model->item(m_playRow -1)->data(UrlRole).toUrl();
 	setPlayRow(m_playRow -1,true);
 	qDebug() << "play previous";
