@@ -24,7 +24,8 @@ using namespace Playlist;
 PlaylistView::PlaylistView(QWidget *parent)
 	: QTableView(parent),
 	m_playRow(-1),
-	m_dragPlaying(false)
+	m_dragPlaying(false),
+	m_dragRow(-1)
 {
 	// model
 	m_model = new PlaylistModel(this);
@@ -48,7 +49,8 @@ PlaylistView::~PlaylistView()
 
 void PlaylistView::dragMoveEvent(QDragMoveEvent *event)
 {
-	event->accept();
+	m_dragRow = indexAt(event->pos()).row();
+	update();
 }
 
 void PlaylistView::mousePressEvent(QMouseEvent *event)
@@ -265,4 +267,12 @@ bool PlaylistView::addUrl(QUrl url, QString ytText, int row)
 	setRowHeight(row,ROW_HEIGHT);
 	delete item;
 	return true;
+}
+
+void PlaylistView::paintEvent(QPaintEvent *event)
+{
+	if(m_dragRow != -1)
+	{
+	}
+	QTableView::paintEvent(event);
 }

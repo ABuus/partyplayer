@@ -52,6 +52,7 @@ private:
 	void setPlayRow(int row, bool playing = false);
 	PlaylistModel *m_model;
 	QPoint startDragPos;
+	int m_dragRow;
 	int m_playRow;
 	bool m_dragPlaying;
 protected:
@@ -60,6 +61,7 @@ protected:
 	void mouseMoveEvent(QMouseEvent *event);
 	void dropEvent(QDropEvent *event);
 	void mouseDoubleClickEvent(QMouseEvent *event);
+	void paintEvent(QPaintEvent *event);
 };
 
 }; // namespace Playlist
