@@ -38,6 +38,9 @@ win32:LIBS += -L../debug \
 	C:/gstreamer/lib/gobject-2.0.lib \
 	-lplaylist \
 	-lplayer
+
+RESOURCES     = mainwindow.qrc	
+
 DEPENDPATH += .
 MOC_DIR += debug
 OBJECTS_DIR += debug

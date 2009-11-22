@@ -18,10 +18,13 @@
 */
 
 #include "mainwindow.h"
+#include "svgsplashscreen.h"
 // Qt solutions
 #include <3rdparty/qtsingleapplication/src/qtsingleapplication.h>
 #include <QDebug>
-
+#include <QSvgWidget>
+#include <QTimer>
+#include <QDesktopWidget>
 
 int main(int argc, char *argv[])
 {
@@ -36,8 +39,17 @@ int main(int argc, char *argv[])
 		app.sendMessage(message);
 		return 0;
 	}
+
+	SvgSplashScreen splash(":/mainwindow/splash.svg");
+	splash.show();
+	splash.fadeIn();
+	QTimer splashTimer;
+	splashTimer.setSingleShot(true);
 	
 	MainWindow win;
+	QObject::connect(&splashTimer,SIGNAL(timeout()),&splash,SLOT(fadeOut()));
+	QObject::connect(&splashTimer,SIGNAL(timeout()),&win,SLOT(show()));
+	splashTimer.start(5000);
 	win.handleApplicationMessage(message);
 
 	QObject::connect(&app,SIGNAL(messageReceived(const QString&)),
@@ -45,7 +57,8 @@ int main(int argc, char *argv[])
 
 	app.setActivationWindow(&win, false);
 	QObject::connect(&win, SIGNAL(needToShow()), &app, SLOT(activateWindow()));
-	win.show();
+//	splash.hide();
+//	win.show();
 	return app.exec();
 }
 
