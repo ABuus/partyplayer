@@ -200,13 +200,15 @@ void PlaylistView::setPlayRow(int row, bool playing)
 	qDebug() << "setting row:" << row << "to PlayState" << playing;
 	for(int i = 0; i < m_model->columnCount(); i++)
 	{
-		m_model->item(row,i)->setData(playing, PlayRole);
+		m_model->item(row,i)->setData(true, PlayRole);
+		update(m_model->index(row,i));
 	}
 	if(playing && m_playRow != -1)
 	{
 		for(int i = 0; i < m_model->columnCount(); i++)
 		{
 			m_model->item(m_playRow,i)->setData(false, PlayRole);
+			update(m_model->index(m_playRow,i));
 		}
 		m_playRow = row;
 	}

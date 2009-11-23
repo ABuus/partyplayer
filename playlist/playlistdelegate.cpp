@@ -25,29 +25,36 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 {
 	QStyleOptionViewItemV4 opt(option);
 	QRect rect = opt.rect;
+	
 	bool playing = index.data(PlayRole).toBool();
 	// paint background if item is playing
 	if(playing)
 	{
-		painter->save();
-		QLinearGradient backgroundGradient(rect.topLeft().x(), rect.topLeft().y() +3, rect.bottomLeft().x(), rect.bottomLeft().y() -3 );
-		backgroundGradient.setColorAt(0.0, QColor(200,200,200));
-		backgroundGradient.setColorAt(0.8, QColor(100,100,100));
-		backgroundGradient.setColorAt(1.0, QColor(200,200,200));
-		painter->setBrush(backgroundGradient);
-		painter->setPen(Qt::NoPen);
-		painter->drawRect(rect.x(),rect.y(),rect.width(),rect.height()-2);
-		painter->restore();
+		QPixmap playBack(":/playing");
+		if(index.column() == 0)
+		{
+			painter->drawPixmap(rect.adjusted(0,0,(rect.width() * -1) + 10,0),playBack,QRect(0,0,10,20));
+			painter->drawPixmap(rect.adjusted(10,0,0,0),playBack,QRect(20,0,0,20));
+		}
+		else if(index.column() == 7)
+		{
+			painter->drawPixmap(rect.adjusted(rect.width() -10,0,0,0),playBack,QRect(10,0,10,20));
+			painter->drawPixmap(rect.adjusted(0,0,-10,0),playBack,QRect(20,0,0,20));
+		}
+		else
+		{
+			painter->drawPixmap(rect,playBack,QRect(20,0,0,20));
+		}
 	}
 	// draw text
 	if(option.state & QStyle::State_Selected || playing)
 		painter->setPen(QColor(0,0,0));
 	else
 		painter->setPen(QColor(175,175,175));
-	rect.adjust(2,2,-2,-2);
+	rect.adjust(4,4,-4,-4);
 	int column = index.column() +1;
 	if(column < Year || Bitrate < column )
-		painter->drawText(rect, Qt::AlignLeft, index.data().toString());
+		painter->drawText(rect, Qt::AlignVCenter, index.data().toString());
 	else
-		painter->drawText(rect, Qt::AlignCenter, index.data().toString());
+		painter->drawText(rect, Qt::AlignVCenter, index.data().toString());
 }
