@@ -36,9 +36,6 @@ class Application : public QtSingleApplication
 public:
 	Application( int argc, char *argv[]);
 	~Application();
-#ifdef Q_WS_WIN
-	bool setWinEnv(const QString appdir);
-#endif
 private:
 	MainWindow *win;
 	SvgSplashScreen *splash;
