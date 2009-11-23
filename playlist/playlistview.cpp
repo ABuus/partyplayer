@@ -111,12 +111,12 @@ void PlaylistView::dropEvent(QDropEvent *event)
 	{
 		if(url.scheme() == "file")
 		{
-			addFile(url.toString(),row);
+			addFile(url.toString(),row++);
 			continue;
 		}
 		else if(url.scheme() == "http")
 		{
-			addUrl(url,ytText,row);
+			addUrl(url,ytText,row++);
 			continue;
 		}
 		/* addDirectory() */
@@ -182,7 +182,8 @@ bool PlaylistView::addM3U(QUrl url,int row)
 			if(line.endsWith("\n"))
 				line.chop(1);
 			QUrl url("file:///" + filePath + "/" + line);
-			addFile(url.toString(),++row);
+			addFile(url.toString(),row++);
+			qDebug() << "M3U insert url" << url;
 		}
 	}
 	selectRow(row -1 );
