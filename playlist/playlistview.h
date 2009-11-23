@@ -27,6 +27,7 @@
 #include <QMimeData>
 #include <QUrl>
 #include <QFile>
+#include <QHeaderView>
 #include "playlist_global.h"
 #include "playlist_export.h"
 #include "playlistmodel.h"

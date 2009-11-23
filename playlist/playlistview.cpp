@@ -37,9 +37,10 @@ PlaylistView::PlaylistView(QWidget *parent)
 	setSelectionMode(QAbstractItemView::SingleSelection);
 	setDragEnabled(true);
 	setAcceptDrops(true);
-	setDropIndicatorShown(true);
+	setDropIndicatorShown(false);
 	setDragDropMode(QAbstractItemView::DragDrop);
 	setItemDelegate(new PlaylistDelegate(this));
+	verticalHeader()->setResizeMode(QHeaderView::Fixed);
 }
 
 PlaylistView::~PlaylistView()
@@ -132,6 +133,8 @@ void PlaylistView::dropEvent(QDropEvent *event)
 
 void PlaylistView::mouseDoubleClickEvent(QMouseEvent *event)
 {
+	if(event->button() != Qt::LeftButton)
+		return;
 	if(m_playRow != -1)
 	{
 		setPlayRow(m_playRow,false);
@@ -238,7 +241,6 @@ bool PlaylistView::addFile(const QString &file, int row)
 			rowItem << stdItem;
 		}
 		m_model->insertRow(row,rowItem);
-		setRowHeight(row,ROW_HEIGHT);
 		delete item;
 		return true;
 	}
