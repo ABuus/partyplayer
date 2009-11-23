@@ -41,6 +41,8 @@ PlaylistView::PlaylistView(QWidget *parent)
 	setDragDropMode(QAbstractItemView::DragDrop);
 	setItemDelegate(new PlaylistDelegate(this));
 	verticalHeader()->setResizeMode(QHeaderView::Fixed);
+	verticalHeader()->setDefaultSectionSize(20);
+	verticalHeader()->setHighlightSections(false);
 }
 
 PlaylistView::~PlaylistView()
