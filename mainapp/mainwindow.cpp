@@ -233,9 +233,9 @@ void MainWindow::handlePlayRequests(const QUrl &url)
 	}
 }
 
-/* handles incomming messeges from QSingleApplication see main.cpp */
+/* handles incomming messeges from QSingleApplication see Application.cpp ctor */
 
-void MainWindow::handleApplicationMessage(const QString &msg)
+bool MainWindow::handleApplicationMessage(const QString &msg)
 {
 	qDebug() << "message recived by new App instance" << msg;
 	QStringList files = msg.split("* *");
@@ -247,4 +247,5 @@ void MainWindow::handleApplicationMessage(const QString &msg)
 		m_playlist->addFile(file,row++);
 	}
 	emit needToShow();
+	return true;
 }

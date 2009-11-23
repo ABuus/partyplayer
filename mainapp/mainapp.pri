@@ -10,7 +10,8 @@ HEADERS += ./controlwidget.h \
     ./search.h \
     ./searchmodel.h \
     ./searchview.h \
-    ./svgsplashscreen.h
+    ./svgsplashscreen.h \
+    ./application.h
 SOURCES += ./controlwidget.cpp \
     ./main.cpp \
     ./mainwindow.cpp \
@@ -19,7 +20,8 @@ SOURCES += ./controlwidget.cpp \
     ./search.cpp \
     ./searchmodel.cpp \
     ./searchview.cpp \
-    ./svgsplashscreen.cpp
+    ./svgsplashscreen.cpp \
+    ./application.cpp
 FORMS += ./controlwidget.ui \
     ./mainwindow.ui
 RESOURCES += mainwindow.qrc

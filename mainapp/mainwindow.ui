@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Party Player</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="mainwindow.qrc">
+    <normaloff>:/mainwindow/icon.svg</normaloff>:/mainwindow/icon.svg</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">

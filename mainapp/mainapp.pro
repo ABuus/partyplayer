@@ -7,7 +7,7 @@ DESTDIR = ../debug
 DESTDIR = ../release
 }
 
-QT += network xml webkit core gui
+QT += network xml webkit core gui svg
 
 #DEFINES += QT_LARGEFILE_SUPPORT QT_XML_LIB QT_DLL QT_WEBKIT_LIB QT_PHONON_LIB QT_NETWORK_LIB
 INCLUDEPATH += . \
@@ -40,7 +40,7 @@ win32:LIBS += -L../debug \
 	-lplayer
 
 RESOURCES     = mainwindow.qrc	
-
+RC_FILE = partyplayer.rc
 DEPENDPATH += .
 MOC_DIR += debug
 OBJECTS_DIR += debug

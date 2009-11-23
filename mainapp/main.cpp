@@ -17,48 +17,11 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "mainwindow.h"
-#include "svgsplashscreen.h"
-// Qt solutions
-#include <3rdparty/qtsingleapplication/src/qtsingleapplication.h>
-#include <QDebug>
-#include <QSvgWidget>
-#include <QTimer>
-#include <QDesktopWidget>
+#include "application.h"
 
 int main(int argc, char *argv[])
 {
-	QtSingleApplication app(argc, argv);
-	app.setApplicationName("PartyPlayer");
-	app.setOrganizationName("BuusSW");
-	
-	QString message = app.arguments().join("* *");
-	qDebug() << app.arguments().count() -1;
-	if(app.isRunning())
-	{
-		app.sendMessage(message);
-		return 0;
-	}
-
-	SvgSplashScreen splash(":/mainwindow/splash.svg");
-	splash.show();
-	splash.fadeIn();
-	QTimer splashTimer;
-	splashTimer.setSingleShot(true);
-	
-	MainWindow win;
-	QObject::connect(&splashTimer,SIGNAL(timeout()),&splash,SLOT(fadeOut()));
-	QObject::connect(&splashTimer,SIGNAL(timeout()),&win,SLOT(show()));
-	splashTimer.start(5000);
-	win.handleApplicationMessage(message);
-
-	QObject::connect(&app,SIGNAL(messageReceived(const QString&)),
-					&win,SLOT(handleApplicationMessage(const QString &)));
-
-	app.setActivationWindow(&win, false);
-	QObject::connect(&win, SIGNAL(needToShow()), &app, SLOT(activateWindow()));
-//	splash.hide();
-//	win.show();
+	Application app(argc,argv);
 	return app.exec();
 }
 

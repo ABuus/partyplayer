@@ -51,7 +51,7 @@ public:
 	MainWindow(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~MainWindow();
 public slots:
-	void handleApplicationMessage(const QString &);
+	bool handleApplicationMessage(const QString &);
 private:
 	Playlist::PlaylistView *m_playlist;
 	Search *search;
