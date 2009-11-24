@@ -25,8 +25,8 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 {
 	QStyleOptionViewItemV4 opt(option);
 	QRect rect = opt.rect;
-	
 	bool playing = index.data(PlayRole).toBool();
+
 	// paint background if item is playing
 	if(playing)
 	{
@@ -46,15 +46,12 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 			painter->drawPixmap(rect,playBack,QRect(20,0,0,20));
 		}
 	}
+
 	// draw text
-	if(option.state & QStyle::State_Selected || playing)
-		painter->setPen(QColor(0,0,0));
-	else
-		painter->setPen(QColor(175,175,175));
 	rect.adjust(4,4,-4,-4);
 	int column = index.column() +1;
 	if(column < Year || Bitrate < column )
 		painter->drawText(rect, Qt::AlignVCenter, index.data().toString());
 	else
-		painter->drawText(rect, Qt::AlignVCenter, index.data().toString());
+		painter->drawText(rect, Qt::AlignCenter, index.data().toString());
 }

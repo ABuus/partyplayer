@@ -100,7 +100,9 @@ void PlaylistView::dropEvent(QDropEvent *event)
 	{
 		ytText = event->mimeData()->data("application/yt-partyplayer");
 	}
+	
 	int row = indexAt(event->pos()).row();
+
 	if(row == -1)
 	{
 		row = m_model->rowCount();
@@ -115,6 +117,8 @@ void PlaylistView::dropEvent(QDropEvent *event)
 		if(url.scheme() == "file")
 		{
 			addFile(url.toString(),row++);
+			if(m_dragPlaying)
+				setPlayRow(row -1);
 			continue;
 		}
 		else if(url.scheme() == "http")
