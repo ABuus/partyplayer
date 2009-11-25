@@ -1,7 +1,7 @@
 TEMPLATE = app
 TARGET = partyplayer
 
-CONFIG(debug) {
+CONFIG(debug, debug|release) {
 DESTDIR = ../debug
 } else {
 DESTDIR = ../release
