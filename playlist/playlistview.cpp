@@ -43,6 +43,8 @@ PlaylistView::PlaylistView(QWidget *parent)
 	verticalHeader()->setResizeMode(QHeaderView::Fixed);
 	verticalHeader()->setDefaultSectionSize(20);
 	verticalHeader()->setHighlightSections(false);
+	horizontalHeader()->setStretchLastSection(true);
+	horizontalHeader()->setStretchLastSection(false);
 }
 
 PlaylistView::~PlaylistView()
@@ -126,11 +128,9 @@ void PlaylistView::dropEvent(QDropEvent *event)
 			addUrl(url,ytText,row++);
 			continue;
 		}
-		/* addDirectory() */
 		else
 		{
-			
-			// unsuported
+			// unsuported content
 			continue;
 		}
 	}
@@ -201,7 +201,6 @@ bool PlaylistView::addM3U(QUrl url,int row)
 
 void PlaylistView::setPlayRow(int row, bool playing)
 {
-	qDebug() << "setting row:" << row << "to PlayState" << playing;
 	for(int i = 0; i < m_model->columnCount(); i++)
 	{
 		m_model->item(row,i)->setData(true, PlayRole);
@@ -239,6 +238,8 @@ bool PlaylistView::addFile(const QString &file, int row)
 		PlaylistItem *item = new PlaylistItem(url);
 		if(!item->isValid())
 		{
+			if(addDir(url.toLocalFile(),row))
+				return true;
 			qDebug() << "Error: invalid file" << url;
 			return false;
 		}
@@ -265,7 +266,7 @@ bool PlaylistView::addUrl(QUrl url, QString ytText, int row)
 	PlaylistItem *item = new PlaylistItem(url,ytText);
 	if(!item->isValid())
 	{
-		qDebug() << "Error: invalid file" << url;
+		qDebug() << "Error: invalid url" << url;
 		return false;
 	}
 	for(int i = 0; i < m_model->columnCount(); i++)
@@ -286,4 +287,28 @@ void PlaylistView::paintEvent(QPaintEvent *event)
 	{
 	}
 	QTableView::paintEvent(event);
+}
+
+void PlaylistView::clear()
+{
+	model()->removeRows(0,model()->rowCount());
+}
+
+bool PlaylistView::addDir(const QString path, int row)
+{
+	QDir dir;
+	dir.setPath(path);
+	if(!dir.exists())
+	{
+		qDebug() << "nonexisting dir" << path;
+		return false;
+	}
+	QStringList entryList;
+	entryList << dir.entryList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files,QDir::DirsFirst);
+	foreach(QString entry, entryList)
+	{
+		if(!entry.endsWith("m3u",Qt::CaseInsensitive))
+		addFile("file:///" + path + "/" + entry,row++);
+	}
+	return true;
 }

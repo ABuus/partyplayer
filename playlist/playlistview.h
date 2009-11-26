@@ -28,6 +28,7 @@
 #include <QUrl>
 #include <QFile>
 #include <QHeaderView>
+#include <QDir>
 #include "playlist_global.h"
 #include "playlist_export.h"
 #include "playlistmodel.h"
@@ -45,11 +46,14 @@ public:
 	QUrl next();
 	QUrl previous();
 	bool addFile(const QString &file, int row); // if row = -1 item id added at bottom
+public slots:
+	void clear();
 signals:
 	void playRequest(const QUrl url);
 private:
 	bool addM3U(QUrl url, int row); // if row = -1 item id added at bottom
 	bool addUrl(QUrl url, QString ytText, int row);	// if row = -1 item id added at bottom
+	bool addDir(const QString path, int row); // if row = -1 item id added at bottom
 	void setPlayRow(int row, bool playing = false);
 	PlaylistModel *m_model;
 	QPoint startDragPos;
