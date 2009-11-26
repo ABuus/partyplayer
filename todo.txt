@@ -22,6 +22,7 @@ done:	look into gstreamer for better codec support
 		webinterface
 		context menu´s
 		QSinleApplication ?? open add files to playlist if open to running PP instance
+		cross fade. ( idea: pade playlist background with audio volume ).
 		
 						### bugs ###
 		QSingleApplication as dll( reason: LGPL violation ) 
