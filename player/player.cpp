@@ -28,7 +28,9 @@ Player::Player(QObject *parent)
 	m_canRunOut(true)
 {
 	// initialize gstreamer
-	gst_init(NULL, NULL);
+	GError *err;
+	if(!gst_init_check(NULL, NULL,&err))
+		qDebug() << err;
 	// connect elements
 	m_pipeline = createPipeline();
 	m_sink = gst_element_factory_make("autoaudiosink", "player");
