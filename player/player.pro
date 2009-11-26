@@ -1,7 +1,7 @@
 
 TEMPLATE = lib
 TARGET = player
-CONFIG(debug) {
+CONFIG(debug, debug|release) {
 DESTDIR = ../debug
 } else {
 DESTDIR = ../release
