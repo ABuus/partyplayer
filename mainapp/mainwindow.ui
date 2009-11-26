@@ -168,8 +168,16 @@
     <addaction name="separator"/>
     <addaction name="actionYouTube_HD"/>
    </widget>
+   <widget class="QMenu" name="menuPlaylist">
+    <property name="title">
+     <string>Playlist</string>
+    </property>
+    <addaction name="actionClearPlaylist"/>
+    <addaction name="actionSavePlaylist"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSettings"/>
+   <addaction name="menuPlaylist"/>
   </widget>
   <action name="actionOpen_file">
    <property name="checkable">
@@ -217,6 +225,16 @@
   <action name="actionYouTube_HD">
    <property name="text">
     <string>YouTube HD</string>
+   </property>
+  </action>
+  <action name="actionClearPlaylist">
+   <property name="text">
+    <string>Clear</string>
+   </property>
+  </action>
+  <action name="actionSavePlaylist">
+   <property name="text">
+    <string>Save</string>
    </property>
   </action>
  </widget>

@@ -23,6 +23,11 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags),
 	webState(false)
 {
+	// restore geometry and states
+	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
+	settings.setDefaultFormat(QSettings::IniFormat);
+	restoreGeometry(settings.value("mainwindow/geometry").toByteArray());
+	restoreState(settings.value("mainwindow/windowState").toByteArray());
 	setupUi(this);
 
 	// youtube searcher
@@ -64,13 +69,15 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	
 	player = new Player();
 
-	// restore geometry and states
-	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
-	restoreGeometry(settings.value("mainwindow/geometry").toByteArray());
-	restoreState(settings.value("mainwindow/windowState").toByteArray());
+
+	/*
 	webView->restoreGeometry(settings.value("mainwindow/webView").toByteArray());
 	m_playlist->restoreGeometry(settings.value("mainwindow/playlist").toByteArray());
 	videoSplitter->restoreGeometry(settings.value("mainwindow/videoSplitter").toByteArray());
+	*/
+	QList<int> sizes;
+	sizes << 0 << 1;
+	videoSplitter->setSizes(sizes);
 
 	// connections
 	connect(this, SIGNAL( preformSearch( QString )), search, SLOT( query( QString )));
@@ -88,7 +95,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	connect(player,SIGNAL(runningOut()),this,SLOT(enqueueNextTrack()));
 	connect(controlWidget,SIGNAL(forward()),this,SLOT(playNextTrack()));
 	connect(controlWidget,SIGNAL(back()),this,SLOT(playPreviousTrack()));
-
+	connect(actionClearPlaylist,SIGNAL(triggered()),m_playlist,SLOT(clear()));
+	connect(actionSavePlaylist,SIGNAL(triggered()),m_playlist,SLOT(save()));
 //	connect(player,SIGNAL(playStateChanged(bool)),controlWidget,SLOT(setPlayState(bool)));
 }
 
@@ -96,6 +104,7 @@ MainWindow::~MainWindow()
 {
 	player->deleteLater();
 	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
+	settings.setDefaultFormat(QSettings::IniFormat);
 	settings.setValue("mainwindow/geometry",saveGeometry());
 	settings.setValue("mainwindow/windowState", saveState());
 	settings.setValue("mainwindow/playlist", videoSplitter->saveGeometry());
