@@ -30,12 +30,16 @@ Player::Player(QObject *parent)
 	// initialize gstreamer
 	GError *err;
 	if(!gst_init_check(NULL, NULL,&err))
-		qDebug() << err;
-	// connect elements
-	m_pipeline = createPipeline();
+		Debug << err;
+	
+	// create gst elemente
 	m_sink = gst_element_factory_make("autoaudiosink", "player");
+	m_pipeline = createPipeline();
+	// connect elements
 	gst_element_link(GST_ELEMENT( m_pipeline), m_sink);
-	g_timeout_add (TIMER_INTERVAL, 0, m_pipeline);
+	g_timeout_add (TIMER_INTERVAL, NULL, m_pipeline);
+	
+	// start play timer
 	m_playTimer.setInterval(TIMER_INTERVAL);
 	connect(&m_playTimer,SIGNAL(timeout()), this, SLOT( getTime()));
 }
@@ -81,23 +85,24 @@ void Player::getTime()
 			if(m_canRunOut)
 			{
 				m_canRunOut = false;
-				qDebug() << "running out with:" << ( GST_TIME_AS_MSECONDS( m_totaltime ) - GST_TIME_AS_MSECONDS( pos ) );
+				Debug << "running out with:" << ( GST_TIME_AS_MSECONDS( m_totaltime ) - GST_TIME_AS_MSECONDS( pos ) );
 				emit runningOut();
 			}
+			// check if we are at end
+			if( ( GST_TIME_AS_MSECONDS( m_totaltime ) - GST_TIME_AS_MSECONDS( pos ) ) <= 0 )
+			{
+				Debug << "play next";
+				m_playTimer.stop();
+				gst_element_set_state(m_newPipeline, GST_STATE_PLAYING);
+				gst_element_set_state(m_pipeline, GST_STATE_NULL);
+				gst_object_unref(m_pipeline);
+				m_pipeline = m_newPipeline;
+				getTotalTime();
+				m_playTimer.start();
+				m_canRunOut = true;
+			}
 		}
-		// check if we are at end
-		if( ( GST_TIME_AS_MSECONDS( m_totaltime ) - GST_TIME_AS_MSECONDS( pos ) ) == 0 )
-		{
-			qDebug() << "### play next ###";
-			m_playTimer.stop();
-			gst_element_set_state(m_newPipeline, GST_STATE_PLAYING);
-			gst_element_set_state(m_pipeline, GST_STATE_NULL);
-			gst_object_unref(m_pipeline);
-			m_pipeline = m_newPipeline;
-			getTotalTime();
-			m_playTimer.start();
-			m_canRunOut = true;
-		}
+		
 	}
 }
 
@@ -140,10 +145,10 @@ void Player::pause()
 
 bool Player::enqueue(const QUrl &url)
 {
-	qDebug() << "### enqueue next ###";
+	Debug << "Enqueue next";
 	if(url.isValid())
 	{
-		qDebug() << "valid url:" << url;
+		Debug << "valid url:" << url;
 		m_newPipeline = createPipeline();
 		std::string str = std::string(url.toString().toAscii().data());
 		const gchar * uri = str.c_str();
@@ -158,7 +163,7 @@ bool Player::enqueue(const QUrl &url)
 GstElement * Player::createPipeline()
 {
 	GstElement *pipeline = gst_element_factory_make("playbin", "player");
-	gst_element_link(GST_ELEMENT( m_pipeline), m_sink);
+	gst_element_link(GST_ELEMENT( pipeline), m_sink);
 	g_timeout_add (TIMER_INTERVAL, 0, pipeline);
 	return pipeline;
 }

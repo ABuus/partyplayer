@@ -24,7 +24,7 @@
 #include <QMimeData>
 #include <QModelIndex>
 #include <QUrl>
-#include <QDebug>
+#include "debug.h"
 #include "playlist_global.h"
 #include "playlist_export.h"
 #include "playlistitem.h"

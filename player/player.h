@@ -30,6 +30,8 @@
 #include <gst/gst.h>
 #include "player_global.h"
 
+#include "debug.h"
+
 #define TIMER_INTERVAL 200
 
 class PLAYER_EXPORT Player : public QObject

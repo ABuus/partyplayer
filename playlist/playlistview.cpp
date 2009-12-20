@@ -157,7 +157,7 @@ QUrl PlaylistView::next()
 		return QUrl();
 	QUrl url = item->data(UrlRole).toUrl();
 	setPlayRow(m_playRow +1,true);
-	qDebug() << "play next";
+	Debug << "play next";
 	return url;
 }
 
@@ -167,7 +167,7 @@ QUrl PlaylistView::previous()
 		return QUrl();
 	QUrl url = m_model->item(m_playRow -1)->data(UrlRole).toUrl();
 	setPlayRow(m_playRow -1,true);
-	qDebug() << "play previous";
+	Debug << "play previous";
 	return url;
 }
 
@@ -176,7 +176,7 @@ bool PlaylistView::addM3U(QUrl url,int row)
 	QFile file(url.toLocalFile());
 	if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
 	{
-		qDebug() << "Error: fopen" << url.toString();
+		Debug << "Error: fopen" << url.toString();
 		return false;
 	}
 	while(!file.atEnd())
@@ -192,7 +192,7 @@ bool PlaylistView::addM3U(QUrl url,int row)
 				line.chop(1);
 			QUrl url("file:///" + filePath + "/" + line);
 			addFile(url.toString(),row++);
-			qDebug() << "M3U insert url" << url;
+			Debug << "M3U insert url" << url;
 		}
 	}
 	selectRow(row -1 );
@@ -201,6 +201,11 @@ bool PlaylistView::addM3U(QUrl url,int row)
 
 void PlaylistView::setPlayRow(int row, bool playing)
 {
+	if(row == -1 && playing == false)
+	{
+		m_playRow = -1;
+		return;
+	}
 	for(int i = 0; i < m_model->columnCount(); i++)
 	{
 		m_model->item(row,i)->setData(true, PlayRole);
@@ -240,7 +245,6 @@ bool PlaylistView::addFile(const QString &file, int row)
 		{
 			if(addDir(url.toLocalFile(),row))
 				return true;
-			qDebug() << "Error: invalid file" << url;
 			return false;
 		}
 		for(int i = 0; i < m_model->columnCount(); i++)
@@ -266,7 +270,7 @@ bool PlaylistView::addUrl(QUrl url, QString ytText, int row)
 	PlaylistItem *item = new PlaylistItem(url,ytText);
 	if(!item->isValid())
 	{
-		qDebug() << "Error: invalid url" << url;
+		Debug << "Error: invalid url" << url;
 		return false;
 	}
 	for(int i = 0; i < m_model->columnCount(); i++)
@@ -285,6 +289,7 @@ void PlaylistView::paintEvent(QPaintEvent *event)
 {
 	if(m_dragRow != -1)
 	{
+		// this is not implemented
 	}
 	QTableView::paintEvent(event);
 }
@@ -292,6 +297,7 @@ void PlaylistView::paintEvent(QPaintEvent *event)
 void PlaylistView::clear()
 {
 	model()->removeRows(0,model()->rowCount());
+	setPlayRow(-1);
 }
 
 bool PlaylistView::addDir(const QString path, int row)
@@ -300,7 +306,7 @@ bool PlaylistView::addDir(const QString path, int row)
 	dir.setPath(path);
 	if(!dir.exists())
 	{
-		qDebug() << "nonexisting dir" << path;
+		Debug << "nonexisting dir" << path;
 		return false;
 	}
 	QStringList entryList;

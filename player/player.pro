@@ -9,15 +9,17 @@ DESTDIR = ../release
 
 DEFINES += PLAYER_LIB
 
-win32:INCLUDEPATH += c:/gstreamer/lib/glib-2.0/include \
-    c:/gstreamer/include/glib-2.0 \
-    c:/gstreamer/include/libxml2 \
-    c:/gstreamer/include/gstreamer-0.10 \
+win32:INCLUDEPATH += "C:\gstreamer-dev\include" \
+	"C:\gstreamer-dev\include/glib-2.0" \
+    "C:\gstreamer-dev\include/glib-2.0" \
+    "C:\gstreamer-dev\include/libxml2" \
+    "C:\gstreamer-dev\include/gstreamer-0.10" \
+	"C:\gstreamer-dev\lib\glib-2.0\include" \
     . \
     ./GeneratedFiles/Debug
-win32:LIBS += C:/gstreamer/lib/gstreamer.lib \
-    C:/gstreamer/lib/glib-2.0.lib \
-    C:/gstreamer/lib/gobject-2.0.lib
+win32:LIBS += "C:\gstreamer-dev\lib\gstreamer-0.10.lib" \
+	"C:\gstreamer-dev\lib\glib-2.0.lib" \
+	"C:\gstreamer-dev\lib\gobject-2.0.lib"
 
 unix:INCLUDEPATH += /usr/include/gstreamer-0.10 \
 	/usr/include/glib-2.0 \

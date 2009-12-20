@@ -21,7 +21,8 @@
 #define APPLICATION_H
 
 #include <QApplication>
-#include <3rdparty/qtsingleapplication/src/qtsingleapplication.h>
+#include <qtsingleapplication.h>
+#include <qtlocalpeer.h>
 #include <QDebug>
 #include <QTimer>
 #include <QDesktopWidget>

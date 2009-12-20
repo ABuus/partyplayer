@@ -7,9 +7,10 @@ HEADERS += ./playlist_export.h \
     ./playlistdelegate.h \
     ./playlistitem.h \
     ./playlistmodel.h \
-    ./playlistview.h
+    ./playlistview.h \
+    ./debug.h
 SOURCES += ./playlistdelegate.cpp \
     ./playlistitem.cpp \
     ./playlistmodel.cpp \
     ./playlistview.cpp
-RESOURCES += ./playlist.qrc
+RESOURCES += playlist.qrc

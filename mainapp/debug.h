@@ -20,5 +20,5 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 #include <QDebug>
-#define Debug qDebug() << __FILE__ << "(" << __LINE__  << ")" 
+#define Debug qDebug() << __FILE__ << "(" << __LINE__  << ")" << "### mainapp ###"
 #endif // DEBUG_H

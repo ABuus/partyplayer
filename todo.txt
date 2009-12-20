@@ -4,12 +4,12 @@ done:	playlist internal drag drop
 done:	m3u support
 		drop indicator playlist ?? 
 done:	{ playing != selected , PlaylistDelegate draw background if playing }
-		resize webweiw, playlist and files on startup
-		drop dir on playlist
-		icon ;-)
+done:	resize webveiw, playlist and files on startup
+done:	drop dir on playlist
+done:	icon ;-)
 		reload playlisst on startup
 		save a playlist
-		clear playlist
+done:	clear playlist
 		fix play button toggle
 		create webplayer with timer, and make a binding class with Player
 		
@@ -21,10 +21,12 @@ done:	look into gstreamer for better codec support
 		collection ( webcollection ?? ) 
 		webinterface
 		context menu´s
-		QSinleApplication ?? open add files to playlist if open to running PP instance
+done:	QSinleApplication ?? open add files to playlist if open to running PP instance
 		cross fade. ( idea: pade playlist background with audio volume ).
 		
 						### bugs ###
 		QSingleApplication as dll( reason: LGPL violation ) 
+		QSingleApplication not sending all files to new instance
 		player running out -> controllwidget slider = 0 -> user press play -> bad things happens
 		internal drag/drop in playlistview of ytvideos is not working
+fixed:	play next on EOS

@@ -17,29 +17,8 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef PLAYLISTDELEGATE_H
-#define PLAYLISTDELEGATE_H
-
-#include <QStyledItemDelegate>
-#include <QPainter>
-#include <QStyleOptionViewItem>
-#include <QModelIndex>
-#include "debug.h"
-#include "playlist_global.h"
-#include "playlist_export.h"
-
-namespace Playlist {
-
-class PLAYLIST_EXPORT PlaylistDelegate : public QStyledItemDelegate
-{
-	Q_OBJECT
-
-public:
-	PlaylistDelegate(QWidget *parent = 0) : QStyledItemDelegate(parent) {}
-	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-//	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
-};
-
-}; // namespace Playlist
-
-#endif // PLAYLISTDELEGATE_H
+#ifndef DEBUG_H
+#define DEBUG_H
+#include <QDebug>
+#define Debug qDebug() << __FILE__ << "(" << __LINE__ << ")" << "### player ###"
+#endif // DEBUG_H
