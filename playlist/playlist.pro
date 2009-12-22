@@ -10,7 +10,7 @@ DESTDIR = ../release
 
 #win32:CONFIG += staticlib
 
-DEFINES += QT_LARGEFILE_SUPPORT PLAYLIST_LIB
+DEFINES += PLAYLIST_LIB
 
 INCLUDEPATH += . \
     ./GeneratedFiles/Debug

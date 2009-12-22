@@ -25,7 +25,7 @@ done:	QSinleApplication ?? open add files to playlist if open to running PP inst
 		cross fade. ( idea: pade playlist background with audio volume ).
 		
 						### bugs ###
-		QSingleApplication as dll( reason: LGPL violation ) 
+fixed:		QSingleApplication as dll( reason: LGPL violation ) 
 		QSingleApplication not sending all files to new instance
 		player running out -> controllwidget slider = 0 -> user press play -> bad things happens
 		internal drag/drop in playlistview of ytvideos is not working

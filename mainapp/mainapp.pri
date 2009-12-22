@@ -6,8 +6,6 @@ HEADERS += ./application.h \
     ./controlwidget.h \
     ./debug.h \
     ./mainwindow.h \
-    ./3rdparty/qtsingleapplication/src/qtlocalpeer.h \
-    ./3rdparty/qtsingleapplication/src/qtsingleapplication.h \
     ./search.h \
     ./searchmodel.h \
     ./searchview.h \
@@ -16,8 +14,6 @@ SOURCES += ./application.cpp \
     ./controlwidget.cpp \
     ./main.cpp \
     ./mainwindow.cpp \
-    ./3rdparty/qtsingleapplication/src/qtlocalpeer.cpp \
-    ./3rdparty/qtsingleapplication/src/qtsingleapplication.cpp \
     ./search.cpp \
     ./searchmodel.cpp \
     ./searchview.cpp \
