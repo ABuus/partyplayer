@@ -10,7 +10,7 @@ done:	icon ;-)
 		reload playlisst on startup
 		save a playlist
 done:	clear playlist
-		fix play button toggle
+done:	fix play button toggle
 		create webplayer with timer, and make a binding class with Player
 		
 						### after 0.1 ###
@@ -21,8 +21,8 @@ done:	look into gstreamer for better codec support
 		collection ( webcollection ?? ) 
 		webinterface
 		context menu´s
-done:	QSinleApplication ?? open add files to playlist if open to running PP instance
-		cross fade. ( idea: pade playlist background with audio volume ).
+done:	QSingleApplication ?? open add files to playlist if open to running PP instance
+		cross fade. ( idea: fade playlist background with audio volume ).
 		
 						### bugs ###
 fixed:		QSingleApplication as dll( reason: LGPL violation ) 

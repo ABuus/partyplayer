@@ -90,12 +90,12 @@ void ControlWidget::playClicked()
 {
 	if(playState == 2)
 	{
-		setPlayState(2);
+		setPlayState(1);
 		emit play();
 	}
 	else
 	{
-		setPlayState(1);
+		setPlayState(2);
 		emit pause();
 	}
 }

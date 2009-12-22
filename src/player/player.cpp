@@ -192,7 +192,7 @@ void Player::checkState()
 		emit stateChanged(m_state);
 		return;
 	}
-	else if(m_state != 0)
+	else if( ( state == GST_STATE_VOID_PENDING || state == GST_STATE_NULL || state == GST_STATE_READY ) && m_state != 0)
 	{
 		m_state = 0;
 		emit stateChanged(m_state);
