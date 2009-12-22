@@ -1,7 +1,6 @@
 TEMPLATE = app
 TARGET = partyplayer
 
-
 CONFIG(debug, debug|release) {
 DESTDIR = ../../debug
 unix:QMAKE_POST_LINK += cp 3rdparty/qtsingleapplication/lib/* ../../debug
@@ -17,8 +16,7 @@ win32:QT += phonon xmlpatterns
 
 INCLUDEPATH += . \
     debug \
-    .. \
-    $(QTDIR)/mkspecs/win32-msvc2008
+    .. 
 
 win32:INCLUDEPATH += C:/dev/include/taglib \
 	C:/gstreamer-dev/include/gstreamer-0.10 \
@@ -39,16 +37,14 @@ unix:LIBS += -L$(DESTDIR) \
 	-lplaylist \
 	-lplayer \
 	-lQtSolutions_SingleApplication-2.6 
-win32:LIBS += -L../debug \
-	-L../release \
+win32:LIBS += -L$$DESTDIR \
 	-L3rdparty/qtsingleapplication/lib \
 	C:/dev/lib/tag.lib \
 	C:/gstreamer-dev/lib/gstreamer-0.10.lib \
 	C:/gstreamer-dev/lib/glib-2.0.lib \
 	C:/gstreamer-dev/lib/gobject-2.0.lib \
 	-lplaylist \
-	-lplayer \
-	-lQtSolutions_SingleApplication-2.6 
+	-lplayer
 RESOURCES     = mainwindow.qrc	
 RC_FILE = partyplayer.rc
 DEPENDPATH += .
@@ -59,3 +55,4 @@ RCC_DIR += debug
 
 #Include file(s)
 include(mainapp.pri)
+win32:include(3rdparty/qtsingleapplication/src/qtsingleapplication.pri)
