@@ -93,8 +93,10 @@ void Player::getTime()
 			{
 				Debug << "play next";
 				m_playTimer.stop();
-				gst_element_set_state(m_newPipeline, GST_STATE_PLAYING);
-				gst_element_set_state(m_pipeline, GST_STATE_NULL);
+				if(!gst_element_set_state(m_newPipeline, GST_STATE_PLAYING))
+					Debug << "Failed to change state on new pipeline";
+				if(!gst_element_set_state(m_pipeline, GST_STATE_NULL))
+					Debug << "Failed to change state on old pipeline";
 				gst_object_unref(m_pipeline);
 				m_pipeline = m_newPipeline;
 				getTotalTime();
