@@ -1,8 +1,4 @@
-CONFIG(debug, debug|release) { 
-QTSINGLEAPPLICATION_LIBDIR = debug
-} else {
-QTSINGLEAPPLICATION_LIBDIR = release
-}
+
 TEMPLATE = subdirs
 CONFIG += orderd
 SUBDIRS += 	src/playlist/playlist.pro \
