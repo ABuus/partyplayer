@@ -21,7 +21,7 @@
 #define CONTROLWIDGET_H
 
 #include <QWidget>
-
+#include "debug.h"
 #include "ui_controlwidget.h"
 
 class ControlWidget : public QWidget , public Ui::controlWidget
@@ -32,11 +32,11 @@ public:
 	ControlWidget(QWidget *parent = 0);
 	~ControlWidget();
 public slots:
-	void setPlayState( bool playing );
+	void setPlayState( int state = 0);
 	void setTime(qint64 time) { slider->setValue(time); };
 	void setTotalTime(qint64 time) { slider->setMaximum(time); };
 private:
-	bool playState; // true playing, false pause
+	int playState; // gst play state see player::checkState()
 private slots:
 	void playClicked();
 signals:

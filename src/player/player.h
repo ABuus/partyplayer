@@ -51,6 +51,7 @@ signals:
 	void timeChanged( qint64 pos );
 	void totalTimeChanged( qint64 totalTime );
 	void runningOut();
+	void stateChanged( int state );
 private:
 	GstElement *m_pipeline;
 	GstElement *m_newPipeline;
@@ -58,10 +59,12 @@ private:
 	bool m_canRunOut;
 	QTimer m_playTimer;
 	qint64 m_totaltime;
-	private slots:
+	int m_state; // 0=stop,1=playing,2=paused
+private slots:
 	void getTime();
 	void getTotalTime();
 	GstElement *createPipeline();
+	void checkState();
 };
 
 #endif // PLAYER_H

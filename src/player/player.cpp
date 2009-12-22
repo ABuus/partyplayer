@@ -25,7 +25,8 @@ Player::Player(QObject *parent)
 	m_totaltime(0),
 	m_pipeline(0),
 	m_newPipeline(0),
-	m_canRunOut(true)
+	m_canRunOut(true),
+	m_state(0)
 {
 	// initialize gstreamer
 	GError *err;
@@ -64,12 +65,12 @@ void Player::playUrl(const QUrl &url)
 	std::string str = std::string(url.toString().toAscii().data());
 	const gchar * uri = str.c_str();
 	g_object_set(G_OBJECT(m_pipeline), "uri", uri, NULL);
-	
-	gst_element_set_state (m_pipeline, GST_STATE_PLAYING);
+	gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
 
 	// get time
 	getTotalTime();
 	m_playTimer.start();
+	checkState();
 }
 
 void Player::getTime()
@@ -102,6 +103,7 @@ void Player::getTime()
 				getTotalTime();
 				m_playTimer.start();
 				m_canRunOut = true;
+				checkState();
 			}
 		}
 		
@@ -131,18 +133,21 @@ void Player::play()
 {
 	gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
 	m_playTimer.start();
+	checkState();
 }
 
 void Player::stop()
 {
-	gst_element_set_state (m_pipeline, GST_STATE_NULL);
+	gst_element_set_state(m_pipeline, GST_STATE_NULL);
 	m_playTimer.stop();
+	checkState();
 }
 
 void Player::pause()
 {
 	gst_element_set_state(m_pipeline, GST_STATE_PAUSED);
 	m_playTimer.stop();
+	checkState();
 }
 
 bool Player::enqueue(const QUrl &url)
@@ -159,6 +164,7 @@ bool Player::enqueue(const QUrl &url)
 	}
 	emit timeChanged(0);
 	m_playTimer.stop();
+	checkState();
 	return false;
 }
 
@@ -168,4 +174,28 @@ GstElement * Player::createPipeline()
 	gst_element_link(GST_ELEMENT( pipeline), m_sink);
 	g_timeout_add (TIMER_INTERVAL, 0, pipeline);
 	return pipeline;
+}
+
+void Player::checkState()
+{
+	GstState state;
+	gst_element_get_state(m_pipeline, &state, NULL, GST_CLOCK_TIME_NONE);
+	if( state == GST_STATE_PLAYING && m_state != 1)
+	{
+		m_state = 1;
+		emit stateChanged(m_state);
+		return;
+	}
+	else if( state == GST_STATE_PAUSED && m_state != 2)
+	{
+		m_state = 2;
+		emit stateChanged(m_state);
+		return;
+	}
+	else if(m_state != 0)
+	{
+		m_state = 0;
+		emit stateChanged(m_state);
+		return;
+	}
 }

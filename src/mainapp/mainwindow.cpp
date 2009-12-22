@@ -97,7 +97,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	connect(controlWidget,SIGNAL(back()),this,SLOT(playPreviousTrack()));
 	connect(actionClearPlaylist,SIGNAL(triggered()),m_playlist,SLOT(clear()));
 	connect(actionSavePlaylist,SIGNAL(triggered()),m_playlist,SLOT(save()));
-//	connect(player,SIGNAL(playStateChanged(bool)),controlWidget,SLOT(setPlayState(bool)));
+	connect(player,SIGNAL(stateChanged(int)),controlWidget,SLOT(setPlayState(int)));
 }
 
 MainWindow::~MainWindow()

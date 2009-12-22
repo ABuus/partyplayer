@@ -23,7 +23,8 @@ ControlWidget::ControlWidget(QWidget *parent)
 	: QWidget(parent)
 {
 	setupUi(this);
-	playState = false;
+	// initial state stoped
+	playState = 0;
 	
 	setStyleSheet("QToolButton {border:none;}");
 	QSize icoSize(60,60);
@@ -49,25 +50,52 @@ ControlWidget::~ControlWidget()
 
 }
 
-void ControlWidget::setPlayState(bool playing)
+void ControlWidget::setPlayState(int state)
 {
-	playState = playing;
-	if(playState)
+	// state 0=stoped 1=playing 2=paused
+	if(state == playState)
 	{
-		playButton->setIcon(QIcon(":/mainwindow/pause.png"));
-		emit play();
+		return;
 	}
-	else
+	playState = state;
+	Debug << "State" << state;
+	// stoped state
+	if(playState == 0)
 	{
 		playButton->setIcon(QIcon(":/mainwindow/play.png"));
-		emit pause();
+		connect(playButton,SIGNAL(clicked()),this,SIGNAL(play()));
+		disconnect(playButton,SIGNAL(clicked()),this,SIGNAL(pause()));
+		stopButton->setEnabled(false);
 	}
+	// playing state
+	else if(playState == 1)
+	{
+		playButton->setIcon(QIcon(":/mainwindow/pause.png"));
+		connect(playButton,SIGNAL(clicked()),this,SIGNAL(pause()));
+		disconnect(playButton,SIGNAL(clicked()),this,SIGNAL(play()));
+		stopButton->setEnabled(true);
+	}
+	// paused state
+	else if(playState == 2)
+	{
+		playButton->setIcon(QIcon(":/mainwindow/play.png"));
+		connect(playButton,SIGNAL(clicked()),this,SIGNAL(play()));
+		disconnect(playButton,SIGNAL(clicked()),this,SIGNAL(pause()));
+		stopButton->setEnabled(true);
+	}
+
 }
 
 void ControlWidget::playClicked()
 {
-	if(playState)
-		setPlayState(false);
+	if(playState == 2)
+	{
+		setPlayState(2);
+		emit play();
+	}
 	else
-		setPlayState(true);
+	{
+		setPlayState(1);
+		emit pause();
+	}
 }
