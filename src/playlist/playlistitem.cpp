@@ -94,7 +94,14 @@ bool PlaylistItem::localFile(const QString &file)
 		m_place = file;
 		m_year = tag->year();
 		m_track = tag->track();
-		m_length = ap->length();
+		// convert track length to string
+		int length = ap->length();
+		int min = length / 60;
+		int sec = length % 60;
+		if(sec < 10)
+			m_length = QString("%1:0%2").arg(min).arg(sec);
+		else
+			m_length = QString("%1:%2").arg(min).arg(sec);
 		m_bitrate = ap->bitrate();
 		m_localFile = true;
 		return true;

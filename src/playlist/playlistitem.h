@@ -44,7 +44,7 @@ public:
 	QString place() { return m_place; };
 	int year() { return m_year; };
 	int track() { return m_track; };
-	int length() { return m_length; };
+	QString length() { return m_length; };
 	int bitrate() { return m_bitrate; };
 	bool isLocal() { return m_localFile; };
 	bool isValid() { return m_isValid; };
@@ -65,7 +65,7 @@ private:
 	QString m_place;
 	int m_year;
 	int m_track;
-	int m_length;
+	QString m_length;
 	int m_bitrate;
 	bool m_localFile;
 	bool m_isValid;
