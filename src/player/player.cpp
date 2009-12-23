@@ -95,9 +95,15 @@ void Player::getTime()
 				Debug << "play next";
 				m_playTimer.stop();
 				if(!gst_element_set_state(m_newPipeline, GST_STATE_PLAYING))
+				{
 					Debug << "Failed to change state on new pipeline";
+					checkState();
+				}
 				if(!gst_element_set_state(m_pipeline, GST_STATE_NULL))
+				{
 					Debug << "Failed to change state on old pipeline";
+					checkState();
+				}
 				gst_object_unref(m_pipeline);
 				m_pipeline = m_newPipeline;
 				getTotalTime();
@@ -114,7 +120,7 @@ void Player::getTotalTime()
 {
 	GstFormat fmt = GST_FORMAT_TIME;
 	gint64 tot;
-	while( !gst_element_query_duration(m_pipeline, &fmt, &tot))
+	while(!gst_element_query_duration(m_pipeline, &fmt, &tot))
 	{}
 	if(m_totaltime == tot)
 		return;
@@ -162,6 +168,7 @@ bool Player::enqueue(const QUrl &url)
 		g_object_set(G_OBJECT(m_newPipeline), "uri", uri, NULL);
 		return true;
 	}
+	gst_element_set_state(m_pipeline, GST_STATE_NULL);
 	emit timeChanged(0);
 	m_playTimer.stop();
 	checkState();
@@ -180,6 +187,7 @@ void Player::checkState()
 {
 	GstState state;
 	gst_element_get_state(m_pipeline, &state, NULL, GST_CLOCK_TIME_NONE);
+	Debug << "Checking state:" << state << m_state;
 	if( state == GST_STATE_PLAYING && m_state != 1)
 	{
 		m_state = 1;
