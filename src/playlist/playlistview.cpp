@@ -147,6 +147,8 @@ void PlaylistView::mouseDoubleClickEvent(QMouseEvent *event)
 	}
 	QModelIndex index = indexAt(event->pos());
 	playRequest(m_model->data(index,UrlRole).toUrl());
+	if(m_playRow == index.row())
+		return;
 	setPlayRow(index.row(), true);
 }
 
