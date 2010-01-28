@@ -15,7 +15,7 @@ YoutubePlayer::YoutubePlayer(QObject *parent)
 
 	connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),this, SLOT(addJavaScriptObject()));
 	
-	QUrl url = "http://www.partyplayer.megabyet.net/play.html";
+	QUrl url = QUrl("http://www.partyplayer.megabyet.net/play.html");
 	mainFrame()->load(url);
 	mainFrame()->evaluateJavaScript("setDebugEnabled(true); null");
 }
