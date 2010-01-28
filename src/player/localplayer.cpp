@@ -21,13 +21,13 @@
 
 LocalPlayer::LocalPlayer(QObject *parent)
 	:QObject(parent),
-	m_playTimer(this),
-	m_totaltime(0),
 	m_pipeline(0),
 	m_newPipeline(0),
 	m_canRunOut(true),
-	m_state(0),
-	m_totalTimeSet(false)
+	m_playTimer(this),
+	m_totaltime(0),
+	m_totalTimeSet(false),
+	m_state(0)
 {
 	// initialize gstreamer
 	GError *err;
