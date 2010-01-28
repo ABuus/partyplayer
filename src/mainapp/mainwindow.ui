@@ -126,11 +126,22 @@
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
+       <property name="handleWidth">
+        <number>5</number>
+       </property>
        <widget class="QWidget" name="gridLayoutWidget">
-        <layout class="QGridLayout" name="videoContainer"/>
+        <layout class="QGridLayout" name="videoContainer">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+        </layout>
        </widget>
        <widget class="QWidget" name="gridLayoutWidget_2">
-        <layout class="QGridLayout" name="playlistContainer"/>
+        <layout class="QGridLayout" name="playlistContainer">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+        </layout>
        </widget>
       </widget>
      </widget>

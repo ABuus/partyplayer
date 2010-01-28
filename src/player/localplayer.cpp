@@ -17,16 +17,17 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "player.h"
+#include "localplayer.h"
 
-Player::Player(QObject *parent)
+LocalPlayer::LocalPlayer(QObject *parent)
 	:QObject(parent),
 	m_playTimer(this),
 	m_totaltime(0),
 	m_pipeline(0),
 	m_newPipeline(0),
 	m_canRunOut(true),
-	m_state(0)
+	m_state(0),
+	m_totalTimeSet(false)
 {
 	// initialize gstreamer
 	GError *err;
@@ -45,7 +46,7 @@ Player::Player(QObject *parent)
 	connect(&m_playTimer,SIGNAL(timeout()), this, SLOT( getTime()));
 }
 
-Player::~Player()
+LocalPlayer::~LocalPlayer()
 {
 	gst_element_set_state(m_pipeline, GST_STATE_NULL);
 	gst_object_unref(m_newPipeline);
@@ -53,11 +54,11 @@ Player::~Player()
 	gst_object_unref(m_sink);
 }
 
-void Player::playUrl(const QUrl &url)
+void LocalPlayer::playUrl(const QUrl &url)
 {
 	if(!url.isValid())
 	{
-		qDebug() << "invalid url:" << url.toString();
+		Debug << "invalid url:" << url.toString();
 		m_playTimer.stop();
 		return;
 	}
@@ -73,8 +74,10 @@ void Player::playUrl(const QUrl &url)
 	checkState();
 }
 
-void Player::getTime()
+void LocalPlayer::getTime()
 {
+	if(!m_totalTimeSet)
+		getTotalTime();
 	GstFormat fmt = GST_FORMAT_TIME;
 	gint64 pos;
 	if( gst_element_query_position(m_pipeline, &fmt, &pos))
@@ -116,47 +119,53 @@ void Player::getTime()
 	}
 }
 
-void Player::getTotalTime()
+void LocalPlayer::getTotalTime()
 {
 	GstFormat fmt = GST_FORMAT_TIME;
 	gint64 tot;
-	while(!gst_element_query_duration(m_pipeline, &fmt, &tot))
-	{}
-	if(m_totaltime == tot)
+	if(!gst_element_query_duration(m_pipeline, &fmt, &tot))
+	{
+		m_totalTimeSet = false;
 		return;
-	m_totaltime = tot;
-	emit totalTimeChanged( GST_TIME_AS_MSECONDS( tot ) );
+	}
+	else {
+		m_totalTimeSet = true;
+		if(m_totaltime == tot)
+			return;
+		m_totaltime = tot;
+		emit totalTimeChanged( GST_TIME_AS_MSECONDS( tot ) );
+	}
 }
 
-void Player::seek(int time)
+void LocalPlayer::seek(int time)
 {
 	gst_element_seek(m_pipeline, 1.0, GST_FORMAT_TIME,
 		GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET, time * GST_MSECOND,
 		GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE);
 }
 
-void Player::play()
+void LocalPlayer::play()
 {
 	gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
 	m_playTimer.start();
 	checkState();
 }
 
-void Player::stop()
+void LocalPlayer::stop()
 {
 	gst_element_set_state(m_pipeline, GST_STATE_NULL);
 	m_playTimer.stop();
 	checkState();
 }
 
-void Player::pause()
+void LocalPlayer::pause()
 {
 	gst_element_set_state(m_pipeline, GST_STATE_PAUSED);
 	m_playTimer.stop();
 	checkState();
 }
 
-bool Player::enqueue(const QUrl &url)
+bool LocalPlayer::enqueue(const QUrl &url)
 {
 	Debug << "Enqueue next";
 	if(url.isValid())
@@ -175,7 +184,7 @@ bool Player::enqueue(const QUrl &url)
 	return false;
 }
 
-GstElement * Player::createPipeline()
+GstElement * LocalPlayer::createPipeline()
 {
 	GstElement *pipeline = gst_element_factory_make("playbin", "player");
 	gst_element_link(GST_ELEMENT( pipeline), m_sink);
@@ -183,7 +192,7 @@ GstElement * Player::createPipeline()
 	return pipeline;
 }
 
-void Player::checkState()
+void LocalPlayer::checkState()
 {
 	GstState state;
 	gst_element_get_state(m_pipeline, &state, NULL, GST_CLOCK_TIME_NONE);

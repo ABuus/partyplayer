@@ -23,23 +23,22 @@
 // Qt
 #include <QObject>
 #include <QUrl>
-#include <QDebug>
 #include <QTimer>
 // gstreamer
 #include <glib-object.h>
 #include <gst/gst.h>
-#include "player_global.h"
 
+#include "player_global.h"
 #include "debug.h"
 
 #define TIMER_INTERVAL 200
 
-class PLAYER_EXPORT Player : public QObject
+class PLAYER_EXPORT LocalPlayer : public QObject
 {
 	Q_OBJECT
 public:
-	Player(QObject *parent = 0);
-	~Player();
+	LocalPlayer(QObject *parent = 0);
+	~LocalPlayer();
 public slots:
 	void playUrl(const QUrl &url);
 	void seek( int time );
@@ -59,6 +58,7 @@ private:
 	bool m_canRunOut;
 	QTimer m_playTimer;
 	qint64 m_totaltime;
+	bool m_totalTimeSet;
 	int m_state; // 0=stop,1=playing,2=paused
 private slots:
 	void getTime();

@@ -11,10 +11,15 @@ done:	icon ;-)
 		save a playlist
 done:	clear playlist
 done:	fix play button toggle
-		create webplayer with timer, and make a binding class with Player
+done:	create webplayer with timer, and make a binding class with Player
+		controllwidget state change on youtube player stare change.
+done_temp:	webserver containing play.html ( free host http://partyplayer.megabyet.net/ is the current soulution.
 		
 						### after 0.1 ###
 done:	look into gstreamer for better codec support
+		
+		enqueue yt video see Mainwindow::enqueueNextTrack()
+		look into qml for drawing the playlist. ( Qt 4.7 will have this )
 		youtube jsapi to control videos
 		youtube playlists ( includeing mostpopular )
 		CD playback

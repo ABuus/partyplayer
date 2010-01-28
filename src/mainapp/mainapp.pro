@@ -12,7 +12,6 @@ win32:QMAKE_POST_LINK += copy 3rdparty\qtsingleapplication\lib\* ..\..\release
 }
 
 QT += network xml webkit core gui svg
-win32:QT += phonon xmlpatterns
 
 INCLUDEPATH += . \
     debug \

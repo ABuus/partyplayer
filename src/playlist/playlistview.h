@@ -44,16 +44,17 @@ class PLAYLIST_EXPORT PlaylistView : public QTableView
 public:
 	PlaylistView(QWidget *parent = 0);
 	~PlaylistView();
-	QUrl next();
-	QUrl previous();
+	QVariant next();
+	QVariant previous();
 	bool addFile(const QString &file, int row); // if row = -1 item id added at bottom
 public slots:
 	void clear();
 signals:
-	void playRequest(const QUrl url);
+	void playRequest(const QVariant value);
 private:
 	bool addM3U(QUrl url, int row); // if row = -1 item id added at bottom
-	bool addUrl(QUrl url, QString ytText, int row);	// if row = -1 item id added at bottom
+	bool addYoutube(const QString title,const QString description, 
+		const QString vidId, const QString duration, int row);	// if row = -1 item id added at bottom
 	bool addDir(const QString path, int row); // if row = -1 item id added at bottom
 	void setPlayRow(int row, bool playing = false);
 	PlaylistModel *m_model;

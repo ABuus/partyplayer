@@ -1,4 +1,5 @@
 
+QT += webkit network gui core
 TEMPLATE = lib
 TARGET = player
 CONFIG(debug, debug|release) {

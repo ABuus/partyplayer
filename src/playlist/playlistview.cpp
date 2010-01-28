@@ -94,17 +94,8 @@ void PlaylistView::mouseMoveEvent(QMouseEvent *event)
 
 void PlaylistView::dropEvent(QDropEvent *event)
 {
-	QString ytText;
-	if(!event->mimeData()->hasUrls())
-		event->ignore();
-	/* this is not good, try dragging from FF */
-	if(event->mimeData()->hasFormat("application/yt-partyplayer"))
-	{
-		ytText = event->mimeData()->data("application/yt-partyplayer");
-	}
-	
+	/* find the right row */
 	int row = indexAt(event->pos()).row();
-
 	if(row == -1)
 	{
 		row = m_model->rowCount();
@@ -113,6 +104,25 @@ void PlaylistView::dropEvent(QDropEvent *event)
 	{
 		++row;
 	}
+
+	/* insert youtube videos */
+	if(event->mimeData()->hasFormat("application/yt-partyplayer"))
+	{
+		QString ytText = event->mimeData()->data("application/yt-partyplayer");
+		QStringList dataList = ytText.split("*\:\*");
+		
+		for( int i = 0; i < dataList.count();)
+		{
+			QString title = dataList.at(i++);
+			QString description = dataList.at(i++);
+			QString id = dataList.at(i++);
+			QString duration = dataList.at(i++);
+			addYoutube(title,description,id,duration,row);
+		}
+		return;
+	}
+
+	/* insert files */
 	QList<QUrl> urls = event->mimeData()->urls();
 	foreach(QUrl url, urls)
 	{
@@ -121,11 +131,6 @@ void PlaylistView::dropEvent(QDropEvent *event)
 			addFile(url.toString(),row++);
 			if(m_dragPlaying)
 				setPlayRow(row -1);
-			continue;
-		}
-		else if(url.scheme() == "http")
-		{
-			addUrl(url,ytText,row++);
 			continue;
 		}
 		else
@@ -146,31 +151,34 @@ void PlaylistView::mouseDoubleClickEvent(QMouseEvent *event)
 		setPlayRow(m_playRow,false);
 	}
 	QModelIndex index = indexAt(event->pos());
-	playRequest(m_model->data(index,UrlRole).toUrl());
+	QVariant data = m_model->data(index,UrlRole);
+	playRequest(data);
+
 	if(m_playRow == index.row())
 		return;
 	setPlayRow(index.row(), true);
 }
 
-QUrl PlaylistView::next()
+QVariant PlaylistView::next()
 {
 	QStandardItem *item = m_model->item(m_playRow +1);
 	if(item == 0)
 		return QUrl();
-	QUrl url = item->data(UrlRole).toUrl();
+	QVariant data = item->data(UrlRole);
 	setPlayRow(m_playRow +1,true);
 	Debug << "play next";
-	return url;
+	return data;
 }
 
-QUrl PlaylistView::previous()
+QVariant PlaylistView::previous()
 {
+	QStandardItem *item = m_model->item(m_playRow -1);
 	if(m_playRow == 0 || m_playRow == -1)
 		return QUrl();
-	QUrl url = m_model->item(m_playRow -1)->data(UrlRole).toUrl();
+	QVariant data = item->data(UrlRole);
 	setPlayRow(m_playRow -1,true);
 	Debug << "play previous";
-	return url;
+	return data;
 }
 
 bool PlaylistView::addM3U(QUrl url,int row)
@@ -262,28 +270,36 @@ bool PlaylistView::addFile(const QString &file, int row)
 	return false;
 }
 
-bool PlaylistView::addUrl(QUrl url, QString ytText, int row)
+bool PlaylistView::addYoutube(const QString title,const QString description, 
+							  const QString vidId, const QString duration, int row)
 {
 	if(row == -1)
 	{
 		row = m_model->rowCount();
 	}
 	QList<QStandardItem *> rowItem;
-	PlaylistItem *item = new PlaylistItem(url,ytText);
-	if(!item->isValid())
+
+	/* convert strings to QStandardItems */
+	QStandardItem *i_title = new QStandardItem(title);
+	QStandardItem *i_description = new QStandardItem(description);
+	QStandardItem *i_vidId = new QStandardItem(vidId);
+	QStandardItem *i_duration = new QStandardItem(duration);
+
+	/* empty placeholder items */
+	QStandardItem *placeholder_1 = new QStandardItem("");
+	QStandardItem *placeholder_2 = new QStandardItem("");
+	QStandardItem *placeholder_3 = new QStandardItem("");
+	QStandardItem *placeholder_4 = new QStandardItem("");
+
+	/* insert items into row */
+	rowItem << i_title << placeholder_1 << placeholder_2 
+		<< placeholder_3 << i_description << i_duration << placeholder_4 << i_vidId;
+	foreach(QStandardItem *item, rowItem)
 	{
-		Debug << "Error: invalid url" << url;
-		return false;
-	}
-	for(int i = 0; i < m_model->columnCount(); i++)
-	{
-		QStandardItem *stdItem = new QStandardItem(item->value(i).toString());
-		stdItem->setData(url,UrlRole );
-		rowItem << stdItem;
+		item->setData(vidId,UrlRole);
 	}
 	m_model->insertRow(row,rowItem);
 	setRowHeight(row,ROW_HEIGHT);
-	delete item;
 	return true;
 }
 

@@ -40,13 +40,19 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	playlistContainer->addWidget(m_playlist);
 	m_playlist->show();
 
-	webView = new QWebView(this);
-	// websettings to ensure we can play youtube vids
-	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled,true);
-	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled,true);
-	webView->show();
-	webView->load(QUrl("http://www.youtube.com/apiplayer?version=3"));
+	// local player
+	localPlayer = new LocalPlayer(this);
+
+	// youtube player
+	webView = new YoutubeViewer(this); // in youtubeplayer.h
+	youtubePlayer = new YoutubePlayer(webView);
+	webView->setPage(youtubePlayer);
 	videoContainer->addWidget(webView);
+#ifdef WEB_DEBUG
+	QWebInspector *in = new QWebInspector;
+	in->setPage(youtubePlayer);
+	in->show();
+#endif
 
 	// control widget
 	controlWidget = new ControlWidget(this);
@@ -67,9 +73,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	fileView->setCurrentIndex(musicIndex);
 	fileView->scrollTo(musicIndex,QAbstractItemView::PositionAtCenter);
 	
-	player = new Player();
-
-
 	/*
 	webView->restoreGeometry(settings.value("mainwindow/webView").toByteArray());
 	m_playlist->restoreGeometry(settings.value("mainwindow/playlist").toByteArray());
@@ -79,30 +82,11 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	sizes << 0 << 1;
 	videoSplitter->setSizes(sizes);
 
-	// connections
-	connect(this, SIGNAL( preformSearch( QString )), search, SLOT( query( QString )));
-	connect(searchLineEdit, SIGNAL(returnPressed()), this, SLOT( querySearch()));
-	connect(search, SIGNAL(newSearch()), this, SLOT(clearSearch()));
-	connect(search, SIGNAL(newItem(QStringList)), this,SLOT(insertSearchItem(QStringList)));
-	connect(menuMode,SIGNAL(triggered(QAction *)),this,SLOT(setVideoMode(QAction *)));
-	connect(m_playlist,SIGNAL(playRequest(const QUrl &)),this,SLOT(handlePlayRequests(const QUrl &)));
-	connect(player,SIGNAL(timeChanged(qint64)),controlWidget,SLOT(setTime(qint64)));
-	connect(player,SIGNAL(totalTimeChanged(qint64)),controlWidget,SLOT(setTotalTime(qint64)));
-	connect(controlWidget,SIGNAL(seek(int)),player,SLOT(seek(int)));
-	connect(controlWidget,SIGNAL(stop()),player,SLOT(stop()));
-	connect(controlWidget,SIGNAL(play()),player,SLOT(play()));
-	connect(controlWidget,SIGNAL(pause()),player,SLOT(pause()));
-	connect(player,SIGNAL(runningOut()),this,SLOT(enqueueNextTrack()));
-	connect(controlWidget,SIGNAL(forward()),this,SLOT(playNextTrack()));
-	connect(controlWidget,SIGNAL(back()),this,SLOT(playPreviousTrack()));
-	connect(actionClearPlaylist,SIGNAL(triggered()),m_playlist,SLOT(clear()));
-	connect(actionSavePlaylist,SIGNAL(triggered()),m_playlist,SLOT(save()));
-	connect(player,SIGNAL(stateChanged(int)),controlWidget,SLOT(setPlayState(int)));
+	createConnections();
 }
 
 MainWindow::~MainWindow()
 {
-	player->deleteLater();
 	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
 	settings.setDefaultFormat(QSettings::IniFormat);
 	settings.setValue("mainwindow/geometry",saveGeometry());
@@ -110,6 +94,33 @@ MainWindow::~MainWindow()
 	settings.setValue("mainwindow/playlist", videoSplitter->saveGeometry());
 	settings.setValue("mainwindow/webView", videoSplitter->saveGeometry());
 	settings.setValue("mainwindow/videoSplitter", videoSplitter->saveGeometry());
+}
+
+void MainWindow::createConnections()
+{
+	// connections
+	connect(this, SIGNAL( preformSearch( QString )), search, SLOT( query( QString )));
+	connect(searchLineEdit, SIGNAL(returnPressed()), this, SLOT( querySearch()));
+	connect(search, SIGNAL(newSearch()), this, SLOT(clearSearch()));
+	connect(search, SIGNAL(newItem(QStringList)), this,SLOT(insertSearchItem(QStringList)));
+	connect(m_playlist,SIGNAL(playRequest(const QVariant &)),this,SLOT(handlePlayRequests(const QVariant &)));
+	connect(controlWidget,SIGNAL(seek(int)),localPlayer,SLOT(seek(int)));
+	connect(controlWidget,SIGNAL(stop()),localPlayer,SLOT(stop()));
+	connect(controlWidget,SIGNAL(play()),localPlayer,SLOT(play()));
+	connect(controlWidget,SIGNAL(pause()),localPlayer,SLOT(pause()));
+	connect(controlWidget,SIGNAL(forward()),this,SLOT(playNextTrack()));
+	connect(controlWidget,SIGNAL(back()),this,SLOT(playPreviousTrack()));
+	connect(controlWidget,SIGNAL(play()),youtubePlayer,SLOT(play()));
+	connect(actionClearPlaylist,SIGNAL(triggered()),m_playlist,SLOT(clear()));
+	connect(actionSavePlaylist,SIGNAL(triggered()),m_playlist,SLOT(save()));
+	connect(menuMode,SIGNAL(triggered(QAction *)),this,SLOT(setVideoMode(QAction *)));
+	connect(localPlayer,SIGNAL(timeChanged(qint64)),controlWidget,SLOT(setTime(qint64)));
+	connect(localPlayer,SIGNAL(totalTimeChanged(qint64)),controlWidget,SLOT(setTotalTime(qint64)));
+	connect(localPlayer,SIGNAL(runningOut()),this,SLOT(enqueueNextTrack()));
+	connect(localPlayer,SIGNAL(stateChanged(int)),controlWidget,SLOT(setPlayState(int)));
+	connect(youtubePlayer,SIGNAL(totalTimeChanged(qint64)),controlWidget,SLOT(setTotalTime(qint64)));
+	connect(youtubePlayer,SIGNAL(currentTimeChanged(qint64)),controlWidget,SLOT(setTime(qint64)));
+	connect(youtubePlayer,SIGNAL(finished()),this,SLOT(playNextTrack()));
 }
 
 void MainWindow::querySearch()
@@ -126,7 +137,7 @@ void MainWindow::insertSearchItem(QStringList item)
 {
 	QStandardItem *m_item = new QStandardItem(item.first());
 	m_item->setData(item.at(1),Qt::ToolTipRole);
-	m_item->setData(QUrl(item.at(2)), Qt::UserRole +1);
+	m_item->setData(item.at(2), Qt::UserRole +1);
 	m_item->setData(item.at(3), Qt::UserRole +2);
 	Debug << item.at(2);
 	searchModel->appendRow(m_item);
@@ -157,88 +168,101 @@ void MainWindow::setVideoMode(QAction *a)
 	}
 }
 
+
+/* todo enqueue in ytplayer */
 void MainWindow::enqueueNextTrack()
 {
-	QUrl url = m_playlist->next();
-	if(url.scheme() == "http")
-	{
-		Debug << "loading http";
-		webView->load(url);
-		webState = true;
-		player->stop();
-	}
-	else
+	QString value = m_playlist->next().toString();
+	if(value.isEmpty())
+		return;
+	if(value.startsWith("file", Qt::CaseInsensitive))
 	{
 		Debug << "loading file";
 		if(webState)
-			webView->load(QUrl("http://www.youtube.com/apiplayer?version=3"));
-		player->enqueue(url);
+		{
+			webState = false;
+			youtubePlayer->pause();
+		}
+		localPlayer->enqueue(QUrl(value));
+	}
+	else
+	{
+		Debug << "loading http" << value;
+		/* enqueueVideoBuId ??? */
+		youtubePlayer->loadVideoById(value);
+		webState = true;
+		localPlayer->stop();
 	}
 }
 
 void MainWindow::playNextTrack()
 {
-	QUrl url = m_playlist->next();
-	if(url.scheme() == "http")
+	QString value = m_playlist->next().toString();
+	if(value.isEmpty())
+		return;
+	if(value.startsWith("file", Qt::CaseInsensitive))
 	{
-		Debug << "loading http";
-		webView->load(url);
-		webState = true;
-		player->stop();
+		Debug << "loading file" << value;
+		if(webState)
+		{
+			webState = false;
+			youtubePlayer->pause();
+		}
+		localPlayer->playUrl(QUrl(value));
 	}
 	else
 	{
-		Debug << "loading file";
-		if(webState)
-			webView->load(QUrl("http://www.youtube.com/apiplayer?version=3"));
-		player->playUrl(url);
+		Debug << "loading http" << value;
+		youtubePlayer->loadVideoById(value);
+		webState = true;
+		localPlayer->stop();
 	}
 }
 
 void MainWindow::playPreviousTrack()
 {
-	QUrl url = m_playlist->previous();
-	if(url.scheme() == "http")
-	{
-		Debug << "loading http";
-		webView->load(url);
-		webState = true;
-		player->stop();
-	}
-	else
+	QString value = m_playlist->previous().toString();
+	if(value.isEmpty())
+		return;
+	if(value.startsWith("file", Qt::CaseInsensitive))
 	{
 		Debug << "loading file";
 		if(webState)
-			webView->load(QUrl("http://www.youtube.com/apiplayer?version=3"));
-		player->playUrl(url);
+		{
+			webState = false;
+			youtubePlayer->pause();
+		}
+		localPlayer->playUrl(QUrl(value));
+	}
+	else
+	{
+		Debug << "loading http" << value;
+		youtubePlayer->loadVideoById(value);
+		webState = true;
+		localPlayer->stop();
 	}
 }
 
-void MainWindow::handlePlayRequests(const QUrl &url)
+void MainWindow::handlePlayRequests(const QVariant &req)
 {
-	Debug << url;
-	if(url.scheme() == "http")
+	QString value = req.toString();
+	
+	if( value.startsWith("file", Qt::CaseInsensitive))
 	{
-		Debug << "loading http";
-		if(actionYouTube_HD->isChecked())
+		Debug << "loading file" << value;
+		if(webState)
 		{
-			QString str = url.toString();
-			str.append("&hd=1");
-			webView->load(QUrl(str));
+			webState = false;
+			youtubePlayer->pause();
 		}
-		else
-		{
-			webView->load(url);
-		}
-		webState = true;
-		player->stop();
+		localPlayer->playUrl(QUrl(value));
 	}
 	else
 	{
-		Debug << "loading file";
-		if(webState)
-			webView->load(QUrl("http://www.youtube.com/apiplayer?version=3"));
-		player->playUrl(url);
+		Debug << "loading http" << value;
+		youtubePlayer->loadVideoById(value);
+		webState = true;
+		localPlayer->stop();
 	}
 }
 

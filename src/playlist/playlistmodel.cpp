@@ -59,7 +59,7 @@ Qt::ItemFlags PlaylistModel::flags(const QModelIndex &index) const
 QStringList PlaylistModel::mimeTypes() const
 {
 	 QStringList types;
-	 types << "text/uri-list";
+	 types << "text/uri-list" << "application/yt-partyplayer";
 	 return types;
 }
 
@@ -79,6 +79,7 @@ QMimeData * PlaylistModel::mimeData(const QModelIndexList &indexes) const
 	return mimeData;
 }
 
+/* set data for entire row */
 void PlaylistModel::setRowData(int row, const QVariant &value, int role)
 {
 	for(int i = 0; i < columnCount(); i++)

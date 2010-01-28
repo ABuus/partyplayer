@@ -25,17 +25,22 @@
 #include <QApplication>
 #include <QSettings>
 #include <QObject>
+#include <QWebView>
 #include <QWebPage>
 #include <QWebFrame>
 #include <QUrl>
 #include <QFileSystemModel>
 #include <QDesktopServices>
-#include <QWebView>
 #include <QAction>
+#ifdef WEB_DEBUG
+#include <QWebInspector>
+#endif
+
 // playlist
 #include "playlist/playlistview.h"
 // player
-#include "player/player.h"
+#include "player/localplayer.h"
+#include "player/youtubeplayer.h"
 // self
 #include "debug.h"
 #include "ui_mainwindow.h"
@@ -58,10 +63,12 @@ private:
 	QFileSystemModel *fileSysModel;
 	ControlWidget *controlWidget;
 	SearchModel *searchModel;
-	Player *player;
-	QWebView *webView;
+	LocalPlayer *localPlayer;
+	YoutubePlayer *youtubePlayer;
+	YoutubeViewer *webView;
 	QList<int> oldVSplitter;
 	bool webState;
+	void createConnections();
 private slots:
 	void querySearch();
 	void clearSearch();
@@ -70,7 +77,7 @@ private slots:
 	void enqueueNextTrack();
 	void playNextTrack();
 	void playPreviousTrack();
-	void handlePlayRequests(const QUrl &url);
+	void handlePlayRequests(const QVariant &req);
 
 signals:
 	void preformSearch(QString text);

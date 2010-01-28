@@ -54,9 +54,7 @@ QStringList SearchModel::mimeTypes() const
 QMimeData *SearchModel::mimeData(const QModelIndexList &indexes) const
 {
 	QMimeData *mimeData = new QMimeData();
-	QByteArray encodedData;
-	QList<QUrl> urlList;
-	QList<int> durationList;
+
 	QByteArray ba;
 
 	foreach (QModelIndex index, indexes) 
@@ -64,15 +62,18 @@ QMimeData *SearchModel::mimeData(const QModelIndexList &indexes) const
 		if (index.isValid()) 
 		{
 			// this does not support mulit drag.
+			// order { title ,description, id, duration }
 			ba.append( data(index, Qt::DisplayRole).toString());
-			urlList.append( QUrl( data(index, Qt::UserRole +1).toUrl() ));
-			ba.append(":");
-			ba.append( QString::number( data(index, Qt::UserRole +2).toInt() ) );
+			ba.append("*\:\*");
+			ba.append( data(index, Qt::ToolTipRole).toString());
+			ba.append("*\:\*");
+			ba.append( data(index, Qt::UserRole+1).toString());
+			ba.append("*\:\*");
+			ba.append( data(index, Qt::UserRole +2).toString());
 		}
 	}
 	mimeData->setData("application/yt-partyplayer",ba);
-	mimeData->setUrls(urlList);
-	Debug << mimeData->urls() << ba;
+	Debug << ba;
 	return mimeData;
 }
 

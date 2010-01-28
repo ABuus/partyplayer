@@ -18,10 +18,18 @@
 */
 
 #include "application.h"
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
 	Application app(argc,argv);
+#ifdef Q_WS_WIN 
+	app.addLibraryPath(app.applicationDirPath());
+	app.addLibraryPath(app.applicationDirPath() + "/bin/qt");
+	app.addLibraryPath(app.applicationDirPath() + "/bin/gstreamer/bin");
+	app.addLibraryPath(app.applicationDirPath() + "/bin/plugins");
+	qDebug() << app.libraryPaths();
+#endif
 	return app.exec();
 }
 

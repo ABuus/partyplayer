@@ -40,7 +40,6 @@ void Search::query(QString queryString)
 	QUrl url( "http://gdata.youtube.com/feeds/api/videos?q=" + queryString + "&format=5&key=" + dev_id);
 	Debug << url;
 	netGetter->get(QNetworkRequest(url));
-//	webPage->mainFrame()->load(url);
 }
 
 void Search::queryFinished(QNetworkReply *reply)
@@ -66,23 +65,9 @@ void Search::queryFinished(QNetworkReply *reply)
 		QDomElement mg = entry.elementsByTagName("media:group").at(0).toElement();
 		QString duration = mg.elementsByTagName("yt:duration").at(0).toElement().attributeNode("seconds").value();
 		Debug << title << description << id << duration;
-
-		
-		// http://code.google.com/apis/youtube/player_parameters.html
-		// there are more parameters to be supported eg hd
-		QString url("http://www.youtube.com/v/");
-		url.append(id);
-		
-		url.append("?autoplay=1"); // start playing on load
-		url.append("&iv_load_policy=3"); 
-		url.append("&showinfo=0&");
-		url.append("enablejsapi=1"); // enables JavaScript control layer
-		url.append("?rel=0");
-		
-		
 		
 		QStringList item;
-		item << title << description << url << duration;
+		item << title << description << id << duration;
 		emit newItem(item);
 	}
 /*
