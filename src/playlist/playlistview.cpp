@@ -109,7 +109,7 @@ void PlaylistView::dropEvent(QDropEvent *event)
 	if(event->mimeData()->hasFormat("application/yt-partyplayer"))
 	{
 		QString ytText = event->mimeData()->data("application/yt-partyplayer");
-		QStringList dataList = ytText.split("*\:\*");
+		QStringList dataList = ytText.split("###-|-###");
 		
 		for( int i = 0; i < dataList.count();)
 		{

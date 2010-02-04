@@ -64,11 +64,11 @@ QMimeData *SearchModel::mimeData(const QModelIndexList &indexes) const
 			// this does not support mulit drag.
 			// order { title ,description, id, duration }
 			ba.append( data(index, Qt::DisplayRole).toString());
-			ba.append("*\:\*");
+			ba.append("###-|-###");
 			ba.append( data(index, Qt::ToolTipRole).toString());
-			ba.append("*\:\*");
+			ba.append("###-|-###");
 			ba.append( data(index, Qt::UserRole+1).toString());
-			ba.append("*\:\*");
+			ba.append("###-|-###");
 			ba.append( data(index, Qt::UserRole +2).toString());
 		}
 	}
