@@ -23,9 +23,10 @@ using namespace Playlist;
 
 PlaylistView::PlaylistView(QWidget *parent)
 	: QTableView(parent),
+	m_dragRow(-1),
 	m_playRow(-1),
-	m_dragPlaying(false),
-	m_dragRow(-1)
+	m_dragPlaying(false)
+	
 {
 	// model
 	m_model = new PlaylistModel(this);
