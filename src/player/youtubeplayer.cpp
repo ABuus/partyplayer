@@ -9,13 +9,13 @@ YoutubePlayer::YoutubePlayer(QObject *parent)
 	/* enable plugins and javascript support */
 	settings()->setAttribute(QWebSettings::PluginsEnabled, true);
 	settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
-	settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+	settings()->setAttribute(QWebSettings::PrivateBrowsingEnabled, true);
 
 //	HttpDaemon *server = new HttpDaemon(1919,this);
 
 	connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),this, SLOT(addJavaScriptObject()));
 	
-	QUrl url = QUrl("http://www.partyplayer.megabyet.net/play.html");
+	QUrl url = QUrl("http://www.partyplayer.megabyet.net/playerdata/play.html");
 	mainFrame()->load(url);
 	mainFrame()->evaluateJavaScript("setDebugEnabled(true); null");
 }
