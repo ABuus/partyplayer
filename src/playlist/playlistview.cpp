@@ -61,7 +61,7 @@ void PlaylistView::dragMoveEvent(QDragMoveEvent *event)
 
 void PlaylistView::mousePressEvent(QMouseEvent *event)
 {
-	if(event->button() == Qt::LeftButton)
+	if(event->button() == Qt::LeftButton && selectedIndexes().count() > 0)
 		startDragPos = event->pos();
 	QTableView::mousePressEvent(event);
 }
