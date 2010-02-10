@@ -76,3 +76,12 @@ void SvgSplashScreen::fadeOut()
 	m_fadeingIn = false;
 	m_fadeTimer.start();
 }
+
+void SvgSplashScreen::mousePressEvent(QMouseEvent *e)
+{
+	if(e->button() == Qt::LeftButton)
+	{
+		this->hide();
+		emit finished();
+	}
+}

@@ -25,7 +25,7 @@
 #include <QApplication>
 #include <QRect>
 #include <QTimer>
-#include <QDebug>
+#include <QMouseEvent>
 
 class SvgSplashScreen : public QSvgWidget
 {
@@ -43,6 +43,8 @@ private:
 	qreal opa;
 private slots:
 	void setOpacity();
+protected:
+	void mousePressEvent(QMouseEvent *e);
 signals:
 	void finished();
 };
