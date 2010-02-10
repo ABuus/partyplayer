@@ -36,7 +36,9 @@ PlaylistItem::PlaylistItem(const QUrl url, const QString ytText)
 		{
 			m_isValid = false;
 		}
+		return;
 	}
+	// this has changed it is no longer an url from yt videos fix it ;-)
 	else if(url.scheme() == "http" && url.host() == "www.youtube.com")
 	{
 		youtubeFile(url,ytText);
@@ -88,9 +90,9 @@ bool PlaylistItem::localFile(const QString &file)
     {
 		TagLib::Tag *tag = f.tag();
 		TagLib::AudioProperties *ap = f.audioProperties();
-		m_artist = tag->artist().toCString();
-		m_title = tag->title().toCString();
-		m_album = tag->album().toCString();
+		m_artist = tag->artist().toCString(true);
+		m_title = tag->title().toCString(true);
+		m_album = tag->album().toCString(true);
 		m_place = file;
 		m_year = tag->year();
 		m_track = tag->track();

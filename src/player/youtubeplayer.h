@@ -39,8 +39,7 @@ private:
 signals:
 	void totalTimeChanged(qint64 newTotal);
 	void currentTimeChanged(qint64 newCurrent);
-	void runningOut();
-	void finished();
+	void stateChanged(int state);
 };
 
 class PLAYER_EXPORT YoutubeViewer : public QWebView

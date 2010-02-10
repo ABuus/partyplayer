@@ -111,6 +111,9 @@ void MainWindow::createConnections()
 	connect(controlWidget,SIGNAL(forward()),this,SLOT(playNextTrack()));
 	connect(controlWidget,SIGNAL(back()),this,SLOT(playPreviousTrack()));
 	connect(controlWidget,SIGNAL(play()),youtubePlayer,SLOT(play()));
+	connect(controlWidget,SIGNAL(pause()),youtubePlayer,SLOT(pause()));
+	// connected to pause
+	connect(controlWidget,SIGNAL(stop()),youtubePlayer,SLOT(pause()));
 	connect(actionClearPlaylist,SIGNAL(triggered()),m_playlist,SLOT(clear()));
 	connect(actionSavePlaylist,SIGNAL(triggered()),m_playlist,SLOT(save()));
 	connect(menuMode,SIGNAL(triggered(QAction *)),this,SLOT(setVideoMode(QAction *)));
@@ -121,6 +124,7 @@ void MainWindow::createConnections()
 	connect(youtubePlayer,SIGNAL(totalTimeChanged(qint64)),controlWidget,SLOT(setTotalTime(qint64)));
 	connect(youtubePlayer,SIGNAL(currentTimeChanged(qint64)),controlWidget,SLOT(setTime(qint64)));
 	connect(youtubePlayer,SIGNAL(finished()),this,SLOT(playNextTrack()));
+	connect(youtubePlayer,SIGNAL(stateChanged(int)),controlWidget,SLOT(setPlayState(int)));
 }
 
 void MainWindow::querySearch()
@@ -282,3 +286,4 @@ bool MainWindow::handleApplicationMessage(const QString &msg)
 	emit needToShow();
 	return true;
 }
+

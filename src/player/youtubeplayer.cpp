@@ -79,16 +79,7 @@ void YoutubePlayer::setState(int state)
 	if(state == m_state)
 		return;
 	m_state = state;
-	switch(state) {
-		case 0:
-			emit finished();
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-		case 5:
-			return;
-	}
+	emit stateChanged(m_state);
 }
 
 void YoutubePlayer::setTotalTime(double time)
@@ -108,17 +99,6 @@ void YoutubePlayer::setCurrentTime(double time)
 	{
 		m_currentTime = temp;
 		emit currentTimeChanged(m_currentTime);
-		// emit run out and finished
-		if(m_currentTime > m_totalTime - 5000)
-		{
-			emit runningOut();
-			return;
-		}
-		if(m_currentTime == m_totalTime)
-		{
-			emit finished();
-			return;
-		}
 	}
 }
 
