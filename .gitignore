@@ -31,6 +31,6 @@ qrc_*
 ui_*
 Makefile
 *.vcproj
-*/Deleted/*
+moc_*.b*
 *.idb
 *.sln
