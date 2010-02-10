@@ -56,14 +56,21 @@ LocalPlayer::~LocalPlayer()
 
 void LocalPlayer::playUrl(const QUrl &url)
 {
+	/* convert url to string that windows accepts as network share */
+	QString str_file = url.toLocalFile();
+	str_file.prepend("file:///");
+
 	if(!url.isValid())
 	{
-		Debug << "invalid url:" << url.toString();
+		Debug << "invalid url:" << str_file;
 		m_playTimer.stop();
 		return;
 	}
+
+	qDebug() << __FILE__ << __LINE__ << "localplayer playing:" << str_file;
+
 	gst_element_set_state(m_pipeline, GST_STATE_NULL);
-	std::string str = std::string(url.toString().toAscii().data());
+	std::string str = std::string(str_file.toAscii().data());
 	const gchar * uri = str.c_str();
 	g_object_set(G_OBJECT(m_pipeline), "uri", uri, NULL);
 	gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
@@ -196,7 +203,6 @@ void LocalPlayer::checkState()
 {
 	GstState state;
 	gst_element_get_state(m_pipeline, &state, NULL, GST_CLOCK_TIME_NONE);
-	Debug << "Checking state:" << state << m_state;
 	if( state == GST_STATE_PLAYING && m_state != 1)
 	{
 		m_state = 1;
