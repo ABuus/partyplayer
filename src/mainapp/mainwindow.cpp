@@ -59,20 +59,22 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	controlLayout->addWidget(controlWidget);
 
 	// file system widget
+	// due to bug in QFileSystemModel windows shares have to be mapped as drives
+	// http://bugreports.qt.nokia.com/browse/QTBUG-4462
 	fileSysModel = new QFileSystemModel(this);
+	fileSysModel->setRootPath("/");
 	fileView->setModel(fileSysModel);
 	fileView->setColumnHidden(1,true);
 	fileView->setColumnHidden(2,true);
 	fileView->setColumnHidden(3,true);
 	fileView->setColumnHidden(4,true);
-	fileSysModel->setRootPath("\\");
-
-	// this does not seem to work
+	
+	// this does not seem to work on linux (opensuse 11.2)
 	QModelIndex musicIndex = fileSysModel->index(QDesktopServices::storageLocation(QDesktopServices::MusicLocation));	
 	fileView->expand(musicIndex);
 	fileView->setCurrentIndex(musicIndex);
 	fileView->scrollTo(musicIndex,QAbstractItemView::PositionAtCenter);
-	
+
 	/*
 	webView->restoreGeometry(settings.value("mainwindow/webView").toByteArray());
 	m_playlist->restoreGeometry(settings.value("mainwindow/playlist").toByteArray());
