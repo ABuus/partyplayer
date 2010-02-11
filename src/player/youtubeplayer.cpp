@@ -10,6 +10,8 @@ YoutubePlayer::YoutubePlayer(QObject *parent)
 	settings()->setAttribute(QWebSettings::PluginsEnabled, true);
 	settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
 	settings()->setAttribute(QWebSettings::PrivateBrowsingEnabled, true);
+	settings()->setMaximumPagesInCache(0);
+	settings()->setObjectCacheCapacities(0,0,0);
 	settings()->clearMemoryCaches();
 
 //	HttpDaemon *server = new HttpDaemon(1919,this);

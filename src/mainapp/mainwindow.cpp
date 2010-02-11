@@ -46,6 +46,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 
 	// youtube player
 	webView = new YoutubeViewer(this); // in youtubeplayer.h
+#ifdef Q_WS_X11
+	webView->setFixedSize(700,466);
+#endif
 	youtubePlayer = new YoutubePlayer(webView);
 	webView->setPage(youtubePlayer);
 	videoContainer->addWidget(webView);
