@@ -54,26 +54,16 @@ QStringList SearchModel::mimeTypes() const
 QMimeData *SearchModel::mimeData(const QModelIndexList &indexes) const
 {
 	QMimeData *mimeData = new QMimeData();
-
-	QByteArray ba;
-
+	QList<QUrl> urlList;
 	foreach (QModelIndex index, indexes) 
 	{
 		if (index.isValid()) 
 		{
-			// this does not support mulit drag.
-			// order { title ,description, id, duration }
-			ba.append( data(index, Qt::DisplayRole).toString());
-			ba.append("###-|-###");
-			ba.append( data(index, Qt::ToolTipRole).toString());
-			ba.append("###-|-###");
-			ba.append( data(index, Qt::UserRole+1).toString());
-			ba.append("###-|-###");
-			ba.append( data(index, Qt::UserRole +2).toString());
+			urlList << QUrl( "http://www.youtube.com/watch?v=" + data(index, Qt::UserRole+1).toString());
 		}
 	}
-	mimeData->setData("application/yt-partyplayer",ba);
-	Debug << ba;
+	mimeData->setUrls(urlList);
+	Debug << urlList;
 	return mimeData;
 }
 

@@ -88,6 +88,14 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	sizes << 0 << 1;
 	videoSplitter->setSizes(sizes);
 
+	m_playerQualityActions = new QActionGroup(this);
+	m_playerQualityActions->addAction(ytQualitySmall);
+	m_playerQualityActions->addAction(ytQualityMedium);
+	m_playerQualityActions->addAction(ytQualityHigh);
+	m_playerQualityActions->addAction(ytQualityHd_720);
+	m_playerQualityActions->addAction(ytQualityStandard);
+	m_playerQualityActions->setExclusive(true);
+
 	createConnections();
 }
 
@@ -126,13 +134,13 @@ void MainWindow::createConnections()
 	connect(localPlayer,SIGNAL(totalTimeChanged(qint64)),this,SLOT(setTotalTime(qint64)));
 	connect(youtubePlayer,SIGNAL(totalTimeChanged(qint64)),this,SLOT(setTotalTime(qint64)));
 	
-
 	// actions & menus
 	connect(actionClearPlaylist,SIGNAL(triggered()),m_playlist,SLOT(clear()));
 	connect(actionSavePlaylist,SIGNAL(triggered()),m_playlist,SLOT(save()));
 	connect(menuMode,SIGNAL(triggered(QAction *)),this,SLOT(setVideoMode(QAction *)));
-
-	
+	connect(ytPbQuality,SIGNAL(triggered(QAction *)),this,SLOT(setVideoQuality(QAction *)));
+	connect(actionOpenFile,SIGNAL(triggered(bool)),this,SLOT(openFileDialog()));
+	connect(actionOpenDir,SIGNAL(triggered(bool)),this,SLOT(openDirDialog()));
 }
 
 void MainWindow::setCurrentPlayer(int player)
@@ -384,4 +392,37 @@ void MainWindow::setTotalTime(qint64 time)
 		controlWidget->setTotalTime(time);
 	}
 	else return;
+}
+
+void MainWindow::setVideoQuality(QAction *a)
+{
+	int quality = -1;
+	if(a->objectName() == "ytQualitySmall")
+		quality = YoutubePlayer::Low;
+	else if(a->objectName() == "ytQualityMedium")
+		quality = YoutubePlayer::Medium;
+	else if(a->objectName() == "ytQualityHigh")
+		quality = YoutubePlayer::High;
+	else if(a->objectName() == "ytQualityHd_720")
+		quality = YoutubePlayer::Hd720;
+	else if(a->objectName() == "ytQualityStandard")
+		quality = YoutubePlayer::Standard;
+	else
+		return;
+	youtubePlayer->setPlayQuality(quality);
+}
+
+void MainWindow::openDirDialog()
+{
+	QString dir = QFileDialog::getExistingDirectory(this,tr("Open Directory"),QDir::homePath(),QFileDialog::ShowDirsOnly);
+	m_playlist->addFile(dir);
+}
+
+void MainWindow::openFileDialog()
+{
+	QStringList files = QFileDialog::getOpenFileNames(this,"*",QDir::homePath());
+	foreach(QString file, files)
+	{
+		m_playlist->addFile(file);
+	}
 }

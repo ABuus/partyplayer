@@ -32,6 +32,8 @@
 #include <QFileSystemModel>
 #include <QDesktopServices>
 #include <QAction>
+#include <QActionGroup>
+#include <QFileDialog>
 #ifdef WEB_DEBUG
 #include <QWebInspector>
 #endif
@@ -75,6 +77,7 @@ private:
 	void createConnections();
 	void setCurrentPlayer(int current);
 	int m_currentPlayer;
+	QActionGroup *m_playerQualityActions;
 private slots:
 	void querySearch();
 	void clearSearch();
@@ -91,6 +94,9 @@ private slots:
 	void handlePlayerState(int state);
 	void setTime(qint64);
 	void setTotalTime(qint64);
+	void setVideoQuality(QAction *);
+	void openFileDialog();
+	void openDirDialog();
 signals:
 	void preformSearch(QString text);
 	void needToShow();

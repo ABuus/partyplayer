@@ -46,6 +46,7 @@ PlaylistView::PlaylistView(QWidget *parent)
 	verticalHeader()->setHighlightSections(false);
 	horizontalHeader()->setStretchLastSection(true);
 	horizontalHeader()->setStretchLastSection(false);
+	setColumnHidden(0,true);
 }
 
 PlaylistView::~PlaylistView()
@@ -97,6 +98,7 @@ void PlaylistView::dropEvent(QDropEvent *event)
 {
 	/* find the right row */
 	int row = indexAt(event->pos()).row();
+	Debug << row;
 	if(row == -1)
 	{
 		row = m_model->rowCount();
@@ -105,31 +107,26 @@ void PlaylistView::dropEvent(QDropEvent *event)
 	{
 		++row;
 	}
-
-	/* insert youtube videos */
-	if(event->mimeData()->hasFormat("application/yt-partyplayer"))
-	{
-		QString ytText = event->mimeData()->data("application/yt-partyplayer");
-		QStringList dataList = ytText.split("###-|-###");
-		
-		for( int i = 0; i < dataList.count();)
-		{
-			QString title = dataList.at(i++);
-			QString description = dataList.at(i++);
-			QString id = dataList.at(i++);
-			QString duration = dataList.at(i++);
-			addYoutube(title,description,id,duration,row);
-		}
-		return;
-	}
-
+	
 	/* insert files */
 	QList<QUrl> urls = event->mimeData()->urls();
+	Debug << urls << row;
 	foreach(QUrl url, urls)
 	{
 		if(url.scheme() == "file")
 		{
 			addFile(url.toString(),row++);
+			if(m_dragPlaying)
+				setPlayRow(row -1);
+			continue;
+		}
+		else if(url.host().contains("youtube.com"))
+		{
+			if(row > indexAt(startDragPos).row())
+			{
+				--row;
+			}
+			addYoutube(url,row++);
 			if(m_dragPlaying)
 				setPlayRow(row -1);
 			continue;
@@ -182,23 +179,23 @@ QVariant PlaylistView::previous()
 	return data;
 }
 
-bool PlaylistView::addM3U(QUrl url,int row)
+bool PlaylistView::addM3U(const QString file,int row)
 {
-	QFile file(url.toLocalFile());
-	if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+	QFile m_file(file);
+	if(!m_file.open(QIODevice::ReadOnly | QIODevice::Text))
 	{
-		Debug << "Error: fopen" << url.toString();
+		Debug << "Error: fopen" << file;
 		return false;
 	}
-	while(!file.atEnd())
+	while(!m_file.atEnd())
 	{
-		QByteArray line = file.readLine();
+		QByteArray line = m_file.readLine();
 		if(line.startsWith("#"))
 			continue;
 		else
 		{
-			QString filePath = url.toLocalFile();
-			filePath.remove(filePath.lastIndexOf("/"),filePath.size());
+			QString filePath = file;
+			filePath.remove(file.lastIndexOf("/"),filePath.size());
 			if(line.endsWith("\n"))
 				line.chop(1);
 			QUrl url("file:///" + filePath + "/" + line);
@@ -217,14 +214,14 @@ void PlaylistView::setPlayRow(int row, bool playing)
 		m_playRow = -1;
 		return;
 	}
-	for(int i = 0; i < m_model->columnCount(); i++)
+	for(int i = m_model->columnCount() -1 ; i > 0; i--)
 	{
 		m_model->item(row,i)->setData(true, PlayRole);
 		update(m_model->index(row,i));
 	}
 	if(playing && m_playRow != -1)
 	{
-		for(int i = 0; i < m_model->columnCount(); i++)
+		for(int i = m_model->columnCount() -1 ; i > 0; i--)
 		{
 			m_model->item(m_playRow,i)->setData(false, PlayRole);
 			update(m_model->index(m_playRow,i));
@@ -237,38 +234,54 @@ void PlaylistView::setPlayRow(int row, bool playing)
 	}
 }
 
-bool PlaylistView::addFile(const QString &file, int row)
+bool PlaylistView::addFile(QString &file, int row)
 {
-	QUrl url(file);
-	if(row == -1)
+	if(row == -1 || row > m_model->rowCount())
 	{
 		row = m_model->rowCount();
 	}
-	if(url.toLocalFile().endsWith(".m3u", Qt::CaseInsensitive))
+	if(file.endsWith(".m3u", Qt::CaseInsensitive))
 	{
-		return addM3U(url,row);
+		return addM3U(file,row);
 	}
 	else
 	{
+		if(!file.startsWith("file:///"))
+			file.prepend("file:///");
 		QList<QStandardItem *> rowItem;
-		PlaylistItem *item = new PlaylistItem(url);
+		PlaylistItem *item = new PlaylistItem(file,row,this);
+		connect(item,SIGNAL(dataRecived(int)),this,SLOT(handleItemData(int)));
 		if(!item->isValid())
 		{
-			if(addDir(url.toLocalFile(),row))
+			if(addDir(file,row))
 				return true;
 			return false;
 		}
 		for(int i = 0; i < m_model->columnCount(); i++)
 		{
-			QStandardItem *stdItem = new QStandardItem(item->value(i).toString());
-			stdItem->setData(url,UrlRole );
+			QString value = item->value(i).toString();
+			QStandardItem *stdItem = new QStandardItem(value);
+			stdItem->setData(file,UrlRole);
 			rowItem << stdItem;
 		}
+		Debug << "insert data row & data:" << row << rowItem;
 		m_model->insertRow(row,rowItem);
 		delete item;
 		return true;
 	}
 	return false;
+}
+
+bool PlaylistView::addYoutube(const QUrl url, int row)
+{
+	if(row == -1 || row > m_model->rowCount())
+	{
+		row = m_model->rowCount();
+	}
+	PlaylistItem *item = new PlaylistItem(url,row,this);
+	connect(item,SIGNAL(dataRecived(int)),this,SLOT(handleItemData(int)));
+
+	return true;
 }
 
 bool PlaylistView::addYoutube(const QString title,const QString description, 
@@ -319,8 +332,10 @@ void PlaylistView::clear()
 	setPlayRow(-1);
 }
 
-bool PlaylistView::addDir(const QString path, int row)
+bool PlaylistView::addDir(QString path, int row)
 {
+	Debug << "Dir path: " << path << row;
+	path.remove("file:///");
 	QDir dir;
 	dir.setPath(path);
 	if(!dir.exists())
@@ -333,7 +348,29 @@ bool PlaylistView::addDir(const QString path, int row)
 	foreach(QString entry, entryList)
 	{
 		if(!entry.endsWith("m3u",Qt::CaseInsensitive))
-		addFile("file:///" + path + "/" + entry,row++);
+			if(!addFile( QString("file:///" + path + "/" + entry) ,row++))
+				row--;
 	}
 	return true;
+}
+
+void PlaylistView::handleItemData(int row)
+{
+	PlaylistItem *item = qobject_cast<PlaylistItem*>(sender());
+	if(row == -1)
+		item->deleteLater();
+	else
+	{
+		QList<QStandardItem *> rowItem;
+		for(int i = 0; i < m_model->columnCount(); i++)
+		{
+			QString value = item->value(i).toString();
+			QStandardItem *stdItem = new QStandardItem(value);
+			stdItem->setData(item->value(PlaylistItem::Place),UrlRole);
+			rowItem << stdItem;
+		}
+		Debug << "insert data row & data:" << row << rowItem;
+		m_model->insertRow(row,rowItem);
+	}
+	item->deleteLater();
 }

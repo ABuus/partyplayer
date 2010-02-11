@@ -4,7 +4,8 @@ YoutubePlayer::YoutubePlayer(QObject *parent)
 	: QWebPage(parent),
 	m_totalTime(0),
 	m_currentTime(0),
-	m_state(-1)
+	m_state(-1),
+	m_playerQuality("default")
 {
 	/* enable plugins and javascript support */
 	settings()->setAttribute(QWebSettings::PluginsEnabled, true);
@@ -59,18 +60,23 @@ void YoutubePlayer::resizePlayer(int width, int height)
 /* load the video with vidId, this is not playing the video */
 void YoutubePlayer::cueVideoById( QString vidId )
 {
+	if(vidId.startsWith("http://www.youtube.com/watch?v="))
+		vidId.remove("http://www.youtube.com/watch?v=");
 	QString js = "cueVideoById('%1');";
 	js = js.arg(vidId);
-	qDebug() << js;
+	Debug << js;
 	mainFrame()->evaluateJavaScript(js);
 }
 
 /* load the video with vidId, this is playing the video */
 void YoutubePlayer::loadVideoById( QString vidId )
 {
-	QString js = "loadVideoById('%1');";
+	if(vidId.startsWith("http://www.youtube.com/watch?v="))
+		vidId.remove("http://www.youtube.com/watch?v=");
+	QString js = "loadVideoById('%1',0,'%2');";
 	js = js.arg(vidId);
-	qDebug() << js;
+	js = js.arg(m_playerQuality);
+	Debug << js;
 	mainFrame()->evaluateJavaScript(js);
 }
 
@@ -117,4 +123,27 @@ void YoutubePlayer::handlePlayerError(int errorCode)
 void YoutubePlayer::jsDebug(QVariant value)
 {
 	qDebug() << "debug output from javascript:" << value.toString();
+}
+
+void YoutubePlayer::setPlayQuality(int playerQualety)
+{
+	switch(playerQualety) {
+		case YoutubePlayer::Low:
+			m_playerQuality = "small";
+			break;
+		case YoutubePlayer::Medium:
+			m_playerQuality = "medium";
+			break;
+		case YoutubePlayer::High:
+			m_playerQuality = "large";
+			break;
+		case YoutubePlayer::Hd720:
+			m_playerQuality = "hd720";
+			break;
+		case YoutubePlayer::Standard:
+			m_playerQuality = "default";
+			break;
+	};
+	QString js = "setPlaybackQuality('%1');";
+	mainFrame()->evaluateJavaScript(js.arg(m_playerQuality));
 }

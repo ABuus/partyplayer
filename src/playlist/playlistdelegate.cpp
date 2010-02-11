@@ -31,12 +31,12 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 	if(playing)
 	{
 		QPixmap playBack(":/playing");
-		if(index.column() == 0)
+		if(index.column() == 1)
 		{
 			painter->drawPixmap(rect.adjusted(0,0,(rect.width() * -1) + 10,0),playBack,QRect(0,0,10,20));
 			painter->drawPixmap(rect.adjusted(10,0,0,0),playBack,QRect(20,0,0,20));
 		}
-		else if(index.column() == 7)
+		else if(index.column() == 8)
 		{
 			painter->drawPixmap(rect.adjusted(rect.width() -10,0,0,0),playBack,QRect(10,0,10,20));
 			painter->drawPixmap(rect.adjusted(0,0,-10,0),playBack,QRect(20,0,0,20));

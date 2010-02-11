@@ -25,6 +25,7 @@ PlaylistModel::PlaylistModel(QObject *parent)
 	: QStandardItemModel(parent)
 {
 	QStringList headerLabels;
+	headerLabels.insert( Playlist::Internal, tr("Internal") );
 	headerLabels.insert( Playlist::Artist, tr("Artist") );
 	headerLabels.insert( Playlist::Title, tr("Title") );
 	headerLabels.insert( Playlist::Album, tr("Album") );

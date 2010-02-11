@@ -4,10 +4,9 @@
 // Qt
 #include <QWebPage>
 #include <QWebFrame>
-#include <QDebug>
 #include <QFile>
 #include <QWebView>
-//#include "tcpserver.h"
+#include "debug.h"
 #include "player_global.h"
 
 #define TIMER_INTERVAL 200
@@ -17,6 +16,13 @@ class PLAYER_EXPORT YoutubePlayer : public QWebPage
 Q_OBJECT
 
 public:
+	enum PlayerQuality {
+		Low = 0,
+		Medium,
+		High,
+		Hd720,
+		Standard
+	};
 	YoutubePlayer(QObject *parent);
 	~YoutubePlayer();
 public slots:
@@ -27,6 +33,7 @@ public slots:
 	void cueVideoById(QString videoId);
 	void loadVideoById(QString videoId);
 	void addJavaScriptObject();
+	void setPlayQuality(int playerQualety = YoutubePlayer::Standard);
 	/* slots called forn JS */
 	void setState(int state);
 	void setTotalTime(double time);
@@ -37,6 +44,7 @@ private:
 	qint64 m_totalTime;
 	qint64 m_currentTime;
 	int m_state;
+	QString m_playerQuality;
 signals:
 	void totalTimeChanged(qint64 newTotal);
 	void currentTimeChanged(qint64 newCurrent);

@@ -23,19 +23,26 @@
 // Qt
 #include <QStandardItem>
 #include <QVariant>
+#include <QString>
 #include <QUrl>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 // taglib
 #include <fileref.h>
 #include <tag.h>
 #include <audioproperties.h>
 #include "playlist_export.h"
+#include "debug.h"
 
 namespace Playlist {
 
-class PLAYLIST_EXPORT PlaylistItem
+class PLAYLIST_EXPORT PlaylistItem : public QObject
 {
+	Q_OBJECT
 public:
-	PlaylistItem(const QUrl url, const QString ytText = 0);
+	PlaylistItem(const QString location,int row = -1, QObject *parent = 0);
+	PlaylistItem(const QUrl url,int row = -1, QObject *parent = 0);
 	~PlaylistItem();
 	QVariant value( int column );
 	QString artist() { return m_artist; };
@@ -49,7 +56,8 @@ public:
 	bool isLocal() { return m_localFile; };
 	bool isValid() { return m_isValid; };
 	enum ColumnData {
-		Artist = 0,
+		Internal = 0,
+		Artist,
 		Title,
 		Album,
 		Year,
@@ -58,7 +66,12 @@ public:
 		Bitrate,
 		Place
 	};
+	enum InternalData {
+		Local = 0,
+		Youtube
+	};
 private:
+	int m_internal;
 	QString m_artist;
 	QString m_title;
 	QString m_album;
@@ -69,8 +82,14 @@ private:
 	int m_bitrate;
 	bool m_localFile;
 	bool m_isValid;
-	bool localFile(const QString &file);
-	void youtubeFile(const QUrl &url, const QString ytText);
+	int m_row;
+	QNetworkAccessManager *netAccessManager;
+	bool localFile(QString file);
+private slots:
+	void youtubeFile(QNetworkReply *reply);
+signals:
+	void dataRecived(int row);
+	
 };
 
 }; // namespace Playlist

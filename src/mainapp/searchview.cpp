@@ -22,7 +22,7 @@
 SearchView::SearchView(QWidget *parent)
 	: QListView(parent)
 {
-	setSelectionMode(QAbstractItemView::ExtendedSelection);
+	setSelectionMode(QAbstractItemView::MultiSelection);
 	setDragEnabled(true);
 	setAcceptDrops(false);
 	setObjectName("SearchView");

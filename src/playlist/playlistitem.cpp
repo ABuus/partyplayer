@@ -21,28 +21,54 @@
 
 using namespace Playlist;
 
-PlaylistItem::PlaylistItem(const QUrl url, const QString ytText)
+/*
+ *	location can be 
+ *	"file://path/to/file.mp3"
+ *	"http://www.youtube.com/watch?v=YYlBQKIOb-w"
+ */
+
+PlaylistItem::PlaylistItem(const QString location,int row, QObject *parent)
+	:QObject(parent)
 {
 	m_isValid = false;
-	QList<QStandardItem *> row;
-	QString file;
+	m_row = row;
+	if(location.startsWith("file"))
+	{
+		localFile(location);
+	}
+	else if(location.startsWith("http://www.youtube.com/watch?v="))
+	{
+		netAccessManager = new QNetworkAccessManager(this);
+		connect(netAccessManager,SIGNAL(finished( QNetworkReply *)),this,SLOT(youtubeFile(QNetworkReply *)));
+		QString id = location;
+		id.remove("http://www.youtube.com/watch?v=");
+		QUrl data_url = ("http://gdata.youtube.com/feeds/api/videos/" + id);
+		netAccessManager->get(QNetworkRequest(data_url));
+	}
+	else
+	{
+		m_localFile = false;
+		m_isValid = false;
+	}
+}
+
+PlaylistItem::PlaylistItem(const QUrl url,int row, QObject *parent)
+	:QObject(parent)
+{
+	m_isValid = false;
+	m_row = row;
 	if(url.scheme() == "file")
 	{
-		if(localFile(url.toLocalFile()))
-		{
-			m_isValid = true;
-		}
-		else
-		{
-			m_isValid = false;
-		}
-		return;
+		localFile(url.toLocalFile());
 	}
-	// this has changed it is no longer an url from yt videos fix it ;-)
-	else if(url.scheme() == "http" && url.host() == "www.youtube.com")
+	else if(url.host().contains("youtube.com"))
 	{
-		youtubeFile(url,ytText);
-		m_isValid = true;
+		netAccessManager = new QNetworkAccessManager(this);
+		connect(netAccessManager,SIGNAL(finished( QNetworkReply *)),this,SLOT(youtubeFile(QNetworkReply *)));
+		QString id = url.toString();
+		id.remove("http://www.youtube.com/watch?v=");
+		QUrl data_url = ("http://gdata.youtube.com/feeds/api/videos/" + id);
+		netAccessManager->get(QNetworkRequest(data_url));
 	}
 	else
 	{
@@ -53,13 +79,14 @@ PlaylistItem::PlaylistItem(const QUrl url, const QString ytText)
 
 PlaylistItem::~PlaylistItem()
 {
-
 }
 
 QVariant PlaylistItem::value( int column )
 {
 	switch(column)
 	{
+		case PlaylistItem::Internal:
+			return m_internal;
 		case PlaylistItem::Artist:
 			return m_artist;
 		case PlaylistItem::Title:
@@ -81,15 +108,18 @@ QVariant PlaylistItem::value( int column )
 	}
 }
 
-bool PlaylistItem::localFile(const QString &file)
+bool PlaylistItem::localFile(QString file)
 {
+	file.remove("file:///");
 	QByteArray ba(file.toLatin1());
+	Debug << "local file: " << ba;
 	const char *tFile = ba.data();
 	TagLib::FileRef f(tFile);
 	if(!f.isNull() && f.tag())
     {
 		TagLib::Tag *tag = f.tag();
 		TagLib::AudioProperties *ap = f.audioProperties();
+		m_internal = PlaylistItem::Local;
 		m_artist = tag->artist().toCString(true);
 		m_title = tag->title().toCString(true);
 		m_album = tag->album().toCString(true);
@@ -106,21 +136,69 @@ bool PlaylistItem::localFile(const QString &file)
 			m_length = QString("%1:%2").arg(min).arg(sec);
 		m_bitrate = ap->bitrate();
 		m_localFile = true;
+		Debug << "valid local file: " << file << m_artist << m_title;
+		m_isValid = true;
+		emit dataRecived(-1);
 		return true;
 	}
+	Debug << "invalid local file: " << file;
+	emit dataRecived(-1);
 	return false;
 }
 
-void PlaylistItem::youtubeFile(const QUrl &url, const QString ytText)
+void PlaylistItem::youtubeFile(QNetworkReply *reply)
 {
-	QStringList texts = ytText.split(":");
-	m_length = texts.last().toInt();
-	QStringList strs = texts.first().split("-");
-	m_artist = strs.first();
-	m_title = strs.last();
-	m_place = url.toString();
+	QByteArray data = reply->readAll();
+	Debug << "Youtube data: ";
+
+	int entryStart = data.indexOf("entry");
+	int entryEnd = data.indexOf("entry",entryStart +1);
+	
+	QString entry = data.mid(entryStart,entryEnd - entryStart);
+
+	int titleStart = entry.indexOf("<title type='text'>") + 19;
+	int titleEnd = entry.indexOf("</title>");
+
+	int decStart = entry.indexOf("<media:description type='plain'>") +32;
+	int decEnd = entry.indexOf("</media:description>");
+	
+	int idStart = entry.indexOf("<id>") +4;
+	int idEnd = entry.indexOf("</id>", idStart);
+
+	int durationStart = entry.indexOf("<yt:duration seconds='") +22;
+	int durationEnd = entry.indexOf("'/>", durationStart);
+
+	QString title = entry.mid(titleStart, (titleEnd - titleStart));
+	QString dec = entry.mid(decStart, (decEnd - decStart));
+	QString id = entry.mid(idStart, (idEnd - idStart));
+	QString duration = entry.mid(durationStart, (durationEnd - durationStart));
+
+	id.remove("http://gdata.youtube.com/feeds/api/videos/");
+
+	Debug << title << id << duration;
+
+	QString url("http://www.youtube.com/watch?v=");
+	url.append(id);
+
+	title.replace("&amp;","&");
+	dec.replace("&amp;","&");
+
+	m_internal = PlaylistItem::Youtube;
+	m_artist = title;
+	m_title = dec;
+	m_place = url;
 	m_year = 0;
 	m_bitrate = 0;
 	m_track = 0;
+	// convert track length to string
+	int length = duration.toInt();
+	int min = length / 60;
+	int sec = length % 60;
+	if(sec < 10)
+		m_length = QString("%1:0%2").arg(min).arg(sec);
+	else
+		m_length = QString("%1:%2").arg(min).arg(sec);
 	m_localFile = false;
+	emit dataRecived(m_row);
+	m_isValid = true;
 }

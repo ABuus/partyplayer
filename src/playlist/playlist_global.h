@@ -28,7 +28,8 @@ namespace Playlist {
 #define ROW_HEIGHT 22
 
 	enum PLAYLIST_EXPORT ColunmData {
-		Artist = 1,
+		Internal = 0,
+		Artist,
 		Title,
 		Album,
 		Year,

@@ -110,7 +110,7 @@
                  <enum>QAbstractItemView::DragOnly</enum>
                 </property>
                 <property name="selectionMode">
-                 <enum>QAbstractItemView::SingleSelection</enum>
+                 <enum>QAbstractItemView::ExtendedSelection</enum>
                 </property>
                </widget>
               </item>
@@ -161,8 +161,8 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionOpen_file"/>
-    <addaction name="actionOpen_Dir"/>
+    <addaction name="actionOpenFile"/>
+    <addaction name="actionOpenDir"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
@@ -175,9 +175,19 @@
      <addaction name="Audio_Only"/>
      <addaction name="Video"/>
     </widget>
+    <widget class="QMenu" name="ytPbQuality">
+     <property name="title">
+      <string>Youtube playback quality</string>
+     </property>
+     <addaction name="ytQualitySmall"/>
+     <addaction name="ytQualityMedium"/>
+     <addaction name="ytQualityHigh"/>
+     <addaction name="ytQualityHd_720"/>
+     <addaction name="ytQualityStandard"/>
+    </widget>
     <addaction name="menuMode"/>
     <addaction name="separator"/>
-    <addaction name="actionYouTube_HD"/>
+    <addaction name="ytPbQuality"/>
    </widget>
    <widget class="QMenu" name="menuPlaylist">
     <property name="title">
@@ -190,18 +200,18 @@
    <addaction name="menuSettings"/>
    <addaction name="menuPlaylist"/>
   </widget>
-  <action name="actionOpen_file">
+  <action name="actionOpenFile">
    <property name="checkable">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Open file.</string>
    </property>
   </action>
-  <action name="actionOpen_Dir">
+  <action name="actionOpenDir">
    <property name="text">
     <string>Open Dir</string>
    </property>
@@ -246,6 +256,52 @@
   <action name="actionSavePlaylist">
    <property name="text">
     <string>Save</string>
+   </property>
+  </action>
+  <action name="ytQualitySmall">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Low</string>
+   </property>
+  </action>
+  <action name="ytQualityMedium">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Medium</string>
+   </property>
+  </action>
+  <action name="ytQualityHigh">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>High</string>
+   </property>
+  </action>
+  <action name="ytQualityHd_720">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hd 720</string>
+   </property>
+  </action>
+  <action name="ytQualityStandard">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Default</string>
    </property>
   </action>
  </widget>

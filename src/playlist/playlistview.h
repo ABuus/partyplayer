@@ -46,16 +46,18 @@ public:
 	~PlaylistView();
 	QVariant next();
 	QVariant previous();
-	bool addFile(const QString &file, int row); // if row = -1 item id added at bottom
+	bool addFile(QString &file, int row = -1); // if row = -1 item id added at bottom
 public slots:
 	void clear();
+	void handleItemData(int row);
 signals:
 	void playRequest(const QVariant value);
 private:
-	bool addM3U(QUrl url, int row); // if row = -1 item id added at bottom
+	bool addM3U(const QString file, int row); // if row = -1 item id added at bottom
+	bool addYoutube(const QUrl url, int row = -1); // if row = -1 item id added at bottom
 	bool addYoutube(const QString title,const QString description, 
 		const QString vidId, const QString duration, int row);	// if row = -1 item id added at bottom
-	bool addDir(const QString path, int row); // if row = -1 item id added at bottom
+	bool addDir(QString path, int row); // if row = -1 item id added at bottom
 	void setPlayRow(int row, bool playing = false);
 	PlaylistModel *m_model;
 	QPoint startDragPos;

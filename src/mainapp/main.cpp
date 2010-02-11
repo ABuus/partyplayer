@@ -18,7 +18,6 @@
 */
 
 #include "application.h"
-#include <QDebug>
 
 int main(int argc, char *argv[])
 {
@@ -28,7 +27,6 @@ int main(int argc, char *argv[])
 	app.addLibraryPath(app.applicationDirPath() + "/bin/qt");
 	app.addLibraryPath(app.applicationDirPath() + "/bin/gstreamer/bin");
 	app.addLibraryPath(app.applicationDirPath() + "/bin/plugins");
-	qDebug() << app.libraryPaths();
 #endif
 	return app.exec();
 }

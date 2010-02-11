@@ -12,15 +12,14 @@ done:	icon ;-)
 done:	clear playlist
 done:	fix play button toggle
 done:	create webplayer with timer, and make a binding class with Player
-		controllwidget state change on youtube player stare change.
+done:	controllwidget state change on youtube player stare change.
 done_temp:	webserver containing play.html ( free host http://partyplayer.megabyet.net/ is the current soulution.
 		
 						### after 0.1 ###
 done:	look into gstreamer for better codec support
-		
 		enqueue yt video see Mainwindow::enqueueNextTrack()
 		look into qml for drawing the playlist. ( Qt 4.7 will have this )
-		youtube jsapi to control videos
+done:	youtube jsapi to control videos
 		youtube playlists ( includeing mostpopular )
 		CD playback
 		collection ( webcollection ?? ) 
@@ -33,5 +32,6 @@ done:	QSingleApplication ?? open add files to playlist if open to running PP ins
 fixed:	QSingleApplication as dll( reason: LGPL violation ) 
 		QSingleApplication not sending all files to new instance
 fixed:	player running out -> controllwidget slider = 0 -> user press play -> bad things happens
-		internal drag/drop in playlistview of ytvideos is not working
+fixed:	internal drag/drop in playlistview of ytvideos is not working
+		internal drag/drop in playlistview of playing ytvideos is not working
 fixed:	play next on EOS
