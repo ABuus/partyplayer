@@ -14,8 +14,6 @@ YoutubePlayer::YoutubePlayer(QObject *parent)
 	settings()->setObjectCacheCapacities(0,0,0);
 	settings()->clearMemoryCaches();
 
-//	HttpDaemon *server = new HttpDaemon(1919,this);
-
 	connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),this, SLOT(addJavaScriptObject()));
 	
 	QUrl url = QUrl("http://www.partyplayer.megabyet.net/playerdata/play.html");
