@@ -26,8 +26,8 @@ unix:LIBS += -L$(DESTDIR) \
 	-lplaylist \
 	-lplayer \
 	-lQtSolutions_SingleApplication-2.6 
-win32:LIBS += -L$(DESTDIR) \
-	-lQtSolutions_SingleApplication-2.6 \
+win32:LIBS += -L$$DESTDIR\
+	-L$$[QT_INSTALL_BINS] \
 	-lplaylist \
 	-lplayer
 RESOURCES     = mainwindow.qrc	
