@@ -92,6 +92,8 @@ void YoutubePlayer::setState(int state)
 	if(state == m_state)
 		return;
 	m_state = state;
+	if(m_state == 0)
+		emit finished();
 	emit stateChanged(m_state);
 }
 

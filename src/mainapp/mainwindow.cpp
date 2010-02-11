@@ -47,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	// youtube player
 	webView = new YoutubeViewer(this); // in youtubeplayer.h
 #ifdef Q_WS_X11
-	webView->setFixedSize(700,466);
+	webView->setFixedSize(500,400);
 #endif
 	youtubePlayer = new YoutubePlayer(webView);
 	webView->setPage(youtubePlayer);
@@ -127,6 +127,7 @@ void MainWindow::createConnections()
 	connect(controlWidget,SIGNAL(pause()),this,SLOT(pause()));
 	connect(m_playlist,SIGNAL(playRequest(const QVariant &)),this,SLOT(handlePlayRequests(const QVariant &)));
 	connect(localPlayer,SIGNAL(runningOut()),this,SLOT(enqueueNextTrack()));
+	connect(youtubePlayer,SIGNAL(finished()),this,SLOT(playNextTrack()));
 	connect(localPlayer,SIGNAL(stateChanged(int)),this,SLOT(handlePlayerState(int)));
 	connect(youtubePlayer,SIGNAL(stateChanged(int)),this,SLOT(handlePlayerState(int)));
 	connect(localPlayer,SIGNAL(timeChanged(qint64)),this,SLOT(setTime(qint64)));
