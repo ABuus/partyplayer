@@ -38,6 +38,13 @@ void YoutubePlayer::pause()
 	mainFrame()->evaluateJavaScript("pauseVideo(); null");
 }
 
+void YoutubePlayer::seek(int msec)
+{
+	// true is allow seek ahead youtube api
+	QString js = "seekTo(%1,true); null"; 
+	mainFrame()->evaluateJavaScript(js.arg(msec / 1000));
+}
+
 /* resize the swf player to fit in this without scrollbars */
 void YoutubePlayer::resizePlayer(int width, int height)
 {

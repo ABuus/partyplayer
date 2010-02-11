@@ -55,6 +55,10 @@ class MainWindow : public QMainWindow, public Ui::mainWindowClass
 public:
 	MainWindow(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~MainWindow();
+	enum CurrentPlayer {
+		Loacal = 1,
+		Youtube
+	};
 public slots:
 	bool handleApplicationMessage(const QString &);
 private:
@@ -69,6 +73,8 @@ private:
 	QList<int> oldVSplitter;
 	bool webState;
 	void createConnections();
+	void setCurrentPlayer(int current);
+	int m_currentPlayer;
 private slots:
 	void querySearch();
 	void clearSearch();
@@ -78,7 +84,13 @@ private slots:
 	void playNextTrack();
 	void playPreviousTrack();
 	void handlePlayRequests(const QVariant &req);
-
+	void play();
+	void pause();
+	void stop();
+	void seek(int msec);
+	void handlePlayerState(int state);
+	void setTime(qint64);
+	void setTotalTime(qint64);
 signals:
 	void preformSearch(QString text);
 	void needToShow();

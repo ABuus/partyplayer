@@ -21,7 +21,8 @@
 
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags),
-	webState(false)
+	webState(false),
+	m_currentPlayer(0)
 {
 	// restore geometry and states
 	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
@@ -100,33 +101,43 @@ MainWindow::~MainWindow()
 
 void MainWindow::createConnections()
 {
-	// connections
+	// youtube search
 	connect(this, SIGNAL( preformSearch( QString )), search, SLOT( query( QString )));
 	connect(searchLineEdit, SIGNAL(returnPressed()), this, SLOT( querySearch()));
 	connect(search, SIGNAL(newSearch()), this, SLOT(clearSearch()));
 	connect(search, SIGNAL(newItem(QStringList)), this,SLOT(insertSearchItem(QStringList)));
-	connect(m_playlist,SIGNAL(playRequest(const QVariant &)),this,SLOT(handlePlayRequests(const QVariant &)));
-	connect(controlWidget,SIGNAL(seek(int)),localPlayer,SLOT(seek(int)));
-	connect(controlWidget,SIGNAL(stop()),localPlayer,SLOT(stop()));
-	connect(controlWidget,SIGNAL(play()),localPlayer,SLOT(play()));
-	connect(controlWidget,SIGNAL(pause()),localPlayer,SLOT(pause()));
+
+	// player control
 	connect(controlWidget,SIGNAL(forward()),this,SLOT(playNextTrack()));
 	connect(controlWidget,SIGNAL(back()),this,SLOT(playPreviousTrack()));
-	connect(controlWidget,SIGNAL(play()),youtubePlayer,SLOT(play()));
-	connect(controlWidget,SIGNAL(pause()),youtubePlayer,SLOT(pause()));
-	// connected to pause
-	connect(controlWidget,SIGNAL(stop()),youtubePlayer,SLOT(pause()));
+	connect(controlWidget,SIGNAL(seek(int)),this,SLOT(seek(int)));
+	connect(controlWidget,SIGNAL(stop()),this,SLOT(stop()));
+	connect(controlWidget,SIGNAL(play()),this,SLOT(play()));
+	connect(controlWidget,SIGNAL(pause()),this,SLOT(pause()));
+	connect(m_playlist,SIGNAL(playRequest(const QVariant &)),this,SLOT(handlePlayRequests(const QVariant &)));
+	connect(localPlayer,SIGNAL(runningOut()),this,SLOT(enqueueNextTrack()));
+	connect(localPlayer,SIGNAL(stateChanged(int)),this,SLOT(handlePlayerState(int)));
+	connect(youtubePlayer,SIGNAL(stateChanged(int)),this,SLOT(handlePlayerState(int)));
+	connect(localPlayer,SIGNAL(timeChanged(qint64)),this,SLOT(setTime(qint64)));
+	connect(youtubePlayer,SIGNAL(currentTimeChanged(qint64)),this,SLOT(setTime(qint64)));
+	connect(localPlayer,SIGNAL(totalTimeChanged(qint64)),this,SLOT(setTotalTime(qint64)));
+	connect(youtubePlayer,SIGNAL(totalTimeChanged(qint64)),this,SLOT(setTotalTime(qint64)));
+	
+
+	// actions & menus
 	connect(actionClearPlaylist,SIGNAL(triggered()),m_playlist,SLOT(clear()));
 	connect(actionSavePlaylist,SIGNAL(triggered()),m_playlist,SLOT(save()));
 	connect(menuMode,SIGNAL(triggered(QAction *)),this,SLOT(setVideoMode(QAction *)));
-	connect(localPlayer,SIGNAL(timeChanged(qint64)),controlWidget,SLOT(setTime(qint64)));
-	connect(localPlayer,SIGNAL(totalTimeChanged(qint64)),controlWidget,SLOT(setTotalTime(qint64)));
-	connect(localPlayer,SIGNAL(runningOut()),this,SLOT(enqueueNextTrack()));
-	connect(localPlayer,SIGNAL(stateChanged(int)),controlWidget,SLOT(setPlayState(int)));
-	connect(youtubePlayer,SIGNAL(totalTimeChanged(qint64)),controlWidget,SLOT(setTotalTime(qint64)));
-	connect(youtubePlayer,SIGNAL(currentTimeChanged(qint64)),controlWidget,SLOT(setTime(qint64)));
-	connect(youtubePlayer,SIGNAL(finished()),this,SLOT(playNextTrack()));
-	connect(youtubePlayer,SIGNAL(stateChanged(int)),controlWidget,SLOT(setPlayState(int)));
+
+	
+}
+
+void MainWindow::setCurrentPlayer(int player)
+{
+	if(m_currentPlayer == player)
+		return;
+	else
+		m_currentPlayer = player;
 }
 
 void MainWindow::querySearch()
@@ -183,7 +194,7 @@ void MainWindow::enqueueNextTrack()
 		return;
 	if(value.startsWith("file", Qt::CaseInsensitive))
 	{
-		Debug << "loading file";
+		setCurrentPlayer(MainWindow::Loacal);
 		if(webState)
 		{
 			webState = false;
@@ -193,7 +204,7 @@ void MainWindow::enqueueNextTrack()
 	}
 	else
 	{
-		Debug << "loading http" << value;
+		setCurrentPlayer(MainWindow::Youtube);
 		/* enqueueVideoBuId ??? */
 		youtubePlayer->loadVideoById(value);
 		webState = true;
@@ -208,7 +219,7 @@ void MainWindow::playNextTrack()
 		return;
 	if(value.startsWith("file", Qt::CaseInsensitive))
 	{
-		Debug << "loading file" << value;
+		setCurrentPlayer(MainWindow::Loacal);
 		if(webState)
 		{
 			webState = false;
@@ -218,10 +229,11 @@ void MainWindow::playNextTrack()
 	}
 	else
 	{
-		Debug << "loading http" << value;
+		setCurrentPlayer(MainWindow::Youtube);
 		youtubePlayer->loadVideoById(value);
 		webState = true;
 		localPlayer->stop();
+
 	}
 }
 
@@ -232,17 +244,17 @@ void MainWindow::playPreviousTrack()
 		return;
 	if(value.startsWith("file", Qt::CaseInsensitive))
 	{
-		Debug << "loading file";
+		setCurrentPlayer(MainWindow::Loacal);
 		if(webState)
 		{
 			webState = false;
 			youtubePlayer->pause();
 		}
-		localPlayer->playUrl(QUrl(value));
+		localPlayer->enqueue(QUrl(value));
 	}
 	else
 	{
-		Debug << "loading http" << value;
+		setCurrentPlayer(MainWindow::Youtube);
 		youtubePlayer->loadVideoById(value);
 		webState = true;
 		localPlayer->stop();
@@ -252,10 +264,10 @@ void MainWindow::playPreviousTrack()
 void MainWindow::handlePlayRequests(const QVariant &req)
 {
 	QString value = req.toString();
-	
+	qDebug() << "play request" << value;
 	if( value.startsWith("file", Qt::CaseInsensitive))
 	{
-		Debug << "loading file" << value;
+		setCurrentPlayer(MainWindow::Loacal);
 		if(webState)
 		{
 			webState = false;
@@ -265,7 +277,7 @@ void MainWindow::handlePlayRequests(const QVariant &req)
 	}
 	else
 	{
-		Debug << "loading http" << value;
+		setCurrentPlayer(MainWindow::Youtube);
 		youtubePlayer->loadVideoById(value);
 		webState = true;
 		localPlayer->stop();
@@ -289,3 +301,84 @@ bool MainWindow::handleApplicationMessage(const QString &msg)
 	return true;
 }
 
+void MainWindow::play()
+{
+	if(m_currentPlayer == MainWindow::Loacal)
+		localPlayer->play();
+	else if(m_currentPlayer == MainWindow::Youtube)
+		youtubePlayer->play();
+	else
+		return;
+}
+
+void MainWindow::pause()
+{
+	if(m_currentPlayer == MainWindow::Loacal)
+		localPlayer->pause();
+	else if(m_currentPlayer == MainWindow::Youtube)
+		youtubePlayer->pause();
+	else
+		return;
+}
+
+void MainWindow::stop()
+{	
+	if(m_currentPlayer == MainWindow::Loacal)
+		localPlayer->stop();
+	else if(m_currentPlayer == MainWindow::Youtube)
+		youtubePlayer->pause();
+	else
+		return;
+}
+
+void MainWindow::seek(int msec)
+{
+	if(m_currentPlayer == MainWindow::Loacal)
+		localPlayer->seek(msec);
+	else if(m_currentPlayer == MainWindow::Youtube)
+		youtubePlayer->seek(msec);
+	else
+		return;
+}
+
+void MainWindow::handlePlayerState(int state)
+{
+	QObject *player = qobject_cast<QObject *>( sender() );
+	if(player == localPlayer && m_currentPlayer == MainWindow::Loacal)
+	{
+		controlWidget->setPlayState(state);
+	}
+	else if(player == youtubePlayer && m_currentPlayer == MainWindow::Youtube)
+	{
+		controlWidget->setPlayState(state);
+	}
+	else return;
+}
+
+void MainWindow::setTime(qint64 time)
+{
+	QObject *player = qobject_cast<QObject *>( sender() );
+	if(player == localPlayer && m_currentPlayer == MainWindow::Loacal)
+	{
+		controlWidget->setTime(time);
+	}
+	else if(player == youtubePlayer && m_currentPlayer == MainWindow::Youtube)
+	{
+		controlWidget->setTime(time);
+	}
+	else return;
+}
+
+void MainWindow::setTotalTime(qint64 time)
+{
+	QObject *player = qobject_cast<QObject *>( sender() );
+	if(player == localPlayer && m_currentPlayer == MainWindow::Loacal)
+	{
+		controlWidget->setTotalTime(time);
+	}
+	else if(player == youtubePlayer && m_currentPlayer == MainWindow::Youtube)
+	{
+		controlWidget->setTotalTime(time);
+	}
+	else return;
+}

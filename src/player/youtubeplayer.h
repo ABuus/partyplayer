@@ -22,6 +22,7 @@ public:
 public slots:
 	void play();
 	void pause();
+	void seek(int msec);
 	void resizePlayer(int w, int h);
 	void cueVideoById(QString videoId);
 	void loadVideoById(QString videoId);
