@@ -110,9 +110,10 @@ QVariant PlaylistItem::value( int column )
 
 bool PlaylistItem::localFile(QString file)
 {
-	file.remove("file://");
+#ifdef Q_WS_WIN
+	file.remove("file:///");
+#endif
 	QByteArray ba(file.toLatin1());
-	Debug << "local file: " << ba;
 	const char *tFile = ba.data();
 	TagLib::FileRef f(tFile);
 	if(!f.isNull() && f.tag())

@@ -27,6 +27,17 @@ namespace Playlist {
 
 #define ROW_HEIGHT 22
 
+/*
+ * on windows path is file:///C:/...
+ * on linux path is file://home/...
+ */
+#ifdef Q_WS_WIN
+#define ROOT_PATH "/"
+#else
+#define ROOT_PATH ""
+#endif
+#define FILE_MARCO "file://" ROOT_PATH
+
 	enum PLAYLIST_EXPORT ColunmData {
 		Internal = 0,
 		Artist,

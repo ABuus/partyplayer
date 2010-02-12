@@ -115,7 +115,7 @@ void PlaylistView::dropEvent(QDropEvent *event)
 	{
 		if(url.scheme() == "file")
 		{
-			addFile(url.toString(),row++);
+			addFile(url.toLocalFile(),row++);
 			if(m_dragPlaying)
 				setPlayRow(row -1);
 			continue;
@@ -196,9 +196,10 @@ bool PlaylistView::addM3U(const QString file,int row)
 		{
 			QString filePath = file;
 			filePath.remove(file.lastIndexOf("/"),filePath.size());
+			filePath.prepend(FILE_MARCO);
 			if(line.endsWith("\n"))
 				line.chop(1);
-			QUrl url("file:///" + filePath + "/" + line);
+			QUrl url(filePath + "/" + line);
 			addFile(url.toString(),row++);
 			Debug << "M3U insert url" << url;
 		}
@@ -246,8 +247,8 @@ bool PlaylistView::addFile(QString file, int row)
 	}
 	else
 	{
-		if(!file.startsWith("file:///"))
-			file.prepend("file:///");
+		if(!file.startsWith(FILE_MARCO))
+			file.prepend(FILE_MARCO);
 		QList<QStandardItem *> rowItem;
 		PlaylistItem *item = new PlaylistItem(file,row,this);
 		connect(item,SIGNAL(dataRecived(int)),this,SLOT(handleItemData(int)));
@@ -264,7 +265,6 @@ bool PlaylistView::addFile(QString file, int row)
 			stdItem->setData(file,UrlRole);
 			rowItem << stdItem;
 		}
-		Debug << "insert data row & data:" << row << rowItem;
 		m_model->insertRow(row,rowItem);
 		delete item;
 		return true;
@@ -335,7 +335,9 @@ void PlaylistView::clear()
 bool PlaylistView::addDir(QString path, int row)
 {
 	Debug << "Dir path: " << path << row;
-	path.remove("file://");
+#ifdef Q_WS_WIN
+	path.remove("file:///");
+#endif
 	QDir dir;
 	dir.setPath(path);
 	if(!dir.exists())
@@ -348,7 +350,7 @@ bool PlaylistView::addDir(QString path, int row)
 	foreach(QString entry, entryList)
 	{
 		if(!entry.endsWith("m3u",Qt::CaseInsensitive))
-			if(!addFile( QString("file://" + path + "/" + entry) ,row++))
+			if(!addFile( QString(path + "/" + entry) ,row++))
 				row--;
 	}
 	return true;
