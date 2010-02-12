@@ -1,6 +1,7 @@
 
 TEMPLATE = lib
 TARGET = playlist
+QT += network
 
 CONFIG(debug, debug|release) {
 DESTDIR = ../../debug

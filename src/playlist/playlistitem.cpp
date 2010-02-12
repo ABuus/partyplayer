@@ -110,7 +110,7 @@ QVariant PlaylistItem::value( int column )
 
 bool PlaylistItem::localFile(QString file)
 {
-	file.remove("file:///");
+	file.remove("file://");
 	QByteArray ba(file.toLatin1());
 	Debug << "local file: " << ba;
 	const char *tFile = ba.data();

@@ -234,7 +234,7 @@ void PlaylistView::setPlayRow(int row, bool playing)
 	}
 }
 
-bool PlaylistView::addFile(QString &file, int row)
+bool PlaylistView::addFile(QString file, int row)
 {
 	if(row == -1 || row > m_model->rowCount())
 	{
@@ -335,7 +335,7 @@ void PlaylistView::clear()
 bool PlaylistView::addDir(QString path, int row)
 {
 	Debug << "Dir path: " << path << row;
-	path.remove("file:///");
+	path.remove("file://");
 	QDir dir;
 	dir.setPath(path);
 	if(!dir.exists())
@@ -348,7 +348,7 @@ bool PlaylistView::addDir(QString path, int row)
 	foreach(QString entry, entryList)
 	{
 		if(!entry.endsWith("m3u",Qt::CaseInsensitive))
-			if(!addFile( QString("file:///" + path + "/" + entry) ,row++))
+			if(!addFile( QString("file://" + path + "/" + entry) ,row++))
 				row--;
 	}
 	return true;

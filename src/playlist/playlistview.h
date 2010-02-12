@@ -46,7 +46,7 @@ public:
 	~PlaylistView();
 	QVariant next();
 	QVariant previous();
-	bool addFile(QString &file, int row = -1); // if row = -1 item id added at bottom
+	bool addFile(QString file, int row = -1); // if row = -1 item id added at bottom
 public slots:
 	void clear();
 	void handleItemData(int row);
