@@ -303,11 +303,10 @@ bool MainWindow::handleApplicationMessage(const QString &msg)
 	qDebug() << "message recived by new App instance" << msg;
 	QStringList files = msg.split("* *");
 	files.removeFirst();
-	int row = -1;
 	foreach(QString file, files)
 	{
 		file.prepend("file:///");
-		m_playlist->addFile(file,row++);
+		m_playlist->addFile(file);
 	}
 	emit needToShow();
 	return true;
