@@ -374,3 +374,17 @@ void PlaylistView::handleItemData(int row)
 	}
 	item->deleteLater();
 }
+
+void PlaylistView::save()
+{
+	QList<QUrl> urls;
+	for(int i = 0; i < m_model->rowCount(); i++)
+	{
+		QUrl url(m_model->data( m_model->index(i,0), UrlRole).toUrl());
+		urls << url;
+	}
+	PlaylistDialog *dialog = new PlaylistDialog(this);
+	dialog->setUrls(urls);
+	dialog->exec();
+	dialog->deleteLater();
+}

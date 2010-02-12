@@ -35,6 +35,7 @@
 #include "playlistmodel.h"
 #include "playlistitem.h"
 #include "playlistdelegate.h"
+#include "playlistdialog.h"
 
 namespace Playlist {
 
@@ -50,6 +51,7 @@ public:
 public slots:
 	void clear();
 	void handleItemData(int row);
+	void save();
 signals:
 	void playRequest(const QVariant value);
 private:
