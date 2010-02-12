@@ -335,9 +335,7 @@ void PlaylistView::clear()
 bool PlaylistView::addDir(QString path, int row)
 {
 	Debug << "Dir path: " << path << row;
-#ifdef Q_WS_WIN
-	path.remove("file:///");
-#endif
+	path.remove(FILE_MARCO);
 	QDir dir;
 	dir.setPath(path);
 	if(!dir.exists())

@@ -18,6 +18,7 @@
 */
 
 #include "playlistitem.h"
+#include "playlist_global.h"
 
 using namespace Playlist;
 
@@ -110,9 +111,7 @@ QVariant PlaylistItem::value( int column )
 
 bool PlaylistItem::localFile(QString file)
 {
-#ifdef Q_WS_WIN
-	file.remove("file:///");
-#endif
+	file.remove(FILE_MARCO);
 	QByteArray ba(file.toLatin1());
 	const char *tFile = ba.data();
 	TagLib::FileRef f(tFile);
