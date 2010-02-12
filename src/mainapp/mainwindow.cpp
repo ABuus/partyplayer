@@ -36,6 +36,14 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	searchModel = new SearchModel(this);
 	searchView->setModel(searchModel);
 	
+	// saved playlists
+	savedPlaylistView = new QListView(this);
+	savedPlaylistView->setDragEnabled(true);
+	savedPlaylistModel = new Playlist::SavedPlaylistModel(this);
+	savedPlaylistView->setModel(savedPlaylistModel);
+	savedPlaylistView->setRootIndex(savedPlaylistModel->index(Playlist::SavedPlaylistModel::playlistPath()));
+	tabWidget->addTab(savedPlaylistView,tr("Playlists"));
+
 	//playlist
 	m_playlist = new Playlist::PlaylistView(this);
 	playlistContainer->addWidget(m_playlist);

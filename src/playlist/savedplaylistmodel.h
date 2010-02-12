@@ -4,6 +4,10 @@
 #include <QFileSystemModel>
 #include <QDesktopServices>
 #include <QDir>
+#include <QFile>
+#include <QUrl>
+#include <QMimeData>
+#include <QString>
 #include "playlist_export.h"
 
 namespace Playlist {
@@ -16,6 +20,7 @@ public:
 	SavedPlaylistModel(QObject *parent);
 	~SavedPlaylistModel();
 	static QString playlistPath();
+	QMimeData * mimeData(const QModelIndexList &indexes) const;
 private:
 	
 };

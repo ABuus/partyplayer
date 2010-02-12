@@ -34,12 +34,14 @@
 #include <QAction>
 #include <QActionGroup>
 #include <QFileDialog>
+#include <QListView>
 #ifdef WEB_DEBUG
 #include <QWebInspector>
 #endif
 
 // playlist
 #include "playlist/playlistview.h"
+#include "playlist/savedplaylistmodel.h"
 // player
 #include "player/localplayer.h"
 #include "player/youtubeplayer.h"
@@ -78,6 +80,8 @@ private:
 	void setCurrentPlayer(int current);
 	int m_currentPlayer;
 	QActionGroup *m_playerQualityActions;
+	QListView *savedPlaylistView;
+	Playlist::SavedPlaylistModel *savedPlaylistModel;
 private slots:
 	void querySearch();
 	void clearSearch();
