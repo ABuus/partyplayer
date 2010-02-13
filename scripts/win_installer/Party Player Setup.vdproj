@@ -10860,6 +10860,17 @@
                     }
                 }
             }
+            "{1525181F-901A-416C-8A58-119130FE478E}:_FCBE6C6DD1924527994E60DB7AFA629E"
+            {
+            "Name" = "8:#1924"
+            "AlwaysCreate" = "11:FALSE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Property" = "8:WindowsFolder"
+                "Folders"
+                {
+                }
+            }
         }
         "LaunchCondition"
         {
@@ -10877,7 +10888,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Party Player"
         "ProductCode" = "8:{5B2B8404-E752-4177-9CE8-D4210D20F451}"
-        "PackageCode" = "8:{C2987DFA-A538-448E-A9E7-D319ADA54D2E}"
+        "PackageCode" = "8:{C59BA514-8011-403B-9DC7-E9B298779851}"
         "UpgradeCode" = "8:{7FC3BED5-572B-49D3-AEEB-D4BC220ACC4F}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
