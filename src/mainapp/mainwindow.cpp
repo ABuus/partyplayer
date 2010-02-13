@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	searchView->setModel(searchModel);
 	
 	// saved playlists
+	Playlist::SavedPlaylistModel::createPlaylistPath();
 	savedPlaylistView = new QListView(this);
 	savedPlaylistView->setDragEnabled(true);
 	savedPlaylistModel = new Playlist::SavedPlaylistModel(this);

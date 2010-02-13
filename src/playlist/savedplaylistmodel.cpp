@@ -39,3 +39,9 @@ QMimeData * SavedPlaylistModel::mimeData(const QModelIndexList &indexes) const
 	mimeData->setUrls(urls);
 	return mimeData;
 }
+
+bool SavedPlaylistModel::createPlaylistPath()
+{
+	QDir dir;
+	return dir.mkpath(SavedPlaylistModel::playlistPath());
+}

@@ -20,6 +20,7 @@ public:
 	SavedPlaylistModel(QObject *parent);
 	~SavedPlaylistModel();
 	static QString playlistPath();
+	static bool createPlaylistPath();
 	QMimeData * mimeData(const QModelIndexList &indexes) const;
 private:
 	

@@ -33,7 +33,7 @@ void PlaylistDialog::savePlaylist()
 		if(!warnOverride())
 			return;
 	}
-	createPlaylistPath();
+
 	QFile file(absolutePlaylistPath(name));
 	if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
 	{
@@ -86,13 +86,6 @@ bool PlaylistDialog::warnOverride()
 	else
 		return false;
 }
-
-bool PlaylistDialog::createPlaylistPath()
-{
-	QDir dir;
-	return dir.mkpath(SavedPlaylistModel::playlistPath());
-}
-
 
 void PlaylistDialog::listViewItemClicked(const QModelIndex &index)
 {

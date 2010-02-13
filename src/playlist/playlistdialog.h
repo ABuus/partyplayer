@@ -29,7 +29,6 @@ private:
 	bool playlistExists(const QString &name);
 	QString absolutePlaylistPath(const QString &name);
 	bool warnOverride();
-	bool createPlaylistPath();
 	QString playlistPath();
 	QList<QUrl> m_urls;
 	SavedPlaylistModel *m_playlistModel;
