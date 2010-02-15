@@ -44,7 +44,26 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 		
 		// painter->fillRect(painter->viewport(), brush);
 		painter->fillRect(rect,brush);
+		goto drawtext;
 	}
+	/* paint selected */
+	if(opt.state & QStyle::State_Selected)
+	{
+		QLinearGradient gradient(0,0,0,1);
+		gradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+		QGradientStops stops;
+		/* top = 0.0 bottom = 1.0 */
+		stops.append(QPair<qreal,QColor>(0.0, Qt::white));
+		stops.append(QPair<qreal,QColor>(0.1, QColor(255,0,255,100)));
+		stops.append(QPair<qreal,QColor>(0.8, QColor(255,0,255,100)));
+		stops.append(QPair<qreal,QColor>(1.0, Qt::white));
+		
+		gradient.setStops(stops);
+		QBrush brush(gradient);
+		painter->fillRect(rect,brush);
+		goto drawtext;
+	}
+	/* mouse hover */
 	if(index.data(Qt::UserRole +5).toBool())
 	{
 		QLinearGradient gradient(0,0,0,1);
@@ -59,7 +78,12 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 		gradient.setStops(stops);
 		QBrush brush(gradient);
 		painter->fillRect(rect,brush);
+		goto drawtext;
 	}
-	QStyledItemDelegate::paint(painter,option,index);
+drawtext:
+	/* draw text */
+	rect.adjust(2,2,-2,-2);
+	QFlags<Qt::Alignment> flags = index.data(Qt::TextAlignmentRole).toInt();
+	painter->drawText(rect.left(),rect.top(),rect.width(),rect.height(),flags,index.data().toString());	
 }
 
