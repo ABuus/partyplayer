@@ -71,8 +71,8 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 		QGradientStops stops;
 		/* top = 0.0 bottom = 1.0 */
 		stops.append(QPair<qreal,QColor>(0.0, Qt::white));
-		stops.append(QPair<qreal,QColor>(0.1, QColor(255,0,255,100)));
-		stops.append(QPair<qreal,QColor>(0.8, QColor(255,0,255,100)));
+		stops.append(QPair<qreal,QColor>(0.1, QColor(255,0,255,50)));
+		stops.append(QPair<qreal,QColor>(0.8, QColor(255,0,255,50)));
 		stops.append(QPair<qreal,QColor>(1.0, Qt::white));
 		
 		gradient.setStops(stops);
@@ -83,7 +83,7 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 drawtext:
 	/* draw text */
 	rect.adjust(2,2,-2,-2);
-	QFlags<Qt::Alignment> flags = index.data(Qt::TextAlignmentRole).toInt();
+	QFlags<Qt::Alignment> flags( index.data(Qt::TextAlignmentRole).toInt() );
 	painter->drawText(rect.left(),rect.top(),rect.width(),rect.height(),flags,index.data().toString());	
 }
 

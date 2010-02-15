@@ -108,11 +108,13 @@ void LocalPlayer::getTime()
 				{
 					Debug << "Failed to change state on new pipeline";
 					checkState();
+					return;
 				}
 				if(!gst_element_set_state(m_pipeline, GST_STATE_NULL))
 				{
 					Debug << "Failed to change state on old pipeline";
 					checkState();
+					return;
 				}
 				gst_object_unref(m_pipeline);
 				m_pipeline = m_newPipeline;
