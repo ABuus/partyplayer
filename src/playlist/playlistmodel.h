@@ -48,6 +48,7 @@ public:
 	bool insertUrls(const QList<QUrl> urls, int startRow);
 	bool insertUrl(const QUrl &url, int row = -1);
 	void setPlayRow(int row);
+	int getPlayRow();
 private:
 	bool isDirectory(const QUrl url);
 	void insertAllFilesUnderDirectory(const QUrl url);

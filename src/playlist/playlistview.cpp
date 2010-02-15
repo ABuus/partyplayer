@@ -22,7 +22,7 @@
 using namespace Playlist;
 
 PlaylistView::PlaylistView(QWidget *parent)
-	: QTableView(parent)	
+	: QTableView(parent)
 {
 	// setup this
 	setShowGrid(false);
@@ -40,7 +40,6 @@ PlaylistView::PlaylistView(QWidget *parent)
 	horizontalHeader()->setStretchLastSection(true);
 	horizontalHeader()->setStretchLastSection(false);
 	setColumnHidden(Playlist::Internal,true);
-//	viewport()->setAttribute(Qt::WA_Hover);
 	setMouseTracking(true);
 
 	// delegate 
@@ -76,22 +75,38 @@ void PlaylistView::setModel(Playlist::PlaylistModel *model)
 
 /*
  * get the url after the item that is in play state
+ * if set is true (the default) play role is set at next row
  */
 
-QUrl PlaylistView::next()
+QUrl PlaylistView::next(bool set)
 {
-	Debug << "UNIMPLEMENTED";
-	return QUrl();
+	QUrl retval;
+	int currentRow = m_model->getPlayRow();
+	if(currentRow == -1 || (currentRow +1) > m_model->rowCount())
+		retval = QUrl();
+	else
+		retval = m_model->index(++currentRow,0).data(UrlRole).toUrl();
+	if(set)
+		m_model->setPlayRow(currentRow);
+	return retval;
 }
 
 /*
  * get the url before the item that is in play state
+ * if set is true (the default) play role is set at previous row
  */
 
-QUrl PlaylistView::previous()
+QUrl PlaylistView::previous(bool set)
 {
-	Debug << "UNIMPLEMENTED";
-	return QUrl();
+	QUrl retval;
+	int currentRow = (m_model->getPlayRow() - 1);
+	if(currentRow < 0 )
+		retval = QUrl();
+	else
+		retval = m_model->index(currentRow,0).data(UrlRole).toUrl();
+	if(set)
+		m_model->setPlayRow(currentRow);
+	return retval;
 }
 
 /*
@@ -141,7 +156,7 @@ void PlaylistView::startDrag(Qt::DropActions supportenDropActions)
 		if(!urls.contains(url))
 			urls.append(url);
 	}
-	/* set drag urls and execute eth drag */
+	/* set drag urls and execute the drag */
 	mimeData->setUrls(urls);
 	drag->setMimeData(mimeData);
 	drag->exec();

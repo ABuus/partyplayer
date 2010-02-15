@@ -201,20 +201,34 @@ void PlaylistModel::updateItemData()
 void PlaylistModel::setPlayRow(int row)
 {
 	/* find old play row if it exists and reset it */
-	for(int i = 0; i < rowCount(); i++)
+	int oldRow = getPlayRow();
+	if(oldRow != -1)
 	{
-		if(!item(i)->data(PlayRole).toBool())
-			continue;
-		for(int j = 0; j < columnCount(); j++)
+		for(int i = 0; i < columnCount(); i++)
 		{
-			item(i,j)->setData(false,PlayRole);
+			item(oldRow,i)->setData(false,PlayRole);
 		}
 	}
 	/* set new play row */
+	if(row < 0 || row >= rowCount())
+		return;
 	for(int i = 0; i < columnCount(); i++)
 	{
 		item(row,i)->setData(true,PlayRole);
 	}
+}
+
+/* find current play row if none set -1 returned */
+int PlaylistModel::getPlayRow()
+{
+	for(int i = 0; i < rowCount(); i++)
+	{
+		if(!item(i)->data(PlayRole).toBool())
+			continue;
+		else
+			return i;
+	}
+	return -1;
 }
 
 bool PlaylistModel::isDirectory(const QUrl url)

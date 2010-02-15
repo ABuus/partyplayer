@@ -46,8 +46,8 @@ public:
 	~PlaylistView();
 	void createConnections();
 	void setModel(PlaylistModel *model);
-	QUrl next();
-	QUrl previous();
+	QUrl next(bool set = true);
+	QUrl previous(bool set = true);
 public slots:
 	void clear();
 	void save();
