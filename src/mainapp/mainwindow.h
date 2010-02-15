@@ -41,6 +41,7 @@
 
 // playlist
 #include "playlist/playlistview.h"
+#include "playlist/playlistmodel.h"
 #include "playlist/savedplaylistmodel.h"
 // player
 #include "player/localplayer.h"
@@ -67,6 +68,7 @@ public slots:
 	bool handleApplicationMessage(const QString &);
 private:
 	Playlist::PlaylistView *m_playlist;
+	Playlist::PlaylistModel *m_playlistModel;
 	Search *search;
 	QFileSystemModel *fileSysModel;
 	ControlWidget *controlWidget;
@@ -90,7 +92,7 @@ private slots:
 	void enqueueNextTrack();
 	void playNextTrack();
 	void playPreviousTrack();
-	void handlePlayRequests(const QVariant &req);
+	void handlePlayRequests(const QUrl url);
 	void play();
 	void pause();
 	void stop();

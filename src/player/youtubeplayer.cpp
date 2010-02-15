@@ -27,6 +27,16 @@ YoutubePlayer::~YoutubePlayer()
 
 }
 
+bool YoutubePlayer::playUrl(const QUrl url)
+{
+	QString urlStr = url.toString();
+	if(!urlStr.startsWith("http://www.youtube.com/watch?v="))
+		return false;
+	urlStr.remove("http://www.youtube.com/watch?v=");
+	loadVideoById(urlStr);
+	return true;
+}
+
 /* call swf player to play video */
 void YoutubePlayer::play()
 {
@@ -60,8 +70,6 @@ void YoutubePlayer::resizePlayer(int width, int height)
 /* load the video with vidId, this is not playing the video */
 void YoutubePlayer::cueVideoById( QString vidId )
 {
-	if(vidId.startsWith("http://www.youtube.com/watch?v="))
-		vidId.remove("http://www.youtube.com/watch?v=");
 	QString js = "cueVideoById('%1');";
 	js = js.arg(vidId);
 	Debug << js;
@@ -124,7 +132,8 @@ void YoutubePlayer::handlePlayerError(int errorCode)
 
 void YoutubePlayer::jsDebug(QVariant value)
 {
-	qDebug() << "debug output from javascript:" << value.toString();
+	Q_UNUSED(value);
+//	qDebug() << "debug output from javascript:" << value.toString();
 }
 
 void YoutubePlayer::setPlayQuality(int playerQualety)

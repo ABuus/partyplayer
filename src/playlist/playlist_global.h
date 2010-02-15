@@ -39,15 +39,15 @@ namespace Playlist {
 #define FILE_MARCO "file://" ROOT_PATH
 
 	enum PLAYLIST_EXPORT ColunmData {
-		Internal = 0,
-		Artist,
+		Artist = 0,
 		Title,
 		Album,
 		Year,
 		Track,
 		Length,
 		Bitrate,
-		Place
+		Place,
+		Internal
 	};
 
 	enum PLAYLIST_EXPORT ItemRole {

@@ -30,28 +30,36 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 	// paint background if item is playing
 	if(playing)
 	{
-		QPixmap playBack(":/playing");
-		if(index.column() == 1)
-		{
-			painter->drawPixmap(rect.adjusted(0,0,(rect.width() * -1) + 10,0),playBack,QRect(0,0,10,20));
-			painter->drawPixmap(rect.adjusted(10,0,0,0),playBack,QRect(20,0,0,20));
-		}
-		else if(index.column() == 8)
-		{
-			painter->drawPixmap(rect.adjusted(rect.width() -10,0,0,0),playBack,QRect(10,0,10,20));
-			painter->drawPixmap(rect.adjusted(0,0,-10,0),playBack,QRect(20,0,0,20));
-		}
-		else
-		{
-			painter->drawPixmap(rect,playBack,QRect(20,0,0,20));
-		}
+		QLinearGradient gradient(0,0,0,1);
+		gradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+		QGradientStops stops;
+		/* top = 0.0 bottom = 1.0 */
+		stops.append(QPair<qreal,QColor>(0.0, Qt::white));
+		stops.append(QPair<qreal,QColor>(0.1, QColor(255,0,255,200)));
+		stops.append(QPair<qreal,QColor>(0.8, QColor(255,0,255,200)));
+		stops.append(QPair<qreal,QColor>(1.0, Qt::white));
+		
+		gradient.setStops(stops);
+		QBrush brush(gradient);
+		
+		// painter->fillRect(painter->viewport(), brush);
+		painter->fillRect(rect,brush);
 	}
-
-	// draw text
-	rect.adjust(4,4,-4,-4);
-	int column = index.column() +1;
-	if(column < Year || Bitrate < column )
-		painter->drawText(rect, Qt::AlignVCenter, index.data().toString());
-	else
-		painter->drawText(rect, Qt::AlignCenter, index.data().toString());
+	if(index.data(Qt::UserRole +5).toBool())
+	{
+		QLinearGradient gradient(0,0,0,1);
+		gradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+		QGradientStops stops;
+		/* top = 0.0 bottom = 1.0 */
+		stops.append(QPair<qreal,QColor>(0.0, Qt::white));
+		stops.append(QPair<qreal,QColor>(0.1, QColor(255,0,255,100)));
+		stops.append(QPair<qreal,QColor>(0.8, QColor(255,0,255,100)));
+		stops.append(QPair<qreal,QColor>(1.0, Qt::white));
+		
+		gradient.setStops(stops);
+		QBrush brush(gradient);
+		painter->fillRect(rect,brush);
+	}
+	QStyledItemDelegate::paint(painter,option,index);
 }
+

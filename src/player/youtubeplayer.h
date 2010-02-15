@@ -25,15 +25,17 @@ public:
 	};
 	YoutubePlayer(QObject *parent);
 	~YoutubePlayer();
+	bool playUrl(const QUrl url);
 public slots:
 	void play();
 	void pause();
-	void seek(int msec);
 	void resizePlayer(int w, int h);
+	void seek(int msec);
+	void setPlayQuality(int playerQualety = YoutubePlayer::Standard);
+private slots:
 	void cueVideoById(QString videoId);
 	void loadVideoById(QString videoId);
 	void addJavaScriptObject();
-	void setPlayQuality(int playerQualety = YoutubePlayer::Standard);
 	/* slots called forn JS */
 	void setState(int state);
 	void setTotalTime(double time);

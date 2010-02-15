@@ -47,6 +47,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 
 	//playlist
 	m_playlist = new Playlist::PlaylistView(this);
+	m_playlistModel = new Playlist::PlaylistModel(this);
+	m_playlist->setModel(m_playlistModel);
 	playlistContainer->addWidget(m_playlist);
 	m_playlist->show();
 
@@ -134,7 +136,7 @@ void MainWindow::createConnections()
 	connect(controlWidget,SIGNAL(stop()),this,SLOT(stop()));
 	connect(controlWidget,SIGNAL(play()),this,SLOT(play()));
 	connect(controlWidget,SIGNAL(pause()),this,SLOT(pause()));
-	connect(m_playlist,SIGNAL(playRequest(const QVariant &)),this,SLOT(handlePlayRequests(const QVariant &)));
+	connect(m_playlist,SIGNAL(playRequest(const QUrl )),this,SLOT(handlePlayRequests(const QUrl)));
 	connect(localPlayer,SIGNAL(runningOut()),this,SLOT(enqueueNextTrack()));
 	connect(youtubePlayer,SIGNAL(finished()),this,SLOT(playNextTrack()));
 	connect(localPlayer,SIGNAL(stateChanged(int)),this,SLOT(handlePlayerState(int)));
@@ -210,10 +212,10 @@ void MainWindow::setVideoMode(QAction *a)
 /* todo enqueue in ytplayer */
 void MainWindow::enqueueNextTrack()
 {
-	QString value = m_playlist->next().toString();
-	if(value.isEmpty())
+	QUrl url = m_playlist->next();
+	if(!url.isValid())
 		return;
-	if(value.startsWith("file", Qt::CaseInsensitive))
+	if(url.scheme() == "file")
 	{
 		setCurrentPlayer(MainWindow::Loacal);
 		if(webState)
@@ -221,13 +223,13 @@ void MainWindow::enqueueNextTrack()
 			webState = false;
 			youtubePlayer->pause();
 		}
-		localPlayer->enqueue(QUrl(value));
+		localPlayer->enqueue(url);
 	}
 	else
 	{
 		setCurrentPlayer(MainWindow::Youtube);
 		/* enqueueVideoBuId ??? */
-		youtubePlayer->loadVideoById(value);
+		youtubePlayer->playUrl(url);
 		webState = true;
 		localPlayer->stop();
 	}
@@ -235,58 +237,19 @@ void MainWindow::enqueueNextTrack()
 
 void MainWindow::playNextTrack()
 {
-	QString value = m_playlist->next().toString();
-	if(value.isEmpty())
-		return;
-	if(value.startsWith("file", Qt::CaseInsensitive))
-	{
-		setCurrentPlayer(MainWindow::Loacal);
-		if(webState)
-		{
-			webState = false;
-			youtubePlayer->pause();
-		}
-		localPlayer->playUrl(QUrl(value));
-	}
-	else
-	{
-		setCurrentPlayer(MainWindow::Youtube);
-		youtubePlayer->loadVideoById(value);
-		webState = true;
-		localPlayer->stop();
-
-	}
+	const QUrl url = m_playlist->next();
+	handlePlayRequests(url);
 }
 
 void MainWindow::playPreviousTrack()
 {
-	QString value = m_playlist->previous().toString();
-	if(value.isEmpty())
-		return;
-	if(value.startsWith("file", Qt::CaseInsensitive))
-	{
-		setCurrentPlayer(MainWindow::Loacal);
-		if(webState)
-		{
-			webState = false;
-			youtubePlayer->pause();
-		}
-		localPlayer->enqueue(QUrl(value));
-	}
-	else
-	{
-		setCurrentPlayer(MainWindow::Youtube);
-		youtubePlayer->loadVideoById(value);
-		webState = true;
-		localPlayer->stop();
-	}
+	const QUrl url = m_playlist->previous();
+	handlePlayRequests(url);
 }
 
-void MainWindow::handlePlayRequests(const QVariant &req)
+void MainWindow::handlePlayRequests(const QUrl url)
 {
-	QString value = req.toString();
-	qDebug() << "play request" << value;
-	if( value.startsWith("file", Qt::CaseInsensitive))
+	if( url.scheme() == "file")
 	{
 		setCurrentPlayer(MainWindow::Loacal);
 		if(webState)
@@ -294,12 +257,12 @@ void MainWindow::handlePlayRequests(const QVariant &req)
 			webState = false;
 			youtubePlayer->pause();
 		}
-		localPlayer->playUrl(QUrl(value));
+		localPlayer->playUrl(url);
 	}
 	else
 	{
 		setCurrentPlayer(MainWindow::Youtube);
-		youtubePlayer->loadVideoById(value);
+		youtubePlayer->playUrl(url);
 		webState = true;
 		localPlayer->stop();
 	}
@@ -315,7 +278,7 @@ bool MainWindow::handleApplicationMessage(const QString &msg)
 	foreach(QString file, files)
 	{
 		file.prepend("file:///");
-		m_playlist->addFile(file);
+		m_playlistModel->insertUrl(QUrl(file));
 	}
 	emit needToShow();
 	return true;
@@ -424,7 +387,7 @@ void MainWindow::setVideoQuality(QAction *a)
 void MainWindow::openDirDialog()
 {
 	QString dir = QFileDialog::getExistingDirectory(this,tr("Open Directory"),QDir::homePath(),QFileDialog::ShowDirsOnly);
-	m_playlist->addFile(dir);
+	m_playlistModel->insertUrl(QUrl(dir));
 }
 
 void MainWindow::openFileDialog()
@@ -432,6 +395,6 @@ void MainWindow::openFileDialog()
 	QStringList files = QFileDialog::getOpenFileNames(this,"*",QDir::homePath());
 	foreach(QString file, files)
 	{
-		m_playlist->addFile(file);
+		m_playlistModel->insertUrl(QUrl(file));
 	}
 }

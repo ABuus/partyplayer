@@ -24,6 +24,8 @@
 #include <QPainter>
 #include <QStyleOptionViewItem>
 #include <QModelIndex>
+#include <QBrush>
+#include <QRect>
 #include "debug.h"
 #include "playlist_global.h"
 #include "playlist_export.h"
@@ -37,7 +39,6 @@ class PLAYLIST_EXPORT PlaylistDelegate : public QStyledItemDelegate
 public:
 	PlaylistDelegate(QWidget *parent = 0) : QStyledItemDelegate(parent) {}
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-//	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };
 
 }; // namespace Playlist

@@ -33,7 +33,6 @@
 #include "playlist_global.h"
 #include "playlist_export.h"
 #include "playlistmodel.h"
-#include "playlistitem.h"
 #include "playlistdelegate.h"
 #include "playlistdialog.h"
 
@@ -45,34 +44,24 @@ class PLAYLIST_EXPORT PlaylistView : public QTableView
 public:
 	PlaylistView(QWidget *parent = 0);
 	~PlaylistView();
-	QVariant next();
-	QVariant previous();
-	bool addFile(QString file, int row = -1); // if row = -1 item id added at bottom
+	void createConnections();
+	void setModel(PlaylistModel *model);
+	QUrl next();
+	QUrl previous();
 public slots:
 	void clear();
-	void handleItemData(int row);
 	void save();
 signals:
-	void playRequest(const QVariant value);
+	void playRequest(const QUrl url);
 private:
-	bool addM3U(const QString file, int row); // if row = -1 item id added at bottom
-	bool addYoutube(const QUrl url, int row = -1); // if row = -1 item id added at bottom
-	bool addYoutube(const QString title,const QString description, 
-		const QString vidId, const QString duration, int row);	// if row = -1 item id added at bottom
-	bool addDir(QString path, int row); // if row = -1 item id added at bottom
-	void setPlayRow(int row, bool playing = false);
 	PlaylistModel *m_model;
-	QPoint startDragPos;
-	int m_dragRow;
-	int m_playRow;
-	bool m_dragPlaying;
+	int m_hoverRow;
+private slots:
+	void onDoubleClicked(const QModelIndex &index);
 protected:
-	void dragMoveEvent(QDragMoveEvent *event);
-	void mousePressEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
+	void startDrag(Qt::DropActions supportenDropActions);
 	void dropEvent(QDropEvent *event);
-	void mouseDoubleClickEvent(QMouseEvent *event);
-	void paintEvent(QPaintEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
 };
 
 }; // namespace Playlist

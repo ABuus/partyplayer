@@ -27,12 +27,12 @@ using namespace Playlist;
  *	"file://path/to/file.mp3"
  *	"http://www.youtube.com/watch?v=YYlBQKIOb-w"
  */
-
-PlaylistItem::PlaylistItem(const QString location,int row, QObject *parent)
-	:QObject(parent)
+/*
+PlaylistItem::PlaylistItem(const QString location, QObject *parent)
+	:QObject(parent),
+	m_internalPointer(0)
 {
 	m_isValid = false;
-	m_row = row;
 	if(location.startsWith("file"))
 	{
 		localFile(location);
@@ -52,12 +52,20 @@ PlaylistItem::PlaylistItem(const QString location,int row, QObject *parent)
 		m_isValid = false;
 	}
 }
+*/
 
-PlaylistItem::PlaylistItem(const QUrl url,int row, QObject *parent)
+PlaylistItem::PlaylistItem(QObject *parent)
 	:QObject(parent)
 {
 	m_isValid = false;
-	m_row = row;
+}
+
+PlaylistItem::~PlaylistItem()
+{
+}
+
+void PlaylistItem::setUrl(const QUrl url)
+{
 	if(url.scheme() == "file")
 	{
 		localFile(url.toLocalFile());
@@ -75,34 +83,31 @@ PlaylistItem::PlaylistItem(const QUrl url,int row, QObject *parent)
 	{
 		m_localFile = false;
 		m_isValid = false;
+		emit dataRecived();
 	}
-}
-
-PlaylistItem::~PlaylistItem()
-{
 }
 
 QVariant PlaylistItem::value( int column )
 {
 	switch(column)
 	{
-		case PlaylistItem::Internal:
+		case Playlist::Internal:
 			return m_internal;
-		case PlaylistItem::Artist:
+		case Playlist::Artist:
 			return m_artist;
-		case PlaylistItem::Title:
+		case Playlist::Title:
 			return m_title;
-		case PlaylistItem::Album:
+		case Playlist::Album:
 			return m_album;
-		case PlaylistItem::Year:
+		case Playlist::Year:
 			return m_year;
-		case PlaylistItem::Track:
+		case Playlist::Track:
 			return m_track;
-		case PlaylistItem::Length:
+		case Playlist::Length:
 			return m_length;
-		case PlaylistItem::Bitrate:
+		case Playlist::Bitrate:
 			return m_bitrate;
-		case PlaylistItem::Place:
+		case Playlist::Place:
 			return m_place;
 		default:
 			return QVariant();
@@ -136,13 +141,13 @@ bool PlaylistItem::localFile(QString file)
 			m_length = QString("%1:%2").arg(min).arg(sec);
 		m_bitrate = ap->bitrate();
 		m_localFile = true;
-		Debug << "valid local file: " << file << m_artist << m_title;
 		m_isValid = true;
-		emit dataRecived(-1);
+		emit dataRecived();
 		return true;
 	}
+	m_isValid = false;
 	Debug << "invalid local file: " << file;
-	emit dataRecived(-1);
+	emit dataRecived();
 	return false;
 }
 
@@ -199,6 +204,6 @@ void PlaylistItem::youtubeFile(QNetworkReply *reply)
 	else
 		m_length = QString("%1:%2").arg(min).arg(sec);
 	m_localFile = false;
-	emit dataRecived(m_row);
 	m_isValid = true;
+	emit dataRecived();
 }

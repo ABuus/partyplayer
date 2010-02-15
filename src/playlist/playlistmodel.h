@@ -24,6 +24,8 @@
 #include <QMimeData>
 #include <QModelIndex>
 #include <QUrl>
+#include <QFileInfo>
+#include <QDir>
 #include "debug.h"
 #include "playlist_global.h"
 #include "playlist_export.h"
@@ -42,9 +44,15 @@ public:
 	Qt::ItemFlags flags(const QModelIndex &index) const;
 	QStringList mimeTypes() const;
 	QMimeData * mimeData(const QModelIndexList &indexes) const;
-	void setRowData(int row, const QVariant &value, int role);
+	bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
+	bool insertUrls(const QList<QUrl> urls, int startRow);
+	bool insertUrl(const QUrl &url, int row = -1);
+	void setPlayRow(int row);
 private:
-	
+	bool isDirectory(const QUrl url);
+	void insertAllFilesUnderDirectory(const QUrl url);
+private slots:
+	void updateItemData();
 };
 
 }; // namespace Playlist

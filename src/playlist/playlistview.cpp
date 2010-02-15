@@ -22,31 +22,32 @@
 using namespace Playlist;
 
 PlaylistView::PlaylistView(QWidget *parent)
-	: QTableView(parent),
-	m_dragRow(-1),
-	m_playRow(-1),
-	m_dragPlaying(false)
-	
+	: QTableView(parent)	
 {
-	// model
-	m_model = new PlaylistModel(this);
-	setModel(m_model);
-	// view
+	// setup this
 	setShowGrid(false);
 	setSortingEnabled(true);
 	setSelectionBehavior(QAbstractItemView::SelectRows);
-	setSelectionMode(QAbstractItemView::SingleSelection);
+	setSelectionMode(QAbstractItemView::ContiguousSelection);
 	setDragEnabled(true);
 	setAcceptDrops(true);
 	setDropIndicatorShown(false);
 	setDragDropMode(QAbstractItemView::DragDrop);
-	setItemDelegate(new PlaylistDelegate(this));
+	setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 	verticalHeader()->setResizeMode(QHeaderView::Fixed);
 	verticalHeader()->setDefaultSectionSize(20);
 	verticalHeader()->setHighlightSections(false);
 	horizontalHeader()->setStretchLastSection(true);
 	horizontalHeader()->setStretchLastSection(false);
-	setColumnHidden(0,true);
+	setColumnHidden(Playlist::Internal,true);
+//	viewport()->setAttribute(Qt::WA_Hover);
+	setMouseTracking(true);
+
+	// delegate 
+	setItemDelegate(new PlaylistDelegate(this));
+	
+	// connections
+	createConnections();
 }
 
 PlaylistView::~PlaylistView()
@@ -54,326 +55,58 @@ PlaylistView::~PlaylistView()
 
 }
 
-void PlaylistView::dragMoveEvent(QDragMoveEvent *event)
+/*
+ * connect Signals & Slots
+ */
+
+void PlaylistView::createConnections()
 {
-	m_dragRow = indexAt(event->pos()).row();
-	update();
+	connect(this,SIGNAL(doubleClicked(const QModelIndex &)),this,SLOT(onDoubleClicked(const QModelIndex &)));
 }
 
-void PlaylistView::mousePressEvent(QMouseEvent *event)
+/* 
+ * force model to be Playlist::playlistModel 
+ */
+
+void PlaylistView::setModel(Playlist::PlaylistModel *model)
 {
-	if(event->button() == Qt::LeftButton && selectedIndexes().count() > 0)
-		startDragPos = event->pos();
-	QTableView::mousePressEvent(event);
+	m_model = model;
+	QTableView::setModel(m_model);
 }
 
-void PlaylistView::mouseMoveEvent(QMouseEvent *event)
-{
-	QPoint moved = event->pos() - startDragPos;
-	if(moved.manhattanLength() < 3)
-	{
-		QTableView::mouseMoveEvent(event);
-		return;
-	}
-	QList<QUrl> urls;
-	QModelIndex index = indexAt(startDragPos);
-	QStandardItem *item = m_model->itemFromIndex(index);
-	if(item->data(PlayRole).toBool())
-		m_dragPlaying = true;
-	urls << model()->data(index,Qt::UserRole + 1).toUrl();
-	QDrag *drag = new QDrag(this);
-	QMimeData *mimeData = new QMimeData;
-	mimeData->setUrls(urls);
-	drag->setMimeData(mimeData);
+/*
+ * get the url after the item that is in play state
+ */
 
-	if(drag->exec() == Qt::MoveAction)
-	{
-		QModelIndex oldIndex = m_model->indexFromItem(item);
-		m_model->removeRow(oldIndex.row());
-	}
-	m_dragPlaying = false;
+QUrl PlaylistView::next()
+{
+	Debug << "UNIMPLEMENTED";
+	return QUrl();
 }
 
-void PlaylistView::dropEvent(QDropEvent *event)
+/*
+ * get the url before the item that is in play state
+ */
+
+QUrl PlaylistView::previous()
 {
-	/* find the right row */
-	int row = indexAt(event->pos()).row();
-	Debug << row;
-	if(row == -1)
-	{
-		row = m_model->rowCount();
-	}
-	else if(row > indexAt(startDragPos).row())
-	{
-		++row;
-	}
-	
-	/* insert files */
-	QList<QUrl> urls = event->mimeData()->urls();
-	Debug << urls << row;
-	foreach(QUrl url, urls)
-	{
-		if(url.scheme() == "file")
-		{
-			addFile(url.toLocalFile(),row++);
-			if(m_dragPlaying)
-				setPlayRow(row -1);
-			continue;
-		}
-		else if(url.host().contains("youtube.com"))
-		{
-			if(row > indexAt(startDragPos).row())
-			{
-				--row;
-			}
-			addYoutube(url,row++);
-			if(m_dragPlaying)
-				setPlayRow(row -1);
-			continue;
-		}
-		else
-		{
-			// unsuported content
-			continue;
-		}
-	}
-	selectRow(row);
+	Debug << "UNIMPLEMENTED";
+	return QUrl();
 }
 
-void PlaylistView::mouseDoubleClickEvent(QMouseEvent *event)
-{
-	if(event->button() != Qt::LeftButton)
-		return;
-	if(m_playRow != -1)
-	{
-		setPlayRow(m_playRow,false);
-	}
-	QModelIndex index = indexAt(event->pos());
-	QVariant data = m_model->data(index,UrlRole);
-	playRequest(data);
-
-	if(m_playRow == index.row())
-		return;
-	setPlayRow(index.row(), true);
-}
-
-QVariant PlaylistView::next()
-{
-	QStandardItem *item = m_model->item(m_playRow +1);
-	if(item == 0)
-		return QUrl();
-	QVariant data = item->data(UrlRole);
-	setPlayRow(m_playRow +1,true);
-	Debug << "play next";
-	return data;
-}
-
-QVariant PlaylistView::previous()
-{
-	QStandardItem *item = m_model->item(m_playRow -1);
-	if(m_playRow == 0 || m_playRow == -1)
-		return QUrl();
-	QVariant data = item->data(UrlRole);
-	setPlayRow(m_playRow -1,true);
-	Debug << "play previous";
-	return data;
-}
-
-bool PlaylistView::addM3U(const QString file,int row)
-{
-	QFile m_file(file);
-	if(!m_file.open(QIODevice::ReadOnly | QIODevice::Text))
-	{
-		Debug << "Error: fopen" << file;
-		return false;
-	}
-	while(!m_file.atEnd())
-	{
-		QByteArray line = m_file.readLine();
-		if(line.startsWith("#"))
-			continue;
-		else
-		{
-			QString filePath = file;
-			filePath.remove(file.lastIndexOf("/"),filePath.size());
-			filePath.prepend(FILE_MARCO);
-			if(line.endsWith("\n"))
-				line.chop(1);
-			QUrl url(filePath + "/" + line);
-			addFile(url.toString(),row++);
-			Debug << "M3U insert url" << url;
-		}
-	}
-	selectRow(row -1 );
-	return true;
-}
-
-void PlaylistView::setPlayRow(int row, bool playing)
-{
-	if(row == -1 && playing == false)
-	{
-		m_playRow = -1;
-		return;
-	}
-	for(int i = m_model->columnCount() -1 ; i > 0; i--)
-	{
-		m_model->item(row,i)->setData(true, PlayRole);
-		update(m_model->index(row,i));
-	}
-	if(playing && m_playRow != -1)
-	{
-		for(int i = m_model->columnCount() -1 ; i > 0; i--)
-		{
-			m_model->item(m_playRow,i)->setData(false, PlayRole);
-			update(m_model->index(m_playRow,i));
-		}
-		m_playRow = row;
-	}
-	else if(playing)
-	{
-		m_playRow = row;
-	}
-}
-
-bool PlaylistView::addFile(QString file, int row)
-{
-	if(row == -1 || row > m_model->rowCount())
-	{
-		row = m_model->rowCount();
-	}
-	if(file.endsWith(".m3u", Qt::CaseInsensitive))
-	{
-		return addM3U(file,row);
-	}
-	else
-	{
-		if(!file.startsWith(FILE_MARCO))
-			file.prepend(FILE_MARCO);
-		QList<QStandardItem *> rowItem;
-		PlaylistItem *item = new PlaylistItem(file,row,this);
-		connect(item,SIGNAL(dataRecived(int)),this,SLOT(handleItemData(int)));
-		if(!item->isValid())
-		{
-			if(addDir(file,row))
-				return true;
-			return false;
-		}
-		for(int i = 0; i < m_model->columnCount(); i++)
-		{
-			QString value = item->value(i).toString();
-			QStandardItem *stdItem = new QStandardItem(value);
-			stdItem->setData(file,UrlRole);
-			rowItem << stdItem;
-		}
-		m_model->insertRow(row,rowItem);
-		delete item;
-		return true;
-	}
-	return false;
-}
-
-bool PlaylistView::addYoutube(const QUrl url, int row)
-{
-	if(row == -1 || row > m_model->rowCount())
-	{
-		row = m_model->rowCount();
-	}
-	PlaylistItem *item = new PlaylistItem(url,row,this);
-	connect(item,SIGNAL(dataRecived(int)),this,SLOT(handleItemData(int)));
-
-	return true;
-}
-
-bool PlaylistView::addYoutube(const QString title,const QString description, 
-							  const QString vidId, const QString duration, int row)
-{
-	if(row == -1)
-	{
-		row = m_model->rowCount();
-	}
-	QList<QStandardItem *> rowItem;
-
-	/* convert strings to QStandardItems */
-	QStandardItem *i_title = new QStandardItem(title);
-	QStandardItem *i_description = new QStandardItem(description);
-	QStandardItem *i_vidId = new QStandardItem(vidId);
-	QStandardItem *i_duration = new QStandardItem(duration);
-
-	/* empty placeholder items */
-	QStandardItem *placeholder_1 = new QStandardItem("");
-	QStandardItem *placeholder_2 = new QStandardItem("");
-	QStandardItem *placeholder_3 = new QStandardItem("");
-	QStandardItem *placeholder_4 = new QStandardItem("");
-
-	/* insert items into row */
-	rowItem << i_title << placeholder_1 << placeholder_2 
-		<< placeholder_3 << i_description << i_duration << placeholder_4 << i_vidId;
-	foreach(QStandardItem *item, rowItem)
-	{
-		item->setData(vidId,UrlRole);
-	}
-	m_model->insertRow(row,rowItem);
-	setRowHeight(row,ROW_HEIGHT);
-	return true;
-}
-
-void PlaylistView::paintEvent(QPaintEvent *event)
-{
-	if(m_dragRow != -1)
-	{
-		// this is not implemented
-	}
-	QTableView::paintEvent(event);
-}
+/*
+ * clear all data from Playlist::PlaylistView
+ * BUG: this is data handling and should be moved to Playlist::PlaylistModel
+ */
 
 void PlaylistView::clear()
 {
 	model()->removeRows(0,model()->rowCount());
-	setPlayRow(-1);
 }
 
-bool PlaylistView::addDir(QString path, int row)
-{
-	Debug << "Dir path: " << path << row;
-	path.remove(FILE_MARCO);
-	QDir dir;
-	dir.setPath(path);
-	if(!dir.exists())
-	{
-		Debug << "nonexisting dir" << path;
-		return false;
-	}
-	QStringList entryList;
-	entryList << dir.entryList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files,QDir::DirsFirst);
-	foreach(QString entry, entryList)
-	{
-		if(!entry.endsWith("m3u",Qt::CaseInsensitive))
-			if(!addFile( QString(path + "/" + entry) ,row++))
-				row--;
-	}
-	return true;
-}
-
-void PlaylistView::handleItemData(int row)
-{
-	PlaylistItem *item = qobject_cast<PlaylistItem*>(sender());
-	if(row == -1)
-		item->deleteLater();
-	else
-	{
-		QList<QStandardItem *> rowItem;
-		for(int i = 0; i < m_model->columnCount(); i++)
-		{
-			QString value = item->value(i).toString();
-			QStandardItem *stdItem = new QStandardItem(value);
-			stdItem->setData(item->value(PlaylistItem::Place),UrlRole);
-			rowItem << stdItem;
-		}
-		Debug << "insert data row & data:" << row << rowItem;
-		m_model->insertRow(row,rowItem);
-	}
-	item->deleteLater();
-}
+/*
+ * Shows a Playlist::PlaylistDialog whers the user can save a playlist
+ */
 
 void PlaylistView::save()
 {
@@ -387,4 +120,118 @@ void PlaylistView::save()
 	dialog->setUrls(urls);
 	dialog->exec();
 	dialog->deleteLater();
+}
+
+/*
+ * Gather urls and execute a drag event
+ */
+
+void PlaylistView::startDrag(Qt::DropActions supportenDropActions)
+{
+	Q_UNUSED(supportenDropActions);
+
+	QList<QModelIndex> indexes = selectedIndexes();
+	QDrag *drag = new QDrag(this);
+	QMimeData *mimeData = new QMimeData();
+	QList<QUrl> urls;
+	/* get urls from indexex */
+	foreach(QModelIndex index,indexes)
+	{
+		const QUrl url = index.data(Playlist::UrlRole).toUrl();
+		if(!urls.contains(url))
+			urls.append(url);
+	}
+	/* set drag urls and execute eth drag */
+	mimeData->setUrls(urls);
+	drag->setMimeData(mimeData);
+	drag->exec();
+}
+
+/*
+ * Handle internal move or send the event to parent class.
+ */
+
+void PlaylistView::dropEvent(QDropEvent *event)
+{
+	/* internal move */
+	if(event->source() == this)
+	{
+		/*
+		 * Collect indexes and there rows 
+		 */
+		QList<QModelIndex> indexes = selectedIndexes();
+		QList<int> rows;
+		foreach(QModelIndex index,indexes)
+		{
+			if(!rows.contains(index.row()))
+			{
+				rows << index.row();
+			}
+		}
+
+		/* 
+		 * Remove items from model bottom up so we do not skrew up the order, 
+		 * insert them into a list so we can reinsert them
+		 */
+		QList<QList<QStandardItem*>> rowList;
+		for(int i = (rows.size() -1); i >= 0; i--)
+		{
+			rowList.prepend(m_model->takeRow(rows.at(i)));
+		}
+		
+		/* 
+		 * Check if the drop should be appended or inserted 
+		 */
+		int row = indexAt(event->pos()).row();
+		if(row == -1)
+			row = model()->rowCount();
+
+		/* 
+		 * Insert items from list and return 
+		 */
+		foreach(QList<QStandardItem*> rowItem, rowList)
+		{
+			m_model->insertRow(row++,rowItem);
+		}
+		return;
+	}
+	/* Let the parent class handle the event */
+	QTableView::dropEvent(event);
+}
+
+/*
+ * Set the PlayRole at index to true, and reset old playrole.
+ * Get the url from the model and emit playrequest
+ */
+
+void PlaylistView::onDoubleClicked(const QModelIndex &index)
+{
+	m_model->setPlayRow(index.row());
+	const QUrl url = model()->data(index,UrlRole).toUrl();
+	if(!url.isValid())
+		return;
+	emit playRequest(url);
+}
+
+void PlaylistView::mouseMoveEvent(QMouseEvent *event)
+{
+	int row = indexAt(event->pos()).row();
+	if(row == m_hoverRow)
+		return;
+	for(int i = 0; i < model()->columnCount(); i++)
+	{
+		QModelIndex newIndex = m_model->index(row,i);
+		QModelIndex oldIndex = m_model->index(m_hoverRow,i);
+		if(newIndex.isValid())
+		{
+			m_model->setData(newIndex,true,Qt::UserRole +5);
+			if( i == ( model()->columnCount() -1 ) )
+				m_hoverRow = row;
+		}
+		if(oldIndex.isValid())
+		{
+			m_model->setData(oldIndex,false,Qt::UserRole +5);
+		}
+	}
+	QTableView::mouseMoveEvent(event);
 }
