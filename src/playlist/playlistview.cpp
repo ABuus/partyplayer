@@ -173,7 +173,7 @@ void PlaylistView::dropEvent(QDropEvent *event)
 		 * Remove items from model bottom up so we do not skrew up the order, 
 		 * insert them into a list so we can reinsert them
 		 */
-		QList<QList<QStandardItem*>> rowList;
+		QList< QList<QStandardItem*> > rowList;
 		for(int i = (rows.size() -1); i >= 0; i--)
 		{
 			rowList.prepend(m_model->takeRow(rows.at(i)));

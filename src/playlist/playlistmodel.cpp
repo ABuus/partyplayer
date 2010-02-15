@@ -160,7 +160,7 @@ bool PlaylistModel::insertUrl(const QUrl &url, int row)
 	item->setInternalPointer(rowItem.last());
 	insertRow(row,rowItem);
 	item->setUrl(url);
-	Debug << "inserted" << url.toString() << "at" << row;
+//	Debug << "inserted" << url.toString() << "at" << row;
 	return true;
 }
 
