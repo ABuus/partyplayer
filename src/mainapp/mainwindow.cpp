@@ -138,6 +138,7 @@ void MainWindow::createConnections()
 	connect(controlWidget,SIGNAL(pause()),this,SLOT(pause()));
 	connect(m_playlist,SIGNAL(playRequest(const QUrl )),this,SLOT(handlePlayRequests(const QUrl)));
 	connect(localPlayer,SIGNAL(runningOut()),this,SLOT(enqueueNextTrack()));
+	connect(localPlayer,SIGNAL(finished()),this,SLOT(playNextTrack()));
 	connect(youtubePlayer,SIGNAL(finished()),this,SLOT(playNextTrack()));
 	connect(localPlayer,SIGNAL(stateChanged(int)),this,SLOT(handlePlayerState(int)));
 	connect(youtubePlayer,SIGNAL(stateChanged(int)),this,SLOT(handlePlayerState(int)));

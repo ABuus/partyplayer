@@ -51,6 +51,7 @@ signals:
 	void totalTimeChanged( qint64 totalTime );
 	void runningOut();
 	void stateChanged( int state );
+	void finished();
 private:
 	GstElement *m_pipeline;
 	GstElement *m_newPipeline;

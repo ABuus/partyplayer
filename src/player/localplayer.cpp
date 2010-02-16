@@ -137,7 +137,8 @@ void LocalPlayer::getTotalTime()
 		m_totalTimeSet = false;
 		return;
 	}
-	else {
+	else 
+	{
 		m_totalTimeSet = true;
 		if(m_totaltime == tot)
 			return;
@@ -219,6 +220,7 @@ void LocalPlayer::checkState()
 	}
 	else if( ( state == GST_STATE_VOID_PENDING || state == GST_STATE_NULL || state == GST_STATE_READY ) && m_state != 0)
 	{
+		emit finished();
 		m_state = 0;
 		emit stateChanged(m_state);
 		return;
