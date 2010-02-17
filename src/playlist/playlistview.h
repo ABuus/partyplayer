@@ -62,6 +62,7 @@ protected:
 	void startDrag(Qt::DropActions supportenDropActions);
 	void dropEvent(QDropEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
+	void leaveEvent(QEvent *);
 };
 
 }; // namespace Playlist

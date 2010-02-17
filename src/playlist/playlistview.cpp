@@ -250,3 +250,15 @@ void PlaylistView::mouseMoveEvent(QMouseEvent *event)
 	}
 	QTableView::mouseMoveEvent(event);
 }
+
+void PlaylistView::leaveEvent(QEvent *)
+{
+	for(int i = 0; i < model()->columnCount(); i++)
+	{
+		QModelIndex index = m_model->index(m_hoverRow,i);
+		if(!index.isValid())
+			return;
+		model()->setData(index,false,Qt::UserRole + 5);
+	}
+	m_hoverRow = -1;
+}
