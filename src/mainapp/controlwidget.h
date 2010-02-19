@@ -21,10 +21,13 @@
 #define CONTROLWIDGET_H
 
 #include <QWidget>
+#include <QSlider>
+#include <QLayout>
+#include <controlbutton.h>
 #include "debug.h"
-#include "ui_controlwidget.h"
+// #include "ui_controlwidget.h"
 
-class ControlWidget : public QWidget , public Ui::controlWidget
+class ControlWidget : public QWidget // , public Ui::controlWidget
 {
 	Q_OBJECT
 
@@ -33,10 +36,15 @@ public:
 	~ControlWidget();
 public slots:
 	void setPlayState( int state = 0);
-	void setTime(qint64 time) { slider->setValue(time); };
-	void setTotalTime(qint64 time) { slider->setMaximum(time); };
+	void setTime(qint64 time) { m_slider->setValue(time); };
+	void setTotalTime(qint64 time) { m_slider->setMaximum(time); };
 private:
-	int playState; // gst play state see player::checkState()
+	int m_playState; // gst play state see player::checkState()
+	ControlButton *m_previousButton;
+	ControlButton *m_playPauseButton;
+	ControlButton *m_stopButton;
+	ControlButton *m_nextButton;
+	QSlider *m_slider;
 private slots:
 	void playClicked();
 signals:

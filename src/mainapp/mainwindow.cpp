@@ -71,7 +71,14 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 
 	// control widget
 	controlWidget = new ControlWidget(this);
+//	controlWidget->setFixedSize(150,70);
+	controlWidget->setMinimumSize(200,100);
 	controlLayout->addWidget(controlWidget);
+
+//	controlLayout->setGeometry(controlWidget->rect());
+
+	Debug << "controlWidget size" << controlWidget->size();
+	Debug << "controlLayout size" << controlLayout->geometry();
 
 	// file system widget
 	// due to bug in QFileSystemModel windows shares have to be mapped as drives
@@ -119,6 +126,7 @@ MainWindow::~MainWindow()
 	settings.setValue("mainwindow/playlist", videoSplitter->saveGeometry());
 	settings.setValue("mainwindow/webView", videoSplitter->saveGeometry());
 	settings.setValue("mainwindow/videoSplitter", videoSplitter->saveGeometry());
+	controlWidget->deleteLater();
 }
 
 void MainWindow::createConnections()
