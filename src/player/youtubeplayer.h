@@ -11,6 +11,13 @@
 
 #define TIMER_INTERVAL 200
 
+/**
+ * \brief This class provides provides support for playing YouTube videos.
+ * \todo Add static function to get the underlaying YouTube xml data.
+ * \todo Test is we can call the underlying player directly.
+ * if so make this class do that for better control of the player( QtWebKit cache ).
+ */
+
 class PLAYER_EXPORT YoutubePlayer : public QWebPage
 {
 Q_OBJECT
@@ -30,11 +37,11 @@ public slots:
 	void play();
 	void pause();
 	void resizePlayer(int w, int h);
-	void seek(int msec);
-	void setPlayQuality(int playerQualety = YoutubePlayer::Standard);
-private slots:
+	void seek(int msec, bool seekAhead = true);
+	void setPlayQuality(enum PlayerQuality playerQuality = YoutubePlayer::Standard);
 	void cueVideoById(QString videoId);
 	void loadVideoById(QString videoId);
+private slots:
 	void addJavaScriptObject();
 	/* slots called forn JS */
 	void setState(int state);
@@ -48,9 +55,16 @@ private:
 	int m_state;
 	QString m_playerQuality;
 signals:
+	/** This signal is emitted when the duration changes. */
 	void totalTimeChanged(qint64 newTotal);
+	/** This signal is emitted when the position changes. */
 	void currentTimeChanged(qint64 newCurrent);
+	/** 
+	 * This signal is emitted when the player change state.
+	 * \todo make Player namespace and enum State and fix these together with GstPlayer::stateChanged()
+	 */
 	void stateChanged(int state);
+	/**	This signal is emmited when the stream ends. */
 	void finished();
 };
 

@@ -33,19 +33,20 @@ public:
 	~ControlWidget();
 public slots:
 	void setPlayState( int state = 0);
-	void setTime(qint64 time) { slider->setValue(time); };
-	void setTotalTime(qint64 time) { slider->setMaximum(time); };
+	void setTime(qint64 time);
+	void setTotalTime(qint64 time);
 private:
 	int playState; // gst play state see player::checkState()
 private slots:
 	void playClicked();
+	void onSliderMoved(int);
 signals:
 	void play();
 	void pause();
 	void stop();
 	void back();
 	void forward();
-	void seek(int value);
+	void seek(qint64 value);
 };
 
 #endif // CONTROLWIDGET_H

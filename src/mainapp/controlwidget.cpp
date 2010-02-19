@@ -42,7 +42,7 @@ ControlWidget::ControlWidget(QWidget *parent)
 	connect(stopButton,SIGNAL(clicked()),this,SIGNAL(stop()));
 	connect(backButton,SIGNAL(clicked()),this,SIGNAL(back()));
 	connect(forwardButton,SIGNAL(clicked()),this,SIGNAL(forward()));
-	connect(slider,SIGNAL(sliderMoved(int)), this,SIGNAL(seek(int)));
+	connect(slider,SIGNAL(sliderMoved(int)), this,SLOT(onSliderMoved(int)));
 }
 
 ControlWidget::~ControlWidget()
@@ -98,4 +98,19 @@ void ControlWidget::playClicked()
 		setPlayState(2);
 		emit pause();
 	}
+}
+
+void ControlWidget::setTime(qint64 time)
+{
+	slider->setValue((int)time);
+}
+
+void ControlWidget::setTotalTime(qint64 time)
+{
+	slider->setMaximum((int)time);
+}
+
+void ControlWidget::onSliderMoved(int value)
+{
+	emit seek((qint64)value);
 }

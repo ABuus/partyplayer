@@ -44,8 +44,8 @@
 #include "playlist/playlistmodel.h"
 #include "playlist/savedplaylistmodel.h"
 // player
-#include "player/localplayer.h"
 #include "player/youtubeplayer.h"
+#include "player/qgstplayer.h"
 // self
 #include "debug.h"
 #include "ui_mainwindow.h"
@@ -73,7 +73,7 @@ private:
 	QFileSystemModel *fileSysModel;
 	ControlWidget *controlWidget;
 	SearchModel *searchModel;
-	LocalPlayer *localPlayer;
+	QGstPlayer *gstPlayer;
 	YoutubePlayer *youtubePlayer;
 	YoutubeViewer *webView;
 	QList<int> oldVSplitter;
@@ -96,7 +96,7 @@ private slots:
 	void play();
 	void pause();
 	void stop();
-	void seek(int msec);
+	void seek(qint64 msec);
 	void handlePlayerState(int state);
 	void setTime(qint64);
 	void setTotalTime(qint64);

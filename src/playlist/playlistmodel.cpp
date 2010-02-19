@@ -133,8 +133,8 @@ bool PlaylistModel::insertUrls(const QList<QUrl> urls, int startRow)
 	return retval;
 }
 
-/* 
- * inserts url at row if row is -1 the item is appended to the model 
+/**
+ * inserts \a url at \a row if \a row is -1 the item is appended to the model.
  */
 
 bool PlaylistModel::insertUrl(const QUrl &url, int row)
@@ -165,6 +165,7 @@ bool PlaylistModel::insertUrl(const QUrl &url, int row)
 }
 
 /*
+ * \internal
  * this slot is connected to Playlist::PlaylistItem::dataReciced() signal
  * this updates data at the QModelIndex PlaylistItem::internelPointer()
  * WARNING: The sender object should be deleted in this slot

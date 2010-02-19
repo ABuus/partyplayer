@@ -37,7 +37,7 @@ LocalPlayer::LocalPlayer(QObject *parent)
 	// create gst elemente
 	m_sink = gst_element_factory_make("autoaudiosink", "player");
 	m_pipeline = createPipeline();
-	// connect elements
+	// link elements
 	gst_element_link(GST_ELEMENT( m_pipeline), m_sink);
 	g_timeout_add (TIMER_INTERVAL, NULL, m_pipeline);
 	
@@ -120,7 +120,6 @@ void LocalPlayer::getTime()
 				m_pipeline = m_newPipeline;
 				getTotalTime();
 				m_playTimer.start();
-				m_canRunOut = true;
 				checkState();
 			}
 		}
@@ -226,7 +225,6 @@ void LocalPlayer::checkState()
 	}
 	else if( ( state == GST_STATE_VOID_PENDING || state == GST_STATE_NULL || state == GST_STATE_READY ) && m_state != 0)
 	{
-//		emit finished();
 		m_state = 0;
 		emit stateChanged(m_state);
 		return;

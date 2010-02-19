@@ -1,5 +1,13 @@
 #include "youtubeplayer.h"
 
+/**
+ * Contructs a new instance of YoutubePlayer
+ * \sa YoutubeViewer
+ * \todo add setJavascriptPlayerPath(const QUrl & url)
+ * and remove fixed link here.
+ * \todo add setJavascriptDebugEnabled(bool enabled = false).
+ */
+
 YoutubePlayer::YoutubePlayer(QObject *parent)
 	: QWebPage(parent),
 	m_totalTime(0),
@@ -11,6 +19,9 @@ YoutubePlayer::YoutubePlayer(QObject *parent)
 	settings()->setAttribute(QWebSettings::PluginsEnabled, true);
 	settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
 	settings()->setAttribute(QWebSettings::PrivateBrowsingEnabled, true);
+#ifdef WEB_DEBUG
+	settings()->setAttribute(QWebSettings::QWebSettings::DeveloperExtrasEnabled, true);
+#endif
 	settings()->setMaximumPagesInCache(0);
 	settings()->setObjectCacheCapacities(0,0,0);
 	settings()->clearMemoryCaches();
@@ -27,6 +38,14 @@ YoutubePlayer::~YoutubePlayer()
 
 }
 
+/**
+ * Plays \a url.
+ * 
+ * Accepted \a url http://www.youtube.com/watch?v= + <yt:videoid>\n
+ * This is usefull for drag & drop operations from a external browser.
+ * \sa cueVideoById(), loadVideoById()
+ */
+
 bool YoutubePlayer::playUrl(const QUrl url)
 {
 	QString urlStr = url.toString();
@@ -37,26 +56,50 @@ bool YoutubePlayer::playUrl(const QUrl url)
 	return true;
 }
 
-/* call swf player to play video */
+/** 
+ * Start playing a video.
+ * \sa cueVideoById()
+ */
+
 void YoutubePlayer::play()
 {
 	mainFrame()->evaluateJavaScript("playVideo(); null");
 }
 
-/* call swf player to pause video */
+/** 
+ * Pause the video.
+ */
+
 void YoutubePlayer::pause()
 {
 	mainFrame()->evaluateJavaScript("pauseVideo(); null");
 }
 
-void YoutubePlayer::seek(int msec)
+/**
+ * Seek to \a msec position in the video.
+ * \a seekAhead determines if the player will seek beyond the current buffered data.
+ * \warning Due to the seek resulotion provided by YouTube, this seeks to the nearest posittion.
+ * \sa http://code.google.com/apis/youtube/js_api_reference.html#Playback_controls
+ */
+
+void YoutubePlayer::seek(int msec, bool seekAhead)
 {
-	// true is allow seek ahead youtube api
-	QString js = "seekTo(%1,true); null"; 
+	QString js;
+	if(seekAhead)
+		js = "seekTo(%1,true); null";
+	else
+		js = "seekTo(%1,false); null";
 	mainFrame()->evaluateJavaScript(js.arg(msec / 1000));
 }
 
-/* resize the swf player to fit in this without scrollbars */
+/** 
+ * Resize the player.
+ * \sa YoutubeViewer::resizeEvent()
+ * \bug this does not resize to the full width on windows.
+ * it used to do that. bug looks to be on js side.
+ * \bug this craches the calling application on linux( due to flash player proplem ).
+ */
+
 void YoutubePlayer::resizePlayer(int width, int height)
 {
 	/* pixel offset to avoid scrollbars */
@@ -67,7 +110,12 @@ void YoutubePlayer::resizePlayer(int width, int height)
 	mainFrame()->evaluateJavaScript(js.arg( width - offset ).arg( height - offset ));
 }
 
-/* load the video with vidId, this is not playing the video */
+/**
+ * Load the video with \a vidId, this is not playing the video.
+ * \sa loadVideoById()
+ * \sa http://code.google.com/apis/youtube/2.0/reference.html#youtube_data_api_tag_yt:videoid
+ */
+
 void YoutubePlayer::cueVideoById( QString vidId )
 {
 	QString js = "cueVideoById('%1');";
@@ -76,7 +124,12 @@ void YoutubePlayer::cueVideoById( QString vidId )
 	mainFrame()->evaluateJavaScript(js);
 }
 
-/* load the video with vidId, this is playing the video */
+/**
+ * Load the video with vidId, and starts playing the video.
+ * \sa cueVideoById()
+ * \sa http://code.google.com/apis/youtube/2.0/reference.html#youtube_data_api_tag_yt:videoid
+ */
+
 void YoutubePlayer::loadVideoById( QString vidId )
 {
 	if(vidId.startsWith("http://www.youtube.com/watch?v="))
@@ -87,6 +140,10 @@ void YoutubePlayer::loadVideoById( QString vidId )
 	Debug << js;
 	mainFrame()->evaluateJavaScript(js);
 }
+
+/**
+ * \internal Inserts this class as clientApp object on the javascript side.
+ */
 
 void YoutubePlayer::addJavaScriptObject()
 {
@@ -136,9 +193,14 @@ void YoutubePlayer::jsDebug(QVariant value)
 //	qDebug() << "debug output from javascript:" << value.toString();
 }
 
-void YoutubePlayer::setPlayQuality(int playerQualety)
+/**
+ * Sets the player quality to \a playerQuality.
+ * \sa PlayerQuality
+ */
+
+void YoutubePlayer::setPlayQuality(enum PlayerQuality playerQuality)
 {
-	switch(playerQualety) {
+	switch(playerQuality) {
 		case YoutubePlayer::Low:
 			m_playerQuality = "small";
 			break;
