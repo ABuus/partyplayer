@@ -22,37 +22,7 @@
 
 using namespace Playlist;
 
-/*
- *	location can be 
- *	"file://path/to/file.mp3"
- *	"http://www.youtube.com/watch?v=YYlBQKIOb-w"
- */
-/*
-PlaylistItem::PlaylistItem(const QString location, QObject *parent)
-	:QObject(parent),
-	m_internalPointer(0)
-{
-	m_isValid = false;
-	if(location.startsWith("file"))
-	{
-		localFile(location);
-	}
-	else if(location.startsWith("http://www.youtube.com/watch?v="))
-	{
-		netAccessManager = new QNetworkAccessManager(this);
-		connect(netAccessManager,SIGNAL(finished( QNetworkReply *)),this,SLOT(youtubeFile(QNetworkReply *)));
-		QString id = location;
-		id.remove("http://www.youtube.com/watch?v=");
-		QUrl data_url = ("http://gdata.youtube.com/feeds/api/videos/" + id);
-		netAccessManager->get(QNetworkRequest(data_url));
-	}
-	else
-	{
-		m_localFile = false;
-		m_isValid = false;
-	}
-}
-*/
+
 
 PlaylistItem::PlaylistItem(QObject *parent)
 	:QObject(parent)
@@ -63,6 +33,13 @@ PlaylistItem::PlaylistItem(QObject *parent)
 PlaylistItem::~PlaylistItem()
 {
 }
+
+/*
+ *	url can be 
+ *	"file://path/to/file.mp3"
+ *	"http://www.youtube.com/watch?v=YYlBQKIOb-w"
+ */
+
 
 void PlaylistItem::setUrl(const QUrl url)
 {

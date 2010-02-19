@@ -106,3 +106,18 @@ void ControlWidget::playClicked()
 		emit pause();
 	}
 }
+
+void ControlWidget::setTime(qint64 time)
+{
+	slider->setValue((int)time);
+}
+
+void ControlWidget::setTotalTime(qint64 time)
+{
+	slider->setMaximum((int)time);
+}
+
+void ControlWidget::onSliderMoved(int value)
+{
+	emit seek((qint64)value);
+}

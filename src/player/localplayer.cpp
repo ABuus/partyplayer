@@ -37,7 +37,7 @@ LocalPlayer::LocalPlayer(QObject *parent)
 	// create gst elemente
 	m_sink = gst_element_factory_make("autoaudiosink", "player");
 	m_pipeline = createPipeline();
-	// connect elements
+	// link elements
 	gst_element_link(GST_ELEMENT( m_pipeline), m_sink);
 	g_timeout_add (TIMER_INTERVAL, NULL, m_pipeline);
 	
@@ -81,7 +81,10 @@ void LocalPlayer::playUrl(const QUrl &url)
 void LocalPlayer::getTime()
 {
 	if(!m_totalTimeSet)
+	{
 		getTotalTime();
+		return;
+	}
 	GstFormat fmt = GST_FORMAT_TIME;
 	gint64 pos;
 	if( gst_element_query_position(m_pipeline, &fmt, &pos))
@@ -117,7 +120,6 @@ void LocalPlayer::getTime()
 				m_pipeline = m_newPipeline;
 				getTotalTime();
 				m_playTimer.start();
-				m_canRunOut = true;
 				checkState();
 			}
 		}
@@ -131,12 +133,16 @@ void LocalPlayer::getTotalTime()
 	gint64 tot;
 	if(!gst_element_query_duration(m_pipeline, &fmt, &tot))
 	{
+		/* gstreamer did not deliver the duration we will try again on next timout event */
 		m_totalTimeSet = false;
 		return;
 	}
 	else 
 	{
+		/* we got the total time */
 		m_totalTimeSet = true;
+		/* if we quered gstreamer for the duration we are playing, so we can run out */
+		m_canRunOut = true;
 		if(m_totaltime == tot)
 			return;
 		m_totaltime = tot;
@@ -179,8 +185,10 @@ bool LocalPlayer::enqueue(const QUrl &url)
 	{
 		Debug << "valid url:" << url;
 		m_newPipeline = createPipeline();
-		std::string str = std::string(url.toString().toAscii().data());
-		const gchar * uri = str.c_str();
+		QByteArray baUrl = url.toEncoded();
+		if(baUrl.isEmpty())
+			Debug << "empty baUrl";
+		const gchar *uri = baUrl.constData();
 		g_object_set(G_OBJECT(m_newPipeline), "uri", uri, NULL);
 		return true;
 	}
@@ -217,7 +225,6 @@ void LocalPlayer::checkState()
 	}
 	else if( ( state == GST_STATE_VOID_PENDING || state == GST_STATE_NULL || state == GST_STATE_READY ) && m_state != 0)
 	{
-		emit finished();
 		m_state = 0;
 		emit stateChanged(m_state);
 		return;

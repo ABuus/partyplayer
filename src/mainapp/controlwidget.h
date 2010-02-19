@@ -36,8 +36,8 @@ public:
 	~ControlWidget();
 public slots:
 	void setPlayState( int state = 0);
-	void setTime(qint64 time) { m_slider->setValue(time); };
-	void setTotalTime(qint64 time) { m_slider->setMaximum(time); };
+	void setTime(qint64 time);
+	void setTotalTime(qint64 time);
 private:
 	int m_playState; // gst play state see player::checkState()
 	ControlButton *m_previousButton;
@@ -47,13 +47,14 @@ private:
 	QSlider *m_slider;
 private slots:
 	void playClicked();
+	void onSliderMoved(int);
 signals:
 	void play();
 	void pause();
 	void stop();
 	void back();
 	void forward();
-	void seek(int value);
+	void seek(qint64 value);
 };
 
 #endif // CONTROLWIDGET_H

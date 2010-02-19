@@ -3,8 +3,9 @@
 # ------------------------------------------------------
 
 HEADERS += ./debug.h \
-    ./localplayer.h \
     ./player_global.h \
+    ./qgstplayer.h \
+    ./qgstplayer_p.h \
     ./youtubeplayer.h
-SOURCES += ./localplayer.cpp \
+SOURCES += ./qgstplayer.cpp \
     ./youtubeplayer.cpp
