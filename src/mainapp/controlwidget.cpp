@@ -23,48 +23,30 @@ ControlWidget::ControlWidget(QWidget *parent)
 	: QWidget(parent),
 	m_playState(0)
 {
+	QGridLayout *gridLayout = new QGridLayout(this);
 	QHBoxLayout *vBoxLayout = new QHBoxLayout(this);
 	m_previousButton = new ControlButton(ControlButton::PreviousStyle,this);
 	m_playPauseButton = new ControlButton(ControlButton::PlayStyle,this);
 	m_stopButton = new ControlButton(ControlButton::StopStyle,this);
 	m_nextButton = new ControlButton(ControlButton::NextStyle,this);
+	m_slider = new QSlider(Qt::Horizontal,this);
 
 	vBoxLayout->addWidget(m_previousButton);
 	vBoxLayout->addWidget(m_playPauseButton);
 	vBoxLayout->addWidget(m_stopButton);
 	vBoxLayout->addWidget(m_nextButton);
-
+	gridLayout->addLayout(vBoxLayout,0,0);
+	gridLayout->addWidget(m_slider,1,0);
 	setFixedWidth( (m_previousButton->width() * 4) + 4);
 	setMinimumWidth( (m_previousButton->width() * 4) + 4 );
 
-	m_slider = new QSlider(Qt::Horizontal,this);
 
-	m_slider->hide();
 
 	connect(m_previousButton,SIGNAL(clicked()),this,SIGNAL(back()));
 	connect(m_playPauseButton,SIGNAL(clicked()),this,SLOT(playClicked()));
 	connect(m_stopButton,SIGNAL(clicked()),this,SIGNAL(stop()));
 	connect(m_nextButton,SIGNAL(clicked()),this,SIGNAL(forward()));
 	connect(m_slider,SIGNAL(sliderMoved(int)),this,SIGNAL(seek(int)));
-
-/*	setStyleSheet("QToolButton {border:none;}");
-	QSize icoSize(60,60);
-	playButton->setIconSize(icoSize);
-	backButton->setIconSize(icoSize);
-	stopButton->setIconSize(icoSize);
-	forwardButton->setIconSize(icoSize);
-
-	playButton->setIcon(QIcon(":/mainwindow/play.png"));
-	backButton->setIcon(QIcon(":/mainwindow/reverse.png"));
-	stopButton->setIcon(QIcon(":/mainwindow/stop.png"));
-	forwardButton->setIcon(QIcon(":/mainwindow/next.png"));
-
-	connect(playButton,SIGNAL(clicked()),this,SLOT(playClicked()));
-	connect(stopButton,SIGNAL(clicked()),this,SIGNAL(stop()));
-	connect(backButton,SIGNAL(clicked()),this,SIGNAL(back()));
-	connect(forwardButton,SIGNAL(clicked()),this,SIGNAL(forward()));
-	connect(slider,SIGNAL(sliderMoved(int)), this,SIGNAL(seek(int)));
-*/
 }
 
 ControlWidget::~ControlWidget()

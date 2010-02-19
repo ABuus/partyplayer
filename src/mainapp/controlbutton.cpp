@@ -80,10 +80,8 @@ QPainterPath ControlButton::forgroundPath()
 	QRectF fgRectF = rect();
 	fgRectF.adjust(15.0,15.0,-15.0,-15.0);
 
-//	path.addRect(fgRectF);
 	switch(m_style) {
 	case ControlButton::PreviousStyle:
-//		path.moveTo(5,0);
 		polygon << fgRectF.topRight();
 		polygon << QPoint(fgRectF.bottomLeft().x() -5, fgRectF.bottomLeft().y() -15);
 		polygon << fgRectF.bottomRight();
@@ -91,7 +89,6 @@ QPainterPath ControlButton::forgroundPath()
 		path.closeSubpath();
 		break;
 	case ControlButton::PlayStyle:
-//		path.moveTo(5,0);
 		polygon << fgRectF.topLeft();
 		polygon << QPoint(fgRectF.bottomRight().x() +5, fgRectF.bottomRight().y() -15);
 		polygon << fgRectF.bottomLeft();
@@ -99,11 +96,12 @@ QPainterPath ControlButton::forgroundPath()
 		path.closeSubpath();
 		break;
 	case ControlButton::PauseStyle:
+		path.addRect(fgRectF.x()+2,fgRectF.y(),fgRectF.width()-20,fgRectF.height());
+		path.addRect(fgRectF.x()+18,fgRectF.y(),fgRectF.width()-20,fgRectF.height());
 		break;
 	case ControlButton::NextStyle:
-//		path.moveTo(5,0);
 		polygon << fgRectF.topLeft();
-		polygon << QPoint(fgRectF.bottomRight().x(), fgRectF.bottomRight().y() -15);
+		polygon << QPoint(fgRectF.bottomRight().x() +5, fgRectF.bottomRight().y() -15);
 		polygon << fgRectF.bottomLeft();
 		path.addPolygon(polygon);
 		path.closeSubpath();
