@@ -74,13 +74,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	in->show();
 #endif
 
-//	controlWidget->setFixedSize(150,70);
-	controlWidget->setMinimumSize(200,100);
-//	controlLayout->setGeometry(controlWidget->rect());
-
-	Debug << "controlWidget size" << controlWidget->size();
-	Debug << "controlLayout size" << controlLayout->geometry();
-
 	// file system widget
 	// due to bug in QFileSystemModel windows shares have to be mapped as drives
 	// http://bugreports.qt.nokia.com/browse/QTBUG-4462

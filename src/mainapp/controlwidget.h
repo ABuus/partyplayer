@@ -23,7 +23,7 @@
 #include <QWidget>
 #include <QSlider>
 #include <QLayout>
-#include <controlbutton.h>
+#include "controlbutton.h"
 #include "debug.h"
 // #include "ui_controlwidget.h"
 

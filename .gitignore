@@ -34,3 +34,4 @@ Makefile
 moc_*.b*
 *.idb
 *.sln
+doc/html

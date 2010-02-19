@@ -24,7 +24,7 @@ ControlWidget::ControlWidget(QWidget *parent)
 	m_playState(0)
 {
 	QGridLayout *gridLayout = new QGridLayout(this);
-	QHBoxLayout *vBoxLayout = new QHBoxLayout(this);
+	QHBoxLayout *vBoxLayout = new QHBoxLayout;
 	m_previousButton = new ControlButton(ControlButton::PreviousStyle,this);
 	m_playPauseButton = new ControlButton(ControlButton::PlayStyle,this);
 	m_stopButton = new ControlButton(ControlButton::StopStyle,this);
@@ -32,13 +32,17 @@ ControlWidget::ControlWidget(QWidget *parent)
 	m_slider = new QSlider(Qt::Horizontal,this);
 
 	vBoxLayout->addWidget(m_previousButton);
+	vBoxLayout->addSpacing(15);
 	vBoxLayout->addWidget(m_playPauseButton);
+	vBoxLayout->addSpacing(15);
 	vBoxLayout->addWidget(m_stopButton);
+	vBoxLayout->addSpacing(15);
 	vBoxLayout->addWidget(m_nextButton);
 	gridLayout->addLayout(vBoxLayout,0,0);
 	gridLayout->addWidget(m_slider,1,0);
-	setFixedWidth( (m_previousButton->width() * 4) + 4);
-	setMinimumWidth( (m_previousButton->width() * 4) + 4 );
+	
+	setFixedWidth( (m_previousButton->width() * 4) + 45);
+//	setMinimumWidth( (m_previousButton->width() * 4) + 45 );
 
 
 
@@ -46,7 +50,7 @@ ControlWidget::ControlWidget(QWidget *parent)
 	connect(m_playPauseButton,SIGNAL(clicked()),this,SLOT(playClicked()));
 	connect(m_stopButton,SIGNAL(clicked()),this,SIGNAL(stop()));
 	connect(m_nextButton,SIGNAL(clicked()),this,SIGNAL(forward()));
-	connect(m_slider,SIGNAL(sliderMoved(int)),this,SIGNAL(seek(int)));
+	connect(m_slider,SIGNAL(sliderMoved(int)),this,SLOT(onSliderMoved(int)));
 }
 
 ControlWidget::~ControlWidget()
@@ -109,12 +113,12 @@ void ControlWidget::playClicked()
 
 void ControlWidget::setTime(qint64 time)
 {
-	slider->setValue((int)time);
+	m_slider->setValue((int)time);
 }
 
 void ControlWidget::setTotalTime(qint64 time)
 {
-	slider->setMaximum((int)time);
+	m_slider->setMaximum((int)time);
 }
 
 void ControlWidget::onSliderMoved(int value)
