@@ -1,4 +1,5 @@
 #include "controlbutton.h"
+#include <QLabel>
 
 ControlButton::ControlButton(enum ButtonStyle style, QWidget *parent)
 	:QAbstractButton(parent),
@@ -12,6 +13,12 @@ ControlButton::ControlButton(enum ButtonStyle style, QWidget *parent)
 	m_fadeTimer.setInterval(20);
 	connect(&m_fadeTimer,SIGNAL(timeout()),this,SLOT(updateFadeTick()));
 	connect(&m_fadeTimer,SIGNAL(timeout()),this,SLOT(update()));
+	/*
+	QPixmap stopPix(":/images/control_stop.png");
+	QLabel *lab = new QLabel(this);
+	lab->setPixmap(stopPix);
+	lab->show();
+	*/
 }
 
 void ControlButton::setButtonStyle(enum ButtonStyle style)
@@ -56,7 +63,7 @@ void ControlButton::updateFadeTick()
 	}
 }
 
-void ControlButton::paintEvent(QPaintEvent *e)
+void ControlButton::paintEvent(QPaintEvent * /* event */)
 {
 	QPainter painter(this);
 	painter.setRenderHint(QPainter::Antialiasing);
@@ -69,8 +76,24 @@ void ControlButton::paintEvent(QPaintEvent *e)
 	painter.drawPath(backgroundPath());
 
 	/* draw foreground */
-	painter.setBrush(QColor(0,0,0,127));
+	painter.setBrush(QColor(127,127,127));
 	painter.drawPath(forgroundPath());
+	if( m_style == ControlButton::PreviousStyle)
+	{
+		QPainterPath path;
+		QRectF fgRectF = rect();
+		fgRectF.adjust(15.0,15.0,-15.0,-15.0);
+		path.addRoundedRect(fgRectF.topLeft().x()-5,fgRectF.topLeft().y() +10,5,10,2,2);
+		painter.drawPath(path);
+	}
+	else if( m_style == ControlButton::NextStyle)
+	{
+		QPainterPath path;
+		QRectF fgRectF = rect();
+		fgRectF.adjust(15.0,15.0,-15.0,-15.0);
+		path.addRoundedRect(fgRectF.topRight().x(),fgRectF.topRight().y() +10,5,10,2,2);
+		painter.drawPath(path);
+	}
 }
 
 QPainterPath ControlButton::forgroundPath()
@@ -96,8 +119,8 @@ QPainterPath ControlButton::forgroundPath()
 		path.closeSubpath();
 		break;
 	case ControlButton::PauseStyle:
-		path.addRect(fgRectF.x()+2,fgRectF.y(),fgRectF.width()-20,fgRectF.height());
-		path.addRect(fgRectF.x()+18,fgRectF.y(),fgRectF.width()-20,fgRectF.height());
+		path.addRoundedRect(fgRectF.x()+2,fgRectF.y(),fgRectF.width()-20,fgRectF.height(),2,2);
+		path.addRoundedRect(fgRectF.x()+18,fgRectF.y(),fgRectF.width()-20,fgRectF.height(),2,2);
 		break;
 	case ControlButton::NextStyle:
 		polygon << fgRectF.topLeft();
