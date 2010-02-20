@@ -47,9 +47,12 @@ public:
 	YoutubeSearchModel(QObject *parent);
 	~YoutubeSearchModel();
 public slots:
-	void search(QString &query, bool append = true);
+	void search(QString &query, bool append = false);
+	void searchMore();
 private:
 	QNetworkAccessManager *netGetter;
+	int searchOffset;
+	QString currentSearch;
 private slots:
 	void queryFinished(QNetworkReply *);
 	void insertSearchItem(QStringList item);

@@ -20,7 +20,8 @@
 #include "youtubesearchmodel.h"
 
 YoutubeSearchModel::YoutubeSearchModel(QObject *parent)
-	: QStandardItemModel(parent)
+	: QStandardItemModel(parent),
+	searchOffset(1)
 {
 	netGetter = new QNetworkAccessManager(this);
 	connect(netGetter,SIGNAL(finished( QNetworkReply *)),this,SLOT(queryFinished(QNetworkReply *)));
@@ -73,17 +74,28 @@ void YoutubeSearchModel::search(QString &query, bool append)
 {
 	if(!append)
 	{
+		searchOffset = 1;
 		clear();
 	}
 	query.replace(" ", "+");
-	QUrl url( "http://gdata.youtube.com/feeds/api/videos?q=" + query + "&format=5&key=" + dev_id);
-	Debug << url;
+	QUrl url("http://gdata.youtube.com/feeds/api/videos?q=" + query + \
+		"&start-index=" + QString::number(searchOffset) + \
+		"&max-results=" + QString::number(49) + \
+		"&format=5&key=" + dev_id;
 	netGetter->get(QNetworkRequest(url));
+	searchOffset += 49;
+	currentSearch = query;
+}
+
+void YoutubeSearchModel::searchMore()
+{
+	search(currentSearch,true);
 }
 
 void YoutubeSearchModel::queryFinished(QNetworkReply *reply)
 {
 	QByteArray ba = reply->readAll();
+	Debug << ba.data();
 	QString html(ba);
 
 	QDomDocument doc;

@@ -49,7 +49,7 @@
 // self
 #include "debug.h"
 #include "ui_mainwindow.h"
-//#include "search.h"
+#include "youtubesearchview.h"
 #include "youtubesearchmodel.h"
 #include "controlwidget.h"
 
@@ -69,9 +69,9 @@ public slots:
 private:
 	Playlist::PlaylistView *m_playlist;
 	Playlist::PlaylistModel *m_playlistModel;
-//	Search *search;
 	QFileSystemModel *fileSysModel;
 	ControlWidget *controlWidget;
+	YoutubeSearchView *youtubeSearchView;
 	YoutubeSearchModel *youtubeSearchModel;
 	QGstPlayer *gstPlayer;
 	YoutubePlayer *youtubePlayer;

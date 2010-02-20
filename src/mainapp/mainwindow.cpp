@@ -36,7 +36,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	restoreState(settings.value("mainwindow/windowState").toByteArray());
 
 	// youtube searcher
-//	search = new Search(this);
+	youtubeSearchView = new YoutubeSearchView(this);
+	youtubeLayout->addWidget(youtubeSearchView);
 	youtubeSearchModel = new YoutubeSearchModel(this);
 	youtubeSearchView->setModel(youtubeSearchModel);
 	
@@ -171,7 +172,7 @@ void MainWindow::setCurrentPlayer(int player)
 
 void MainWindow::queryYoutubeSearch()
 {
-	youtubeSearchModel->search(youtubeSearchLineEdit->text(),false);
+	youtubeSearchModel->search(youtubeSearchLineEdit->text());
 }
 
 void MainWindow::setVideoMode(QAction *a)

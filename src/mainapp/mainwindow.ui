@@ -99,20 +99,7 @@
                <widget class="QLineEdit" name="youtubeSearchLineEdit"/>
               </item>
               <item>
-               <widget class="YoutubeSearchView" name="youtubeSearchView">
-                <property name="editTriggers">
-                 <set>QAbstractItemView::NoEditTriggers</set>
-                </property>
-                <property name="dragEnabled">
-                 <bool>true</bool>
-                </property>
-                <property name="dragDropMode">
-                 <enum>QAbstractItemView::DragOnly</enum>
-                </property>
-                <property name="selectionMode">
-                 <enum>QAbstractItemView::ExtendedSelection</enum>
-                </property>
-               </widget>
+               <layout class="QGridLayout" name="youtubeLayout"/>
               </item>
              </layout>
             </item>
@@ -306,13 +293,6 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>YoutubeSearchView</class>
-   <extends>QListView</extends>
-   <header>youtubesearchview.h</header>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="mainwindow.qrc"/>
  </resources>

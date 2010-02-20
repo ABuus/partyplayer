@@ -22,6 +22,8 @@
 
 #include <QListView>
 #include <QMouseEvent>
+#include <QScrollBar>
+#include "youtubesearchmodel.h"
 
 class YoutubeSearchView : public QListView
 {
@@ -30,8 +32,15 @@ class YoutubeSearchView : public QListView
 public:
 	YoutubeSearchView(QWidget *parent);
 	~YoutubeSearchView();
-
+	void setModel(YoutubeSearchModel *model) { 
+		m_model = model;
+		QListView::setModel(model); 
+	};
 private:
+	QScrollBar *vScrollBar;
+	YoutubeSearchModel *m_model;
+private slots:
+	void checkSearchMore(int vBarValue);
 protected:
 };
 
