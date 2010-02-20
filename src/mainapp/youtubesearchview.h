@@ -17,38 +17,22 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SEARCH_H
-#define SEARCH_H
+#ifndef YOUTUBESEARCHVIEW_H
+#define YOUTUBESEARCHVIEW_H
 
-#include <QObject>
-#include <QUrl>
-#include <QString>
-#include <QStringList>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QDomDocument>
-#include <QDomElement>
-#include <QDomNode>
-#include <QDomNodeList>
-#include "debug.h"
+#include <QListView>
+#include <QMouseEvent>
 
-class Search : public QObject
+class YoutubeSearchView : public QListView
 {
 	Q_OBJECT
 
 public:
-	Search(QObject *parent);
-	~Search();
-public slots:
-	void query(QString queryString);
+	YoutubeSearchView(QWidget *parent);
+	~YoutubeSearchView();
+
 private:
-	QNetworkAccessManager *netGetter;
-private slots:
-	void queryFinished(QNetworkReply *reply);
-signals:
-	void newSearch();
-	void newItem(QStringList item);
+protected:
 };
 
-#endif // SEARCH_H
+#endif // YOUTUBESEARCHVIEW_H

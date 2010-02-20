@@ -49,8 +49,8 @@
 // self
 #include "debug.h"
 #include "ui_mainwindow.h"
-#include "search.h"
-#include "searchmodel.h"
+//#include "search.h"
+#include "youtubesearchmodel.h"
 #include "controlwidget.h"
 
 class MainWindow : public QMainWindow, public Ui::mainWindowClass
@@ -69,10 +69,10 @@ public slots:
 private:
 	Playlist::PlaylistView *m_playlist;
 	Playlist::PlaylistModel *m_playlistModel;
-	Search *search;
+//	Search *search;
 	QFileSystemModel *fileSysModel;
 	ControlWidget *controlWidget;
-	SearchModel *searchModel;
+	YoutubeSearchModel *youtubeSearchModel;
 	QGstPlayer *gstPlayer;
 	YoutubePlayer *youtubePlayer;
 	YoutubeViewer *webView;
@@ -85,9 +85,11 @@ private:
 	QListView *savedPlaylistView;
 	Playlist::SavedPlaylistModel *savedPlaylistModel;
 private slots:
-	void querySearch();
+	void queryYoutubeSearch();
+	/*
 	void clearSearch();
 	void insertSearchItem(QStringList);
+	*/
 	void setVideoMode(QAction *);
 	void enqueueNextTrack();
 	void playNextTrack();

@@ -17,31 +17,49 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SEARCHMODEL_H
-#define SEARCHMODEL_H
+#ifndef YOUTUBESEARCHMODEL_H
+#define YOUTUBESEARCHMODEL_H
 
 #include <QStandardItemModel>
 #include <QMimeData>
 #include <QByteArray>
 #include <QList>
 #include <QUrl>
-#include <QDataStream>
+#include <QString>
+#include <QStringList>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QDomDocument>
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
 #include "debug.h"
 
-class SearchModel : public QStandardItemModel
+// google developer id of Anders Buus
+#define dev_id "AI39si61cUdAWBI2eFoGoRKodF3zuFDyUTTFHyK_X85TDEpjIv6EgeJokdy6UiuG4bq1zri9l4gExE6oEb_xwyAXuxuUgdwdRg"
+
+class YoutubeSearchModel : public QStandardItemModel
 {
 	Q_OBJECT
 
 public:
-	SearchModel(QObject *parent);
-	~SearchModel();
-
+	YoutubeSearchModel(QObject *parent);
+	~YoutubeSearchModel();
+public slots:
+	void search(QString &query, bool append = true);
 private:
+	QNetworkAccessManager *netGetter;
+private slots:
+	void queryFinished(QNetworkReply *);
+	void insertSearchItem(QStringList item);
 protected:
 	Qt::DropActions supportedDropActions() const;
 	Qt::ItemFlags flags(const QModelIndex &index) const;
 	QStringList mimeTypes() const;
 	QMimeData * mimeData(const QModelIndexList &indexes) const;
+signals:
+	void newItem(QStringList item);
 };
 
-#endif // SEARCHMODEL_H
+#endif // YOUTUBESEARCHMODEL_H

@@ -17,22 +17,19 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SEARCHVIEW_H
-#define SEARCHVIEW_H
+#include "youtubesearchview.h"
 
-#include <QListView>
-#include <QMouseEvent>
-
-class SearchView : public QListView
+YoutubeSearchView::YoutubeSearchView(QWidget *parent)
+	: QListView(parent)
 {
-	Q_OBJECT
+	setSelectionMode(QAbstractItemView::MultiSelection);
+	setDragEnabled(true);
+	setAcceptDrops(false);
+	setObjectName("SearchView");
+}
 
-public:
-	SearchView(QWidget *parent);
-	~SearchView();
+YoutubeSearchView::~YoutubeSearchView()
+{
 
-private:
-protected:
-};
+}
 
-#endif // SEARCHVIEW_H

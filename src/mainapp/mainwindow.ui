@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>580</width>
+    <width>592</width>
     <height>383</height>
    </rect>
   </property>
@@ -42,7 +42,7 @@
            <enum>QTabWidget::South</enum>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab">
            <attribute name="title">
@@ -96,10 +96,10 @@
                <number>0</number>
               </property>
               <item>
-               <widget class="QLineEdit" name="searchLineEdit"/>
+               <widget class="QLineEdit" name="youtubeSearchLineEdit"/>
               </item>
               <item>
-               <widget class="SearchView" name="searchView">
+               <widget class="YoutubeSearchView" name="youtubeSearchView">
                 <property name="editTriggers">
                  <set>QAbstractItemView::NoEditTriggers</set>
                 </property>
@@ -153,8 +153,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>580</width>
-     <height>22</height>
+     <width>592</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -308,9 +308,9 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>SearchView</class>
+   <class>YoutubeSearchView</class>
    <extends>QListView</extends>
-   <header>searchview.h</header>
+   <header>youtubesearchview.h</header>
   </customwidget>
  </customwidgets>
  <resources>

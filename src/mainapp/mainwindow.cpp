@@ -36,9 +36,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	restoreState(settings.value("mainwindow/windowState").toByteArray());
 
 	// youtube searcher
-	search = new Search(this);
-	searchModel = new SearchModel(this);
-	searchView->setModel(searchModel);
+//	search = new Search(this);
+	youtubeSearchModel = new YoutubeSearchModel(this);
+	youtubeSearchView->setModel(youtubeSearchModel);
 	
 	// saved playlists
 	Playlist::SavedPlaylistModel::createPlaylistPath();
@@ -126,10 +126,10 @@ MainWindow::~MainWindow()
 void MainWindow::createConnections()
 {
 	// youtube search
-	connect(this, SIGNAL( preformSearch( QString )), search, SLOT( query( QString )));
-	connect(searchLineEdit, SIGNAL(returnPressed()), this, SLOT( querySearch()));
-	connect(search, SIGNAL(newSearch()), this, SLOT(clearSearch()));
-	connect(search, SIGNAL(newItem(QStringList)), this,SLOT(insertSearchItem(QStringList)));
+	connect(youtubeSearchLineEdit, SIGNAL(returnPressed()), this, SLOT( queryYoutubeSearch()));
+	
+//	connect(search, SIGNAL(newSearch()), this, SLOT(clearSearch()));
+//	connect(search, SIGNAL(newItem(QStringList)), this,SLOT(insertSearchItem(QStringList)));
 
 	// player control
 	connect(controlWidget,SIGNAL(forward()),this,SLOT(playNextTrack()));
@@ -169,24 +169,9 @@ void MainWindow::setCurrentPlayer(int player)
 		m_currentPlayer = player;
 }
 
-void MainWindow::querySearch()
+void MainWindow::queryYoutubeSearch()
 {
-	emit preformSearch( searchLineEdit->text() );
-}
-
-void MainWindow::clearSearch()
-{
-	searchModel->clear();
-}
-
-void MainWindow::insertSearchItem(QStringList item)
-{
-	QStandardItem *m_item = new QStandardItem(item.first());
-	m_item->setData(item.at(1),Qt::ToolTipRole);
-	m_item->setData(item.at(2), Qt::UserRole +1);
-	m_item->setData(item.at(3), Qt::UserRole +2);
-	Debug << item.at(2);
-	searchModel->appendRow(m_item);
+	youtubeSearchModel->search(youtubeSearchLineEdit->text(),false);
 }
 
 void MainWindow::setVideoMode(QAction *a)
