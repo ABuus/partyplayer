@@ -21,11 +21,10 @@
 #define CONTROLWIDGET_H
 
 #include <QWidget>
-#include <QSlider>
 #include <QLayout>
 #include "controlbutton.h"
+#include "controlslider.h"
 #include "debug.h"
-// #include "ui_controlwidget.h"
 
 class ControlWidget : public QWidget // , public Ui::controlWidget
 {
@@ -44,7 +43,7 @@ private:
 	ControlButton *m_playPauseButton;
 	ControlButton *m_stopButton;
 	ControlButton *m_nextButton;
-	QSlider *m_slider;
+	ControlSlider *m_slider;
 private slots:
 	void playClicked();
 	void onSliderMoved(int);

@@ -29,7 +29,7 @@ ControlWidget::ControlWidget(QWidget *parent)
 	m_playPauseButton = new ControlButton(ControlButton::PlayStyle,this);
 	m_stopButton = new ControlButton(ControlButton::StopStyle,this);
 	m_nextButton = new ControlButton(ControlButton::NextStyle,this);
-	m_slider = new QSlider(Qt::Horizontal,this);
+	m_slider = new ControlSlider(this);
 
 	vBoxLayout->addWidget(m_previousButton);
 	vBoxLayout->addSpacing(15);
