@@ -81,7 +81,7 @@ void YoutubeSearchModel::search(QString &query, bool append)
 	QUrl url("http://gdata.youtube.com/feeds/api/videos?q=" + query + \
 		"&start-index=" + QString::number(searchOffset) + \
 		"&max-results=" + QString::number(49) + \
-		"&format=5&key=" + dev_id;
+		"&format=5&key=" + dev_id);
 	netGetter->get(QNetworkRequest(url));
 	searchOffset += 49;
 	currentSearch = query;
