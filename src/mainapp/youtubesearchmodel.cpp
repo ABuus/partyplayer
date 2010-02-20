@@ -115,12 +115,14 @@ void YoutubeSearchModel::queryFinished(QNetworkReply *reply)
 		// mg is a media:group see http://code.google.com/apis/youtube/2.0/reference.html#youtube_data_api_tag_media:group
 		QDomElement mg = entry.elementsByTagName("media:group").at(0).toElement();
 		QString duration = mg.elementsByTagName("yt:duration").at(0).toElement().attributeNode("seconds").value();
-		Debug << title << description << id << duration;
+
+//		Debug << title << description << id << duration;
 		
 		QStringList item;
 		item << title << description << id << duration;
 		emit newItem(item);
 	}
+	emit searchFinished();
 }
 
 void YoutubeSearchModel::insertSearchItem(QStringList item)

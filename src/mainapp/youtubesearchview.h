@@ -32,15 +32,14 @@ class YoutubeSearchView : public QListView
 public:
 	YoutubeSearchView(QWidget *parent);
 	~YoutubeSearchView();
-	void setModel(YoutubeSearchModel *model) { 
-		m_model = model;
-		QListView::setModel(model); 
-	};
+	void setModel(YoutubeSearchModel *model);
 private:
 	QScrollBar *vScrollBar;
 	YoutubeSearchModel *m_model;
+	bool searchMoreRequested;
 private slots:
 	void checkSearchMore(int vBarValue);
+	void onSearchFinished();
 protected:
 };
 

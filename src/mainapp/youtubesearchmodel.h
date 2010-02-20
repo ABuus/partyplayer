@@ -63,6 +63,7 @@ protected:
 	QMimeData * mimeData(const QModelIndexList &indexes) const;
 signals:
 	void newItem(QStringList item);
+	void searchFinished();
 };
 
 #endif // YOUTUBESEARCHMODEL_H

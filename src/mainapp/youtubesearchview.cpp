@@ -20,14 +20,15 @@
 #include "youtubesearchview.h"
 
 YoutubeSearchView::YoutubeSearchView(QWidget *parent)
-	: QListView(parent)
+	: QListView(parent),
+	searchMoreRequested(false)
 {
-	setSelectionMode(QAbstractItemView::MultiSelection);
+	setSelectionMode(QAbstractItemView::ExtendedSelection);
 	setDragEnabled(true);
 	setAcceptDrops(false);
-//	setObjectName("YoutubeSearchView");
 	vScrollBar = verticalScrollBar();
 	connect(vScrollBar,SIGNAL(valueChanged(int)),this,SLOT(checkSearchMore(int)));
+	
 }
 
 YoutubeSearchView::~YoutubeSearchView()
@@ -37,10 +38,23 @@ YoutubeSearchView::~YoutubeSearchView()
 
 void YoutubeSearchView::checkSearchMore(int vBarValue)
 {
-	qDebug() << "scroll bar value" << vBarValue << "scroll bar max" << vScrollBar->maximum();
-	if((vBarValue / vScrollBar->maximum()) * 100 >= 80)
+	if(vScrollBar->value() == 0)
+		return;
+	if((vBarValue / vScrollBar->maximum()) * 100 >= 80 && searchMoreRequested != true)
 	{
+		searchMoreRequested = true;
 		m_model->searchMore();
-		qDebug() << "scroll bar value at 80 %";
 	}
+}
+
+void YoutubeSearchView::onSearchFinished()
+{
+	searchMoreRequested = false;
+}
+
+void YoutubeSearchView::setModel(YoutubeSearchModel *model)
+{
+	m_model = model;
+	QListView::setModel(m_model);
+	connect(m_model,SIGNAL(searchFinished()),this,SLOT(onSearchFinished()));
 }
