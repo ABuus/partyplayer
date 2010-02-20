@@ -2,9 +2,13 @@
 #define CONTROLSLIDER_H
 
 #include <QAbstractSlider>
-#include <QPainter>
-#include <QStyle>
 #include <QTimer>
+#include <QPainter>
+#include <QPainterPath>
+#include <QRadialGradient>
+#include <QStyle>
+#include <QMouseEvent>
+#include <QDebug>
 
 class ControlSlider : public QAbstractSlider
 {
@@ -13,22 +17,27 @@ class ControlSlider : public QAbstractSlider
 public:
 	ControlSlider(QWidget *parent);
 	~ControlSlider();
-
 private:
-	QColor backgroundColor();
-	QRadialGradient backgroundGradient();
-	QPainterPath backgroundPath();
-	QRadialGradient handleGradient();
-	QPainterPath handlePath();
 	QTimer m_fadeTimer;
 	int m_fadeTick;
 	bool m_fadeUp;
+	bool handlePressed;
+	QRadialGradient backgroundGradient();
+	QPainterPath backgroundPath();
+	QColor backgroundColor();
+	QPainterPath handlePath();
+	QRadialGradient handleGradient();
+	QRect handleRect();
 private slots:
 	void updateFadeTick();
 protected:
-	void paintEvent(QPaintEvent *event);
-	void enterEvent(QEvent *event);
-	void leaveEvent(QEvent *event);
+	void paintEvent(QPaintEvent *e);
+	void enterEvent(QEvent *);
+	void leaveEvent(QEvent *);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
 };
 
 #endif // CONTROLSLIDER_H
+

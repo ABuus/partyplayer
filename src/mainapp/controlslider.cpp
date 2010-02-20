@@ -4,8 +4,7 @@ ControlSlider::ControlSlider(QWidget *parent)
 	: QAbstractSlider(parent),
 	m_fadeTimer(this),
 	m_fadeTick(0),
-	m_fadeUp(false),
-	handleRect(0,0,12,12)
+	m_fadeUp(false)
 {
 	setAttribute(Qt::WA_Hover);
 	m_fadeTimer.setInterval(20);
@@ -13,17 +12,11 @@ ControlSlider::ControlSlider(QWidget *parent)
 	connect(&m_fadeTimer,SIGNAL(timeout()),this,SLOT(updateFadeTick()));
 	connect(&m_fadeTimer,SIGNAL(timeout()),this,SLOT(update()));
 	connect(this,SIGNAL(sliderMoved(int)),this,SLOT(update()));
-	connect(this,SIGNAL(sliderPressed()),this,SLOT(onSliderPress()));
 }
 
 ControlSlider::~ControlSlider()
 {
 
-}
-
-void ControlSlider::onSliderPress()
-{
-	qDebug() << "slider press";
 }
 
 void ControlSlider::enterEvent(QEvent *)
@@ -81,9 +74,14 @@ void ControlSlider::paintEvent(QPaintEvent * /* event */)
 QPainterPath ControlSlider::handlePath()
 {
 	QPainterPath path;
-	int sliderPos = style()->sliderPositionFromValue(minimum(),maximum(),value(),width()-12);
-	path.addEllipse(sliderPos,0,12,12);
+	path.addEllipse(handleRect());
 	return path;
+}
+
+QRect ControlSlider::handleRect()
+{
+	int sliderPos = style()->sliderPositionFromValue(minimum(),maximum(),value(),width()-12);
+	return QRect(sliderPos,0,12,12);
 }
 
 QRadialGradient ControlSlider::handleGradient()
@@ -121,4 +119,36 @@ QPainterPath ControlSlider::backgroundPath()
 QColor ControlSlider::backgroundColor()
 {
 	return QColor(m_fadeTick,0,m_fadeTick,200);
+}
+
+void ControlSlider::mousePressEvent(QMouseEvent *event)
+{
+	setSliderDown(true);
+	if(handleRect().contains(event->pos()))
+	{
+		handlePressed = true;
+		setSliderDown(true);
+		int sliderValue = style()->sliderValueFromPosition(minimum(),maximum(),event->pos().x()-6,width()-12);
+		setValue(sliderValue);
+	}
+}
+
+void ControlSlider::mouseReleaseEvent(QMouseEvent *event)
+{
+	if(!handlePressed)
+	{
+		int sliderValue = style()->sliderValueFromPosition(minimum(),maximum(),event->pos().x()-6,width()-12);
+		setValue(sliderValue);
+	}
+	handlePressed = false;
+	setSliderDown(false);
+}
+
+void ControlSlider::mouseMoveEvent(QMouseEvent *event)
+{
+	if(isSliderDown())
+	{
+		int sliderValue = style()->sliderValueFromPosition(minimum(),maximum(),event->pos().x()-6,width()-12);
+		setValue(sliderValue);
+	}
 }
