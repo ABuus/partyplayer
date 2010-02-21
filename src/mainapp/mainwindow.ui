@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>592</width>
-    <height>383</height>
+    <width>609</width>
+    <height>375</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,14 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
+    <item row="0" column="1">
      <widget class="QSplitter" name="splitter_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -118,6 +124,9 @@
        </property>
        <widget class="QWidget" name="gridLayoutWidget">
         <layout class="QGridLayout" name="videoContainer">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetDefaultConstraint</enum>
+         </property>
          <property name="spacing">
           <number>0</number>
          </property>
@@ -140,7 +149,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>592</width>
+     <width>609</width>
      <height>21</height>
     </rect>
    </property>

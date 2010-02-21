@@ -20,7 +20,7 @@ YoutubePlayer::YoutubePlayer(QObject *parent)
 	settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
 	settings()->setAttribute(QWebSettings::PrivateBrowsingEnabled, true);
 #ifdef WEB_DEBUG
-	settings()->setAttribute(QWebSettings::QWebSettings::DeveloperExtrasEnabled, true);
+	settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
 #endif
 	settings()->setMaximumPagesInCache(0);
 	settings()->setObjectCacheCapacities(0,0,0);
@@ -28,9 +28,8 @@ YoutubePlayer::YoutubePlayer(QObject *parent)
 
 	connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),this, SLOT(addJavaScriptObject()));
 	
-	QUrl url = QUrl("http://www.partyplayer.megabyet.net/playerdata/play.html");
+	QUrl url = QUrl("http://www.partyplayer.megabyet.net/playerdata/play_v2.html");
 	mainFrame()->load(url);
-	mainFrame()->evaluateJavaScript("setDebugEnabled(true); null");
 }
 
 YoutubePlayer::~YoutubePlayer()
@@ -63,7 +62,7 @@ bool YoutubePlayer::playUrl(const QUrl url)
 
 void YoutubePlayer::play()
 {
-	mainFrame()->evaluateJavaScript("playVideo(); null");
+	mainFrame()->evaluateJavaScript("ytplayer.playVideo(); null");
 }
 
 /** 
@@ -72,7 +71,7 @@ void YoutubePlayer::play()
 
 void YoutubePlayer::pause()
 {
-	mainFrame()->evaluateJavaScript("pauseVideo(); null");
+	mainFrame()->evaluateJavaScript("ytplayer.pauseVideo(); null");
 }
 
 /**
@@ -86,9 +85,9 @@ void YoutubePlayer::seek(int msec, bool seekAhead)
 {
 	QString js;
 	if(seekAhead)
-		js = "seekTo(%1,true); null";
+		js = "ytplayer.seekTo(%1,true); null";
 	else
-		js = "seekTo(%1,false); null";
+		js = "ytplayer.seekTo(%1,false); null";
 	mainFrame()->evaluateJavaScript(js.arg(msec / 1000));
 }
 
@@ -103,11 +102,11 @@ void YoutubePlayer::seek(int msec, bool seekAhead)
 void YoutubePlayer::resizePlayer(int width, int height)
 {
 	/* pixel offset to avoid scrollbars */
-	int offset = 0;
+	int offset = 15;
 
-	QString js = "resizePlayer(%1,%2)";
-	setViewportSize(QSize(width,height));
-	mainFrame()->evaluateJavaScript(js.arg( width - offset ).arg( height - offset ));
+	QString js = "ytplayer.width = %1; ytplayer.height = %2;";
+	mainFrame()->evaluateJavaScript(js.arg( width ).arg( height ));
+	setViewportSize(QSize(width + offset, height+offset ));
 }
 
 /**
@@ -118,7 +117,7 @@ void YoutubePlayer::resizePlayer(int width, int height)
 
 void YoutubePlayer::cueVideoById( QString vidId )
 {
-	QString js = "cueVideoById('%1');";
+	QString js = "ytplayer.cueVideoById('%1');";
 	js = js.arg(vidId);
 	Debug << js;
 	mainFrame()->evaluateJavaScript(js);
@@ -134,7 +133,7 @@ void YoutubePlayer::loadVideoById( QString vidId )
 {
 	if(vidId.startsWith("http://www.youtube.com/watch?v="))
 		vidId.remove("http://www.youtube.com/watch?v=");
-	QString js = "loadVideoById('%1',0,'%2');";
+	QString js = "ytplayer.loadVideoById('%1',0,'%2');";
 	js = js.arg(vidId);
 	js = js.arg(m_playerQuality);
 	Debug << js;
@@ -165,6 +164,7 @@ void YoutubePlayer::setState(int state)
 void YoutubePlayer::setTotalTime(double time)
 {
 	qint64 temp = time * 1000;
+	qDebug() << "duration" << temp;
 	if(m_totalTime != temp)
 	{
 		m_totalTime = temp;
@@ -175,6 +175,7 @@ void YoutubePlayer::setTotalTime(double time)
 void YoutubePlayer::setCurrentTime(double time)
 {
 	qint64 temp = time * 1000;
+	qDebug() << "time" << temp;
 	if(m_currentTime != temp)
 	{
 		m_currentTime = temp;
@@ -217,6 +218,6 @@ void YoutubePlayer::setPlayQuality(enum PlayerQuality playerQuality)
 			m_playerQuality = "default";
 			break;
 	};
-	QString js = "setPlaybackQuality('%1');";
+	QString js = "ytplayer.setPlaybackQuality('%1');";
 	mainFrame()->evaluateJavaScript(js.arg(m_playerQuality));
 }

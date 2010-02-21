@@ -19,6 +19,7 @@
 
 #include "mainwindow.h"
 
+
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags),
 	webState(false),
@@ -67,6 +68,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	webView->setFixedSize(500,400);
 #endif
 	youtubePlayer = new YoutubePlayer(webView);
+	youtubePlayer->mainFrame()->setScrollBarPolicy(Qt::Horizontal,Qt::ScrollBarAlwaysOff);
+	youtubePlayer->mainFrame()->setScrollBarPolicy(Qt::Vertical,Qt::ScrollBarAlwaysOff);
 	webView->setPage(youtubePlayer);
 	videoContainer->addWidget(webView);
 #ifdef WEB_DEBUG
