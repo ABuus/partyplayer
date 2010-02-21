@@ -35,6 +35,7 @@
 #include "playlistmodel.h"
 #include "playlistdelegate.h"
 #include "playlistdialog.h"
+#include "playlistcontextmenu.h"
 
 namespace Playlist {
 
@@ -56,13 +57,16 @@ signals:
 private:
 	PlaylistModel *m_model;
 	int m_hoverRow;
+	PlaylistContextMenu *contexMenu;
 private slots:
 	void onDoubleClicked(const QModelIndex &index);
+	void removeSelected();
 protected:
 	void startDrag(Qt::DropActions supportenDropActions);
 	void dropEvent(QDropEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
 	void leaveEvent(QEvent *);
+	void contextMenuEvent(QContextMenuEvent *event);
 };
 
 }; // namespace Playlist

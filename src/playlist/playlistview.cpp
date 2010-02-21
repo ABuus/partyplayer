@@ -42,6 +42,8 @@ PlaylistView::PlaylistView(QWidget *parent)
 	setColumnHidden(Playlist::Internal,true);
 	setMouseTracking(true);
 
+	contexMenu = new PlaylistContextMenu(this);
+
 	// delegate 
 	setItemDelegate(new PlaylistDelegate(this));
 	
@@ -61,6 +63,7 @@ PlaylistView::~PlaylistView()
 void PlaylistView::createConnections()
 {
 	connect(this,SIGNAL(doubleClicked(const QModelIndex &)),this,SLOT(onDoubleClicked(const QModelIndex &)));
+	connect(contexMenu,SIGNAL(requestRemove()),this,SLOT(removeSelected()));
 }
 
 /* 
@@ -226,6 +229,7 @@ void PlaylistView::onDoubleClicked(const QModelIndex &index)
 	if(!url.isValid())
 		return;
 	emit playRequest(url);
+	clearSelection();
 }
 
 void PlaylistView::mouseMoveEvent(QMouseEvent *event)
@@ -261,4 +265,31 @@ void PlaylistView::leaveEvent(QEvent *)
 		model()->setData(index,false,Qt::UserRole + 5);
 	}
 	m_hoverRow = -1;
+}
+
+void PlaylistView::contextMenuEvent(QContextMenuEvent *event)
+{
+	QModelIndex index = indexAt(event->pos());
+	if(!index.isValid())
+		return;
+	Playlist::InternalData type = (Playlist::InternalData)index.data(Playlist::PlacementRole).toInt();
+	const QUrl url = index.data(Playlist::UrlRole).toUrl();
+	contexMenu->exec(type,url,mapToGlobal(event->pos()));
+}
+
+void PlaylistView::removeSelected()
+{
+	QList<QModelIndex> indexes = selectedIndexes();
+	QList<int> rows;
+	foreach(QModelIndex index,indexes)
+	{
+		if(!rows.contains(index.row()))
+		{
+			rows.append(index.row());
+		}
+	}
+	while(!rows.isEmpty())
+	{
+		m_model->removeRow(rows.takeLast());
+	}
 }

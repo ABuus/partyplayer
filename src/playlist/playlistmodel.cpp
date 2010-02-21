@@ -33,7 +33,6 @@ PlaylistModel::PlaylistModel(QObject *parent)
 	headerLabels.insert( Playlist::Length, tr("Length") );
 	headerLabels.insert( Playlist::Bitrate, tr("Bitrate") );
 	headerLabels.insert( Playlist::Place, tr("Directory") );
-	headerLabels.insert( Playlist::Internal, tr("Internal") );
 	setHorizontalHeaderLabels(headerLabels);
 }
 
@@ -194,6 +193,7 @@ void PlaylistModel::updateItemData()
 	for(int i = 0; i < columnCount(); i++)
 	{
 		setData(index(row,i),playlistItem->value(i),Qt::DisplayRole);
+		setData(index(row,i),playlistItem->value(Playlist::Internal),Playlist::PlacementRole);
 	}
 	/* delete the item */
 	playlistItem->deleteLater();

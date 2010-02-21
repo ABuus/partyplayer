@@ -6,16 +6,18 @@ HEADERS += ./debug.h \
     ./playlist_export.h \
     ./playlist_global.h \
     ./playlistdelegate.h \
+    ./playlistdialog.h \
     ./playlistitem.h \
     ./playlistmodel.h \
     ./playlistview.h \
-    ./playlistdialog.h \
-    ./savedplaylistmodel.h
+    ./savedplaylistmodel.h \
+    ./playlistcontextmenu.h
 SOURCES += ./playlistdelegate.cpp \
+    ./playlistdialog.cpp \
     ./playlistitem.cpp \
     ./playlistmodel.cpp \
     ./playlistview.cpp \
-    ./playlistdialog.cpp \
-    ./savedplaylistmodel.cpp
+    ./savedplaylistmodel.cpp \
+    ./playlistcontextmenu.cpp
 FORMS += ./playlistdialog.ui
 RESOURCES += playlist.qrc

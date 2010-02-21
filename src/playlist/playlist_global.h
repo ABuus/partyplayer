@@ -52,7 +52,13 @@ namespace Playlist {
 
 	enum PLAYLIST_EXPORT ItemRole {
 		UrlRole = Qt::UserRole +1,
-		PlayRole
+		PlayRole,
+		PlacementRole
+	};
+
+	enum PLAYLIST_EXPORT InternalData {
+		Local = 0,
+		Youtube
 	};
 
 	void Q_DECL_EXPORT registerTypes();
