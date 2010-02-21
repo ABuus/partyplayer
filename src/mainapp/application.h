@@ -35,7 +35,7 @@ class Application : public QtSingleApplication
 	Q_OBJECT
 
 public:
-	Application( int argc, char *argv[]);
+	Application( int &argc, char *argv[]);
 	~Application();
 private:
 	MainWindow *win;

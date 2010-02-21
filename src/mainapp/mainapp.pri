@@ -8,8 +8,6 @@ HEADERS += ./application.h \
     ./controlwidget.h \
     ./debug.h \
     ./mainwindow.h \
-    ./3rdparty/qtsingleapplication/src/qtlocalpeer.h \
-    ./3rdparty/qtsingleapplication/src/qtsingleapplication.h \
     ./youtubesearchmodel.h \
     ./svgsplashscreen.h \
     ./youtubesearchview.h
@@ -19,8 +17,6 @@ SOURCES += ./application.cpp \
     ./controlwidget.cpp \
     ./main.cpp \
     ./mainwindow.cpp \
-    ./3rdparty/qtsingleapplication/src/qtlocalpeer.cpp \
-    ./3rdparty/qtsingleapplication/src/qtsingleapplication.cpp \
     ./youtubesearchmodel.cpp \
     ./svgsplashscreen.cpp \
     ./youtubesearchview.cpp

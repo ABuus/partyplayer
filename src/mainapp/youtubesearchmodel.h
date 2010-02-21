@@ -47,7 +47,7 @@ public:
 	YoutubeSearchModel(QObject *parent);
 	~YoutubeSearchModel();
 public slots:
-	void search(QString &query, bool append = false);
+	void search(QString query, bool append = false);
 	void searchMore();
 private:
 	QNetworkAccessManager *netGetter;

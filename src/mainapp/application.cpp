@@ -19,7 +19,7 @@
 
 #include "application.h"
 
-Application::Application(int argc, char * argv[])
+Application::Application(int &argc, char * argv[])
 	: QtSingleApplication(argc,argv)
 {
 	setApplicationName("PartyPlayer");

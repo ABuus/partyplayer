@@ -70,7 +70,7 @@ QMimeData *YoutubeSearchModel::mimeData(const QModelIndexList &indexes) const
 	return mimeData;
 }
 
-void YoutubeSearchModel::search(QString &query, bool append)
+void YoutubeSearchModel::search(QString query, bool append)
 {
 	if(!append)
 	{
