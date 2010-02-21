@@ -85,6 +85,7 @@ bool PlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
 {
 	Q_UNUSED(parent);
 	Q_UNUSED(column);
+	Debug << "drop row" << row << parent;
 	if(action == Qt::IgnoreAction)
 		return true;
 	if(!data->hasUrls())
@@ -99,7 +100,7 @@ bool PlaylistModel::insertUrls(const QList<QUrl> urls, int startRow)
 	{
 		if(isDirectory(url))
 		{
-			insertAllFilesUnderDirectory(url);
+			validLocations << insertAllFilesUnderDirectory(url);
 		}
 		else
 		{
@@ -255,8 +256,9 @@ bool PlaylistModel::isDirectory(const QUrl url)
  * url has to be local dir. eg. file:///C:/Users/User/Music
  */
 
-void PlaylistModel::insertAllFilesUnderDirectory(const QUrl url)
+QList<QUrl> PlaylistModel::insertAllFilesUnderDirectory(const QUrl url)
 {
+	QList<QUrl> retval;
 	QFileInfo topInfo(url.toLocalFile());
 	Q_ASSERT(topInfo.exists());
 	QFlags<QDir::Filter> dirFilter(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -272,8 +274,8 @@ void PlaylistModel::insertAllFilesUnderDirectory(const QUrl url)
 	foreach(QFileInfo file, topFiles)
 	{
 		QUrl url = FILE_MARCO + file.path() + "/" + file.fileName();
-		Debug << "found file:" << url.toString();
-		insertUrl(url);
+		retval << url;
+		// insertUrl(url);
 	}
 	
 	/* insert all dirs and there files under topdir */
@@ -295,13 +297,14 @@ void PlaylistModel::insertAllFilesUnderDirectory(const QUrl url)
 		foreach(QString file, entList)
 		{
 			QUrl url = FILE_MARCO + info.path() + "/" + info.fileName() + "/" + file;
-			insertUrl(url);
+			retval << url;
+			//insertUrl(url);
 		}
 		/* get all sub dirs add them to subDirs */
 		sub.setFilter(dirFilter);
 		sub.setSorting(dirSortFlags);
 		entList = sub.entryList();
-		Debug << "subdies to be inserted" << entList.count() << info.path() + "/" + info.fileName();
+		Debug << "subdirs to be inserted" << entList.count() << info.path() + "/" + info.fileName();
 		if(!entList.isEmpty())
 		{
 			foreach(QString strSubDir, entList)
@@ -311,4 +314,5 @@ void PlaylistModel::insertAllFilesUnderDirectory(const QUrl url)
 			}
 		}
 	}
+	return retval;
 }

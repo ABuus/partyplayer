@@ -214,7 +214,8 @@ void PlaylistView::dropEvent(QDropEvent *event)
 		return;
 	}
 	/* Let the parent class handle the event */
-	QTableView::dropEvent(event);
+//	QTableView::dropEvent(event);
+	m_model->dropMimeData(event->mimeData(),Qt::CopyAction,indexAt(event->pos()).row(),-1,QModelIndex());
 }
 
 /*
@@ -234,6 +235,8 @@ void PlaylistView::onDoubleClicked(const QModelIndex &index)
 
 void PlaylistView::mouseMoveEvent(QMouseEvent *event)
 {
+	QTableView::mouseMoveEvent(event);
+
 	int row = indexAt(event->pos()).row();
 	if(row == m_hoverRow)
 		return;
@@ -252,7 +255,6 @@ void PlaylistView::mouseMoveEvent(QMouseEvent *event)
 			m_model->setData(oldIndex,false,Qt::UserRole +5);
 		}
 	}
-	QTableView::mouseMoveEvent(event);
 }
 
 void PlaylistView::leaveEvent(QEvent *)

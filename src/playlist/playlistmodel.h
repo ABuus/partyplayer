@@ -51,7 +51,7 @@ public:
 	int getPlayRow();
 private:
 	bool isDirectory(const QUrl url);
-	void insertAllFilesUnderDirectory(const QUrl url);
+	QList<QUrl> insertAllFilesUnderDirectory(const QUrl url);
 private slots:
 	void updateItemData();
 };
