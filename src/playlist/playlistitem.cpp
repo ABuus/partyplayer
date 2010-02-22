@@ -106,9 +106,9 @@ bool PlaylistItem::localFile(QString file)
 		TagLib::Tag *tag = f.tag();
 		TagLib::AudioProperties *ap = f.audioProperties();
 		m_internal = PlaylistItem::Local;
-		m_artist = tag->artist().toCString(true);
-		m_title = tag->title().toCString(true);
-		m_album = tag->album().toCString(true);
+		m_artist = QString::fromUtf8(tag->artist().toCString(true));
+		m_title = QString::fromUtf8(tag->title().toCString(true));
+		m_album = QString::fromUtf8(tag->album().toCString(true));
 		m_place = file;
 		m_year = tag->year();
 		m_track = tag->track();
