@@ -51,7 +51,6 @@ LocalPlayer::LocalPlayer(QObject *parent)
 LocalPlayer::~LocalPlayer()
 {
 	gst_element_set_state(m_pipeline, GST_STATE_NULL);
-	gst_object_unref(m_newPipeline);
 	gst_object_unref(m_pipeline);
 	gst_object_unref(m_sink);
 	gst_deinit();
