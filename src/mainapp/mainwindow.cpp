@@ -27,9 +27,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 {
 	setupUi(this);
 	
-	gstPlayer = new QGstPlayer(this);
-	gstPlayer->start();
-	
 	// restore geometry and states
 	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
 	settings.setDefaultFormat(QSettings::IniFormat);
@@ -62,9 +59,12 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	controlWidget = new ControlWidget(this);
 	controlLayout->addWidget(controlWidget);
 
+	// locale player
+	localPlayer = new LocalPlayer(this);
+
 	// youtube player
 	webView = new YoutubeViewer(this); // in youtubeplayer.h
-#ifdef Q_WS_X11
+#ifdef FLASH_NO_RESIZE
 	webView->setFixedSize(500,400);
 #endif
 	youtubePlayer = new YoutubePlayer(webView);
@@ -112,6 +112,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	m_playerQualityActions->addAction(ytQualityStandard);
 	m_playerQualityActions->setExclusive(true);
 
+
 	createConnections();
 }
 
@@ -131,9 +132,6 @@ void MainWindow::createConnections()
 {
 	// youtube search
 	connect(youtubeSearchLineEdit, SIGNAL(returnPressed()), this, SLOT( queryYoutubeSearch()));
-	
-//	connect(search, SIGNAL(newSearch()), this, SLOT(clearSearch()));
-//	connect(search, SIGNAL(newItem(QStringList)), this,SLOT(insertSearchItem(QStringList)));
 
 	// player control
 	connect(controlWidget,SIGNAL(forward()),this,SLOT(playNextTrack()));
@@ -145,10 +143,10 @@ void MainWindow::createConnections()
 	connect(m_playlist,SIGNAL(playRequest(const QUrl )),this,SLOT(handlePlayRequests(const QUrl)));
 
 	// gst player
-	connect(gstPlayer,SIGNAL(timeChanged(qint64)),this,SLOT(setTime(qint64)));
-	connect(gstPlayer,SIGNAL(durationChanged(qint64)),this,SLOT(setTotalTime(qint64)));
-	connect(gstPlayer,SIGNAL(stateChanged(int)),this,SLOT(handlePlayerState(int)));
-	connect(gstPlayer,SIGNAL(finished()),this,SLOT(playNextTrack()));
+	connect(localPlayer,SIGNAL(timeChanged(qint64)),this,SLOT(setTime(qint64)));
+	connect(localPlayer,SIGNAL(totalTimeChanged(qint64)),this,SLOT(setTotalTime(qint64)));
+	connect(localPlayer,SIGNAL(stateChanged(int)),this,SLOT(handlePlayerState(int)));
+	connect(localPlayer,SIGNAL(finished()),this,SLOT(playNextTrack()));
 	
 	// youtube player
 	connect(youtubePlayer,SIGNAL(finished()),this,SLOT(playNextTrack()));
@@ -221,7 +219,7 @@ void MainWindow::enqueueNextTrack()
 			webState = false;
 			youtubePlayer->pause();
 		}
-		gstPlayer->enqueueNext(url);
+		localPlayer->enqueue(url);
 		Debug << "Enqueue next mainwin";
 	}
 	else
@@ -230,7 +228,7 @@ void MainWindow::enqueueNextTrack()
 		/* enqueueVideoBuId ??? */
 		youtubePlayer->playUrl(url);
 		webState = true;
-		gstPlayer->stop();
+		localPlayer->stop();
 	}
 }
 
@@ -256,14 +254,14 @@ void MainWindow::handlePlayRequests(const QUrl url)
 			webState = false;
 			youtubePlayer->pause();
 		}
-		gstPlayer->playUrl(url);
+		localPlayer->playUrl(url);
 	}
 	else
 	{
 		setCurrentPlayer(MainWindow::Youtube);
 		youtubePlayer->playUrl(url);
 		webState = true;
-		gstPlayer->stop();
+		localPlayer->stop();
 	}
 }
 
@@ -286,7 +284,7 @@ bool MainWindow::handleApplicationMessage(const QString &msg)
 void MainWindow::play()
 {
 	if(m_currentPlayer == MainWindow::Loacal)
-		gstPlayer->play();
+		localPlayer->play();
 	else if(m_currentPlayer == MainWindow::Youtube)
 		youtubePlayer->play();
 	else
@@ -296,7 +294,7 @@ void MainWindow::play()
 void MainWindow::pause()
 {
 	if(m_currentPlayer == MainWindow::Loacal)
-		gstPlayer->pause();
+		localPlayer->pause();
 	else if(m_currentPlayer == MainWindow::Youtube)
 		youtubePlayer->pause();
 	else
@@ -306,7 +304,7 @@ void MainWindow::pause()
 void MainWindow::stop()
 {	
 	if(m_currentPlayer == MainWindow::Loacal)
-		gstPlayer->stop();
+		localPlayer->stop();
 	else if(m_currentPlayer == MainWindow::Youtube)
 		youtubePlayer->pause();
 	else
@@ -316,7 +314,7 @@ void MainWindow::stop()
 void MainWindow::seek(qint64 msec)
 {
 	if(m_currentPlayer == MainWindow::Loacal)
-		gstPlayer->seek(msec);
+		localPlayer->seek(msec);
 	else if(m_currentPlayer == MainWindow::Youtube)
 		youtubePlayer->seek((int)msec);
 	else
@@ -326,7 +324,7 @@ void MainWindow::seek(qint64 msec)
 void MainWindow::handlePlayerState(int state)
 {
 	QObject *player = qobject_cast<QObject *>( sender() );
-	if(player == gstPlayer && m_currentPlayer == MainWindow::Loacal)
+	if(player == localPlayer && m_currentPlayer == MainWindow::Loacal)
 	{
 		controlWidget->setPlayState(state);
 	}
@@ -340,7 +338,7 @@ void MainWindow::handlePlayerState(int state)
 void MainWindow::setTime(qint64 time)
 {
 	QObject *player = qobject_cast<QObject *>( sender() );
-	if(player == gstPlayer && m_currentPlayer == MainWindow::Loacal)
+	if(player == localPlayer && m_currentPlayer == MainWindow::Loacal)
 	{
 		controlWidget->setTime(time);
 		return;
@@ -357,7 +355,7 @@ void MainWindow::setTime(qint64 time)
 void MainWindow::setTotalTime(qint64 time)
 {
 	QObject *player = qobject_cast<QObject *>( sender() );
-	if(player == gstPlayer && m_currentPlayer == MainWindow::Loacal)
+	if(player == localPlayer && m_currentPlayer == MainWindow::Loacal)
 	{
 		controlWidget->setTotalTime(time);
 	}

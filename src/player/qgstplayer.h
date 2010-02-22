@@ -26,7 +26,7 @@
 
 class QGstPlayerPrivate;
 
-class PLAYER_EXPORT QGstPlayer : public QThread
+class PLAYER_EXPORT QGstPlayer : public QObject
 {
 	Q_OBJECT
 public:

@@ -19,13 +19,14 @@
 
 #include "qgstplayer.h"
 #include "qgstplayer_p.h"
+#include <QCoreApplication>
 
 /*
  * --------------- Public Class --------------
  */
 
 QGstPlayer::QGstPlayer(QObject *parent)
-	: QThread(parent),
+	: QObject(parent),
 	d_ptr(new QGstPlayerPrivate())
 {
 	Q_D(QGstPlayer);
@@ -33,7 +34,7 @@ QGstPlayer::QGstPlayer(QObject *parent)
 }
 
 QGstPlayer::QGstPlayer(QGstPlayerPrivate &dd, QObject *parent)
-	: QThread(parent),
+	: QObject(parent),
 	d_ptr(&dd)
 {
 	Q_D(QGstPlayer);
@@ -91,8 +92,14 @@ bool QGstPlayer::enqueueNext(const QUrl &url)
 
 QGstPlayerPrivate::QGstPlayerPrivate()
 {
+	Q_Q(QGstPlayer);
 	/* initialise gstreamer */
-	gst_init(NULL,NULL);
+	GError **err = NULL;
+	if(!gst_init_check(NULL,NULL,err))
+	{
+		qDebug() << err;
+	}
+	g_object_unref(err);
 
 	/* create gstreamer elements */
 	sink = gst_element_factory_make("autoaudiosink", "player");
@@ -115,9 +122,9 @@ QGstPlayerPrivate::~QGstPlayerPrivate()
 
 void QGstPlayerPrivate::init()
 {
-	g_timeout_add(100,syncEventloop,this);
-	gLoop = g_main_loop_new(NULL,false);
-	g_main_loop_run(gLoop);
+//	g_timeout_add(100,syncEventloop,this);
+//	gLoop = g_main_loop_new(NULL,false);
+//	g_main_loop_run(gLoop);
 }
 
 gboolean QGstPlayerPrivate::bus_callback(GstBus *bus,GstMessage *message, gpointer ptr)
@@ -137,6 +144,8 @@ gboolean QGstPlayerPrivate::bus_callback(GstBus *bus,GstMessage *message, gpoint
 			gst_element_get_state(thisPtr->pipeline,&state,NULL,NULL);
 			thisPtr->setState(state);
 			break;
+		default:
+			break;
 	}
 	return true;
 }
@@ -144,14 +153,17 @@ gboolean QGstPlayerPrivate::bus_callback(GstBus *bus,GstMessage *message, gpoint
 gboolean QGstPlayerPrivate::syncEventloop(gpointer ptr)
 {
 	Q_UNUSED(ptr);
+	QCoreApplication::processEvents(QEventLoop::AllEvents,90);
+	/*
 	QEventLoop qLoop;
 	qLoop.processEvents();
-
+	*/
+/*
 	QGstPlayerPrivate *thisPtr = static_cast<QGstPlayerPrivate*>(ptr);
 	Q_ASSERT(thisPtr);
 
 	thisPtr->updatePosision();
-	
+*/
 	return true;
 }
 
@@ -241,8 +253,8 @@ void QGstPlayerPrivate::setState(GstState state)
 
 void QGstPlayerPrivate::emitFinished()
 {
-	Q_Q(QGstPlayer);
-	emit q->finished();
+//	Q_Q(QGstPlayer);
+//	emit q->finished();
 }
 
 void QGstPlayerPrivate::updateDuration()

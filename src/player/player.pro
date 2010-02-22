@@ -1,7 +1,7 @@
 TEMPLATE = lib
 TARGET = player
 
-QT += webkit network gui core 
+QT += webkit network gui core
 
 include(../common.pri)
 
@@ -18,11 +18,12 @@ INCLUDEPATH += 	"C:\gstreamer-dev\include" \
 LIBS += 	"C:\gstreamer-dev\lib\gstreamer-0.10.lib" \
 		"C:\gstreamer-dev\lib\glib-2.0.lib" \
 		"C:\gstreamer-dev\lib\gobject-2.0.lib"
+QT += phonon
 }
 
 unix {
 CONFIG += link_pkgconfig
-PKGCONFIG += gstreamer-0.10
+PKGCONFIG += gstreamer-0.10 phonon
 }
 
 

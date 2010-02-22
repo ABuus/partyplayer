@@ -36,7 +36,9 @@ public:
 public slots:
 	void play();
 	void pause();
+#ifndef FLASH_NO_RESIZE
 	void resizePlayer(int w, int h);
+#endif
 	void seek(int msec, bool seekAhead = true);
 	void setPlayQuality(enum PlayerQuality playerQuality = YoutubePlayer::Standard);
 	void cueVideoById(QString videoId);
@@ -77,10 +79,12 @@ public:
 	{
 		m_page = new YoutubePlayer(this);
 	}
+#ifndef FLASH_NO_RESIZE
 	void resizeEvent(QResizeEvent *e) { 
 		m_page->resizePlayer(width(),height());
 		QWebView::resizeEvent(e);
 	};
+#endif
 	void setPage(YoutubePlayer *yt_page) { m_page = yt_page; };
 private:
 	YoutubePlayer *m_page;

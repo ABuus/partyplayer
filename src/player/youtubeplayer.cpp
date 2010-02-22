@@ -93,11 +93,14 @@ void YoutubePlayer::seek(int msec, bool seekAhead)
 
 /** 
  * Resize the player.
+ * This is not enabled on linux.
  * \sa YoutubeViewer::resizeEvent()
  * \bug this does not resize to the full width on windows.
  * it used to do that. bug looks to be on js side.
  * \bug this craches the calling application on linux( due to flash player proplem ).
  */
+
+#ifndef FLASH_NO_RESIZE
 
 void YoutubePlayer::resizePlayer(int width, int height)
 {
@@ -108,6 +111,8 @@ void YoutubePlayer::resizePlayer(int width, int height)
 	mainFrame()->evaluateJavaScript(js.arg( width ).arg( height ));
 	setViewportSize(QSize(width + offset, height+offset ));
 }
+
+#endif
 
 /**
  * Load the video with \a vidId, this is not playing the video.

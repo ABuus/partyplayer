@@ -45,7 +45,7 @@
 #include "playlist/savedplaylistmodel.h"
 // player
 #include "player/youtubeplayer.h"
-#include "player/qgstplayer.h"
+#include "player/localplayer.h"
 // self
 #include "debug.h"
 #include "ui_mainwindow.h"
@@ -73,7 +73,7 @@ private:
 	ControlWidget *controlWidget;
 	YoutubeSearchView *youtubeSearchView;
 	YoutubeSearchModel *youtubeSearchModel;
-	QGstPlayer *gstPlayer;
+	LocalPlayer *localPlayer;
 	YoutubePlayer *youtubePlayer;
 	YoutubeViewer *webView;
 	QList<int> oldVSplitter;
