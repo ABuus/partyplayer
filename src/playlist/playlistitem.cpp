@@ -94,8 +94,12 @@ QVariant PlaylistItem::value( int column )
 bool PlaylistItem::localFile(QString file)
 {
 	file.remove(FILE_MARCO);
+#ifndef Q_WS_X11
 	QByteArray ba(file.toLatin1());
 	const char *tFile = ba.data();
+#else
+	const char *tFile = file.toUtf8();
+#endif
 	TagLib::FileRef f(tFile);
 	if(!f.isNull() && f.tag())
     {
@@ -123,7 +127,7 @@ bool PlaylistItem::localFile(QString file)
 		return true;
 	}
 	m_isValid = false;
-	Debug << "invalid local file: " << file;
+	Debug << "invalid local file (taglib data): " << tFile;
 	emit dataRecived();
 	return false;
 }
