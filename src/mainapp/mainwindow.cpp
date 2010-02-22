@@ -201,37 +201,6 @@ void MainWindow::setVideoMode(QAction *a)
 	}
 }
 
-
-/* todo enqueue in ytplayer */
-void MainWindow::enqueueNextTrack()
-{
-	QUrl url = m_playlist->next();
-	if(!url.isValid())
-	{
-		Debug << "invalid url";
-		return;
-	}
-	if(url.scheme() == "file")
-	{
-		setCurrentPlayer(MainWindow::Loacal);
-		if(webState)
-		{
-			webState = false;
-			youtubePlayer->pause();
-		}
-		localPlayer->enqueue(url);
-		Debug << "Enqueue next mainwin";
-	}
-	else
-	{
-		setCurrentPlayer(MainWindow::Youtube);
-		/* enqueueVideoBuId ??? */
-		youtubePlayer->playUrl(url);
-		webState = true;
-		localPlayer->stop();
-	}
-}
-
 void MainWindow::playNextTrack()
 {
 	const QUrl url = m_playlist->next();

@@ -91,7 +91,6 @@ private slots:
 	void insertSearchItem(QStringList);
 	*/
 	void setVideoMode(QAction *);
-	void enqueueNextTrack();
 	void playNextTrack();
 	void playPreviousTrack();
 	void handlePlayRequests(const QUrl url);

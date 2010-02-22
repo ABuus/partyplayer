@@ -45,7 +45,6 @@ public slots:
 	void play();
 	void stop();
 	void pause();
-	bool enqueue(const QUrl &url);
 signals:
 	void timeChanged( qint64 pos );
 	void totalTimeChanged( qint64 totalTime );
@@ -54,7 +53,6 @@ signals:
 	void finished();
 private:
 	GstElement *m_pipeline;
-	GstElement *m_newPipeline;
 	GstElement *m_sink;
 	bool m_canRunOut;
 	QTimer m_playTimer;
@@ -64,7 +62,6 @@ private:
 private slots:
 	void getTime();
 	void getTotalTime();
-	GstElement *createPipeline();
 	void checkState();
 };
 

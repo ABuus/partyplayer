@@ -22,7 +22,6 @@
 LocalPlayer::LocalPlayer(QObject *parent)
 	:QObject(parent),
 	m_pipeline(0),
-	m_newPipeline(0),
 	m_canRunOut(true),
 	m_playTimer(this),
 	m_totaltime(0),
@@ -32,14 +31,17 @@ LocalPlayer::LocalPlayer(QObject *parent)
 	// initialize gstreamer
 	GError *err;
 	if(!gst_init_check(NULL, NULL,&err))
+	{
+		g_object_unref(err);
 		Debug << err;
+	}
 	
 	// create gst elemente
 	m_sink = gst_element_factory_make("autoaudiosink", "player");
-	m_pipeline = createPipeline();
+	m_pipeline = gst_element_factory_make("playbin",NULL);
 	// link elements
-	gst_element_link(GST_ELEMENT( m_pipeline), m_sink);
-	g_timeout_add (TIMER_INTERVAL, NULL, m_pipeline);
+	gst_element_link(m_pipeline, m_sink);
+//	g_timeout_add (TIMER_INTERVAL, NULL, m_pipeline);
 	
 	// start play timer
 	m_playTimer.setInterval(TIMER_INTERVAL);
@@ -52,6 +54,7 @@ LocalPlayer::~LocalPlayer()
 	gst_object_unref(m_newPipeline);
 	gst_object_unref(m_pipeline);
 	gst_object_unref(m_sink);
+	gst_deinit();
 }
 
 void LocalPlayer::playUrl(const QUrl &url)
@@ -102,28 +105,18 @@ void LocalPlayer::getTime()
 			// check if we are at end
 			if( ( GST_TIME_AS_MSECONDS( m_totaltime ) - GST_TIME_AS_MSECONDS( pos ) ) <= 0 )
 			{
-				Debug << "play next";
+				Debug << "EOS";
 				m_playTimer.stop();
-				if(!gst_element_set_state(m_newPipeline, GST_STATE_PLAYING))
-				{
-					Debug << "Failed to change state on new pipeline";
-					checkState();
-					return;
-				}
-				if(!gst_element_set_state(m_pipeline, GST_STATE_NULL))
-				{
-					Debug << "Failed to change state on old pipeline";
-					checkState();
-					return;
-				}
-				gst_object_unref(m_pipeline);
-				m_pipeline = m_newPipeline;
 				getTotalTime();
-				m_playTimer.start();
 				checkState();
+				emit finished();
 			}
 		}
 		
+	}
+	else
+	{
+		Debug << "Could not get posision";
 	}
 }
 
@@ -176,35 +169,6 @@ void LocalPlayer::pause()
 	gst_element_set_state(m_pipeline, GST_STATE_PAUSED);
 	m_playTimer.stop();
 	checkState();
-}
-
-bool LocalPlayer::enqueue(const QUrl &url)
-{
-	Debug << "Enqueue next";
-	if(url.isValid())
-	{
-		Debug << "valid url:" << url;
-		m_newPipeline = createPipeline();
-		QByteArray baUrl = url.toEncoded();
-		if(baUrl.isEmpty())
-			Debug << "empty baUrl";
-		const gchar *uri = baUrl.constData();
-		g_object_set(G_OBJECT(m_newPipeline), "uri", uri, NULL);
-		return true;
-	}
-	gst_element_set_state(m_pipeline, GST_STATE_NULL);
-	emit timeChanged(0);
-	m_playTimer.stop();
-	checkState();
-	return false;
-}
-
-GstElement * LocalPlayer::createPipeline()
-{
-	GstElement *pipeline = gst_element_factory_make("playbin", "player");
-	gst_element_link(GST_ELEMENT( pipeline), m_sink);
-	g_timeout_add (TIMER_INTERVAL, 0, pipeline);
-	return pipeline;
 }
 
 void LocalPlayer::checkState()
