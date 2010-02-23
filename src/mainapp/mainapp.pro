@@ -20,16 +20,17 @@ PKGCONFIG += gstreamer-0.10 taglib
 }
 
 win32 {
-LIBS += -L$$DESTDIR\
-	-lplaylist \
-	-lplayer
+LIBS += -L$$DESTDIR \
+		-Lsrc/3rdparty/qtsingleapplication-2.6_1-opensource/lib/ \
+		-lplaylist \
+		-lplayer
 INCLUDEPATH += C:/dev/include/taglib \
 	C:/gstreamer-dev/include/gstreamer-0.10 \
 	C:/gstreamer-dev/include/glib-2.0 \
 	C:/gstreamer-dev/include/libxml2 \
 	C:/gstreamer-dev/lib/glib-2.0/include \
 	C:/gstreamer-dev/include \
-	3rdparty/qtsingleapplication/src
+	../3rdparty/qtsingleapplication/src
 
 RESOURCES     = mainwindow.qrc	
 RC_FILE = partyplayer.rc
@@ -39,3 +40,4 @@ RC_FILE = partyplayer.rc
 
 #Include file(s)
 include(mainapp.pri)
+win32:include(../3rdparty/qtsingleapplication-2.6_1-opensource/src/qtsingleapplication.pri)

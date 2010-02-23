@@ -1,13 +1,17 @@
-TEMPLATE=lib
-CONFIG += qt dll qtsingleapplication-buildlib
 
-TARGET = QtSolutions_SingleApplication-2.6
+unix {
+	TEMPLATE=lib
+	CONFIG += qt dll qtsingleapplication-buildlib
 
-QT += network
+	TARGET = QtSolutions_SingleApplication-2.6
 
-include(../common.pri)
+	QT += network
 
-SOURCES += $$PWD/qtsingleapplication-2.6_1-opensource/src/qtsingleapplication.cpp \
-	   $$PWD/qtsingleapplication-2.6_1-opensource/src/qtlocalpeer.cpp
-HEADERS += $$PWD/qtsingleapplication-2.6_1-opensource/src/qtsingleapplication.h \
-	   $$PWD/qtsingleapplication-2.6_1-opensource/src/qtlocalpeer.h
+	include(../common.pri)
+
+	SOURCES += 	./qtsingleapplication-2.6_1-opensource/src/qtsingleapplication.cpp \
+			./qtsingleapplication-2.6_1-opensource/src/qtlocalpeer.cpp
+	HEADERS += 	./qtsingleapplication-2.6_1-opensource/src/qtsingleapplication.h \
+			./qtsingleapplication-2.6_1-opensource/src/qtlocalpeer.h
+}
+			

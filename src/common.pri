@@ -7,19 +7,20 @@ unix {
     INSTALLS += target
     target.path = $$BINDIR
  
-    DATADIR = $$PREFIX/share
+	DEFINES += FLASH_NO_RESIZE
+
+	DATADIR = $$PWD/../build/objects
+	MOC_DIR = $$DATADIR
+	UI_DIR = $$DATADIR
+	RCC_DIR = $$DATADIR
+	OBJECTS_DIR = $$DATADIR
+	DESTDIR = $$(PWD)/../build
+	DEPENDPATH += $$DESTDIR $$DATADIR
+	INCLUDEPATH += $$(PWD)
 }
 
-unix {
-DEFINES += FLASH_NO_RESIZE
-}
-
-DATADIR = $$PWD/../build/objects
-MOC_DIR = $$DATADIR
-UI_DIR = $$DATADIR
-RCC_DIR = $$DATADIR
-OBJECTS_DIR = $$DATADIR
-
-DESTDIR = $$PWD/../build
+win32 {
+DESTDIR = ../../build
 DEPENDPATH += $$DESTDIR $$DATADIR
-INCLUDEPATH += $$PWD
+INCLUDEPATH += .
+}

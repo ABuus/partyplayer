@@ -40,12 +40,12 @@
 #endif
 
 // playlist
-#include "playlist/playlistview.h"
-#include "playlist/playlistmodel.h"
-#include "playlist/savedplaylistmodel.h"
+#include "../playlist/playlistview.h"
+#include "../playlist/playlistmodel.h"
+#include "../playlist/savedplaylistmodel.h"
 // player
-#include "player/youtubeplayer.h"
-#include "player/localplayer.h"
+#include "../player/youtubeplayer.h"
+#include "../player/localplayer.h"
 // self
 #include "debug.h"
 #include "ui_mainwindow.h"
