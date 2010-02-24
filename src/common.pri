@@ -14,9 +14,9 @@ unix {
 	UI_DIR = $$DATADIR
 	RCC_DIR = $$DATADIR
 	OBJECTS_DIR = $$DATADIR
-	DESTDIR = $$(PWD)/../build
+	DESTDIR = $$PWD/../build
 	DEPENDPATH += $$DESTDIR $$DATADIR
-	INCLUDEPATH += $$(PWD)
+	INCLUDEPATH += $$PWD
 }
 
 win32 {
