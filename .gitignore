@@ -35,3 +35,7 @@ moc_*.b*
 *.idb
 *.sln
 doc/html
+*.dll
+build/
+*.Debug
+*.Release
