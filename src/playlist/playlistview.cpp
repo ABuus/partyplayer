@@ -171,6 +171,7 @@ void PlaylistView::startDrag(Qt::DropActions supportenDropActions)
 
 void PlaylistView::dropEvent(QDropEvent *event)
 {
+	event->accept();
 	/* internal move */
 	if(event->source() == this)
 	{

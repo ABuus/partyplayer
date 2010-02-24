@@ -263,9 +263,13 @@ void PlaylistModel::insertFile(QUrl url, int row)
 			itemLength->setText(QString("%1:%2").arg(min).arg(sec));
 		QList<QStandardItem*> rowItem;
 		rowItem << artist << title << album << year << track << itemLength << bitrate << place;
+		foreach(QStandardItem *item, rowItem)
+		{
+			item->setData(Local,PlacementRole);
+			item->setData(url,UrlRole);
+			item->setData(true,ValidRole);
+		}
 		insertRow(row,rowItem);
-//		setDataAll(Local,PlacementRole);
-//		setDataAll(true,ValidRole);
 		return;
 	}
 	Debug << "invalid local file (taglib data): " << tFile;
