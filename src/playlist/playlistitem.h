@@ -28,11 +28,9 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
-// taglib
-#include <fileref.h>
-#include <tag.h>
-#include <audioproperties.h>
+
 #include "playlist_export.h"
+#include "playlist_global.h"
 #include "debug.h"
 
 namespace Playlist {
@@ -41,41 +39,28 @@ class PLAYLIST_EXPORT PlaylistItem : public QObject
 {
 	Q_OBJECT
 public:
-//	PlaylistItem(const QString location, QObject *parent = 0);
-	PlaylistItem(QObject *parent = 0);
+	PlaylistItem(const QUrl location, QObject *parent);
 	~PlaylistItem();
-	QStandardItem * internalPointer() { return m_internalPointer; };
-	void setInternalPointer( QStandardItem *item ) { m_internalPointer = item; };
-	void setUrl(const QUrl url);
-	QVariant value( int column );
-	bool isLocal() { return m_localFile; };
-	bool isValid() { return m_isValid; };
-
-	enum InternalData {
-		Local = 0,
-		Youtube
-	};
+	QList<QStandardItem*> itemList;
+	bool IsValid() { return m_isValid; };
 private:
-	QStandardItem *m_internalPointer;
-	int m_internal;
-	QString m_artist;
-	QString m_title;
-	QString m_album;
-	QString m_place;
-	int m_year;
-	int m_track;
-	QString m_length;
-	int m_bitrate;
+	QStandardItem *m_artist;
+	QStandardItem *m_title;
+	QStandardItem *m_album;
+	QStandardItem *m_place;
+	QStandardItem *m_year;
+	QStandardItem *m_track;
+	QStandardItem *m_length;
+	QStandardItem *m_bitrate;
 	bool m_localFile;
 	bool m_isValid;
 	QNetworkAccessManager *netAccessManager;
-	bool localFile(QString file);
 	QUrl m_url;
+	void setFlags(QStandardItem *item);
+	void setDataAll(QVariant value,int role);
 private slots:
 	void youtubeFile(QNetworkReply *reply);
 signals:
-	void dataRecived();
-	
 };
 
 }; // namespace Playlist

@@ -244,7 +244,8 @@ bool MainWindow::handleApplicationMessage(const QString &msg)
 	foreach(QString file, files)
 	{
 		file.prepend("file:///");
-		m_playlistModel->insertUrl(QUrl(file));
+//		m_playlistModel->insertUrl(QUrl(file));
+		Debug << "not implemented";
 	}
 	emit needToShow();
 	return true;
@@ -356,15 +357,19 @@ void MainWindow::setVideoQuality(QAction *a)
 
 void MainWindow::openDirDialog()
 {
-	QString dir = QFileDialog::getExistingDirectory(this,tr("Open Directory"),QDir::homePath(),QFileDialog::ShowDirsOnly);
-	m_playlistModel->insertUrl(QUrl(dir));
+//	QString dir = QFileDialog::getExistingDirectory(this,tr("Open Directory"),QDir::homePath(),QFileDialog::ShowDirsOnly);
+//	m_playlistModel->insertUrl(QUrl(dir));
+	Debug << "not implemented";
 }
 
 void MainWindow::openFileDialog()
 {
+	/*
 	QStringList files = QFileDialog::getOpenFileNames(this,"*",QDir::homePath());
 	foreach(QString file, files)
 	{
 		m_playlistModel->insertUrl(QUrl(file));
 	}
+	*/
+	Debug << "not implemented";
 }

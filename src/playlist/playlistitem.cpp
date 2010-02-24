@@ -18,36 +18,41 @@
 */
 
 #include "playlistitem.h"
-#include "playlist_global.h"
 
 using namespace Playlist;
 
-
-
-PlaylistItem::PlaylistItem(QObject *parent)
+PlaylistItem::PlaylistItem(const QUrl url, QObject *parent)
 	:QObject(parent)
 {
 	m_isValid = false;
-}
 
-PlaylistItem::~PlaylistItem()
-{
-}
-
-/*
- *	url can be 
- *	"file://path/to/file.mp3"
- *	"http://www.youtube.com/watch?v=YYlBQKIOb-w"
- */
-
-
-void PlaylistItem::setUrl(const QUrl url)
-{
-	if(url.scheme() == "file")
+	// create items
+	m_artist = new QStandardItem();
+	m_title = new QStandardItem();
+	m_album = new QStandardItem();
+	m_place = new QStandardItem();
+	m_year = new QStandardItem();
+	m_track = new QStandardItem();
+	m_length = new QStandardItem();
+	m_bitrate = new QStandardItem();
+	itemList.append(m_artist);
+	itemList.append(m_title);
+	itemList.append(m_album);
+	itemList.append(m_year);
+	itemList.append(m_track);
+	itemList.append(m_length);
+	itemList.append(m_bitrate);
+	itemList.append(m_place);
+	m_year->setTextAlignment(Qt::AlignCenter);
+	m_track->setTextAlignment(Qt::AlignCenter);
+	m_bitrate->setTextAlignment(Qt::AlignCenter);
+	m_length->setTextAlignment(Qt::AlignCenter);
+	foreach(QStandardItem *item, itemList)
 	{
-		localFile(url.toLocalFile());
+		setFlags(item);
 	}
-	else if(url.host().contains("youtube.com"))
+	
+	if(url.host().contains("youtube.com"))
 	{
 		netAccessManager = new QNetworkAccessManager(this);
 		connect(netAccessManager,SIGNAL(finished( QNetworkReply *)),this,SLOT(youtubeFile(QNetworkReply *)));
@@ -58,78 +63,18 @@ void PlaylistItem::setUrl(const QUrl url)
 	}
 	else
 	{
+		Debug << "invalid playlist item file";
 		m_localFile = false;
 		m_isValid = false;
-		emit dataRecived();
 	}
 }
 
-QVariant PlaylistItem::value( int column )
+PlaylistItem::~PlaylistItem()
 {
-	switch(column)
+	foreach(QStandardItem *item, itemList)
 	{
-		case Playlist::Internal:
-			return m_internal;
-		case Playlist::Artist:
-			return m_artist;
-		case Playlist::Title:
-			return m_title;
-		case Playlist::Album:
-			return m_album;
-		case Playlist::Year:
-			return m_year;
-		case Playlist::Track:
-			return m_track;
-		case Playlist::Length:
-			return m_length;
-		case Playlist::Bitrate:
-			return m_bitrate;
-		case Playlist::Place:
-			return m_place;
-		default:
-			return QVariant();
+		delete item;
 	}
-}
-
-bool PlaylistItem::localFile(QString file)
-{
-	file.remove(FILE_MARCO);
-#ifndef Q_WS_X11
-	QByteArray ba(file.toLatin1());
-	const char *tFile = ba.data();
-#else
-	const char *tFile = file.toUtf8();
-#endif
-	TagLib::FileRef f(tFile);
-	if(!f.isNull() && f.tag())
-    {
-		TagLib::Tag *tag = f.tag();
-		TagLib::AudioProperties *ap = f.audioProperties();
-		m_internal = PlaylistItem::Local;
-		m_artist = QString::fromUtf8(tag->artist().toCString(true));
-		m_title = QString::fromUtf8(tag->title().toCString(true));
-		m_album = QString::fromUtf8(tag->album().toCString(true));
-		m_place = file;
-		m_year = tag->year();
-		m_track = tag->track();
-		// convert track length to string
-		int length = ap->length();
-		int min = length / 60;
-		int sec = length % 60;
-		if(sec < 10)
-			m_length = QString("%1:0%2").arg(min).arg(sec);
-		else
-			m_length = QString("%1:%2").arg(min).arg(sec);
-		m_bitrate = ap->bitrate();
-		m_localFile = true;
-		m_isValid = true;
-		emit dataRecived();
-		return true;
-	}
-	m_isValid = false;
-	Debug << "invalid local file (taglib data): " << tFile;
-	emit dataRecived();
-	return false;
 }
 
 void PlaylistItem::youtubeFile(QNetworkReply *reply)
@@ -169,22 +114,33 @@ void PlaylistItem::youtubeFile(QNetworkReply *reply)
 	title.replace("&amp;","&");
 	dec.replace("&amp;","&");
 
-	m_internal = PlaylistItem::Youtube;
-	m_artist = title;
-	m_title = dec;
-	m_place = url;
-	m_year = 0;
-	m_bitrate = 0;
-	m_track = 0;
+	m_artist->setText(title);
+	m_title->setText(dec);
+	m_place->setText(url);
+	
 	// convert track length to string
 	int length = duration.toInt();
 	int min = length / 60;
 	int sec = length % 60;
 	if(sec < 10)
-		m_length = QString("%1:0%2").arg(min).arg(sec);
+		m_length->setText(QString("%1:0%2").arg(min).arg(sec));
 	else
-		m_length = QString("%1:%2").arg(min).arg(sec);
+		m_length->setText(QString("%1:%2").arg(min).arg(sec));
 	m_localFile = false;
 	m_isValid = true;
-	emit dataRecived();
+	setDataAll(Youtube,PlacementRole);
+	setDataAll(true,ValidRole);
+}
+
+void PlaylistItem::setFlags(QStandardItem *item)
+{
+	item->setFlags( Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled );
+}
+
+void PlaylistItem::setDataAll(QVariant value, int role)
+{
+	foreach(QStandardItem *item, itemList)
+	{
+		item->setData(value,role);
+	}
 }

@@ -85,119 +85,23 @@ bool PlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
 {
 	Q_UNUSED(parent);
 	Q_UNUSED(column);
-	Debug << "drop row" << row << parent;
 	if(action == Qt::IgnoreAction)
 		return true;
 	if(!data->hasUrls())
 		return false;
-	return insertUrls(data->urls(),row);
-}
-
-bool PlaylistModel::insertUrls(const QList<QUrl> urls, int startRow)
-{
-	QList<QUrl> validLocations;
-	foreach(QUrl url, urls)
-	{
-		if(isDirectory(url))
-		{
-			validLocations << insertAllFilesUnderDirectory(url);
-		}
-		else
-		{
-			validLocations.append(url);
-		}
-	}
-
-	/* insert all valid data */
-	bool retval = true;
-	foreach(QUrl validLocation, validLocations)
-	{
-		if(startRow == -1 && rowCount() == 0)
-		{
-			startRow = 0;
-			if(!insertUrl(validLocation,startRow))
-				retval = false;
-		}
-		else if(startRow == -1)
-		{
-			startRow = rowCount();
-			if(!insertUrl(validLocation,startRow))
-				retval = false;
-		}
-		else
-		{
-			if(!insertUrl(validLocation,++startRow))
-				retval = false;
-		}
-	}
-	return retval;
-}
-
-/**
- * inserts \a url at \a row if \a row is -1 the item is appended to the model.
- */
-
-bool PlaylistModel::insertUrl(const QUrl &url, int row)
-{
-	if(!url.isValid())
-		return false;
 	if(row == -1)
-		row = rowCount();
-	PlaylistItem *item = new PlaylistItem(this);
-	connect(item,SIGNAL(dataRecived()),this,SLOT(updateItemData()));
-	QList<QStandardItem*> rowItem;
-	for(int i = 0; i < columnCount(); i++)
 	{
-		QStandardItem *stdItem = new QStandardItem(item->value(i).toString());
-		stdItem->setData(url,Playlist::UrlRole);
-		stdItem->setData(false,Playlist::PlayRole);
-		if(i == Year || i == Track || i == Length || i == Bitrate)
+		if(rowCount() == 0)
 		{
-			stdItem->setTextAlignment(Qt::AlignCenter);
+			row = 0;
 		}
-		rowItem << stdItem;
+		else
+		{
+			row = rowCount();
+		}
 	}
-	item->setInternalPointer(rowItem.last());
-	insertRow(row,rowItem);
-	item->setUrl(url);
-//	Debug << "inserted" << url.toString() << "at" << row;
+	insertDropData(data->urls(),row);
 	return true;
-}
-
-/*
- * \internal
- * this slot is connected to Playlist::PlaylistItem::dataReciced() signal
- * this updates data at the QModelIndex PlaylistItem::internelPointer()
- * WARNING: The sender object should be deleted in this slot
- */
-
-void PlaylistModel::updateItemData()
-{
-	PlaylistItem *playlistItem = qobject_cast<PlaylistItem*>( sender() );
-	QStandardItem *pointer = playlistItem->internalPointer();
-	int row = indexFromItem(pointer).row();
-	/* if the item could not gather valid info delete it and its row */
-	if(!playlistItem->isValid())
-	{
-		Debug << "invalid item";
-		removeRow(row);
-		delete playlistItem;
-		return;
-	}
-	/* if item´s internal pointer is 0 delete it */
-	if(pointer == 0)
-	{
-		playlistItem->deleteLater();
-		return;
-	}
-	/* valid data insert */
-	for(int i = 0; i < columnCount(); i++)
-	{
-		setData(index(row,i),playlistItem->value(i),Qt::DisplayRole);
-		setData(index(row,i),playlistItem->value(Playlist::Internal),Playlist::PlacementRole);
-	}
-	/* delete the item */
-	playlistItem->deleteLater();
 }
 
 void PlaylistModel::setPlayRow(int row)
@@ -233,86 +137,136 @@ int PlaylistModel::getPlayRow()
 	return -1;
 }
 
-bool PlaylistModel::isDirectory(const QUrl url)
-{
 /*
-	if(url.isValid())
-		return false;
-*/
-	bool retval = false;
-	if(url.scheme() != "file")
-		retval = false;
-	else
-	{
-		QFileInfo info(url.toLocalFile());
-		retval = info.isDir();
-	}
-	Debug << "Found dir:" << retval << "at" << url.toString();
-	return retval;
-}
-
-/*
- * inserts all files under url recursively.
- * url has to be local dir. eg. file:///C:/Users/User/Music
- */
-
-QList<QUrl> PlaylistModel::insertAllFilesUnderDirectory(const QUrl url)
+void PlaylistModel::removeDirty()
 {
-	QList<QUrl> retval;
-	QFileInfo topInfo(url.toLocalFile());
-	Q_ASSERT(topInfo.exists());
-	QFlags<QDir::Filter> dirFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-	QFlags<QDir::Filter> fileFilter(QDir::Files | QDir::NoDotAndDotDot);
-	QFlags<QDir::SortFlag> dirSortFlags(QDir::Name);
-
-	QDir topDir( topInfo.path() + "/" + topInfo.fileName(), "");
-	topDir.setSorting(dirSortFlags);
-
-	/* insert all files under topdir */
-	topDir.setFilter(fileFilter);
-	QList<QFileInfo> topFiles = topDir.entryInfoList();
-	foreach(QFileInfo file, topFiles)
+	for(int i = rowCount(); i > 0; i--)
 	{
-		QUrl url = FILE_MARCO + file.path() + "/" + file.fileName();
-		retval << url;
-		// insertUrl(url);
-	}
-	
-	/* insert all dirs and there files under topdir */
-	topDir.setFilter(dirFilter);
-	QList<QFileInfo> subDirs;
-	const QStringList strSubDirs = topDir.entryList();
-	foreach(QString strSubDir, strSubDirs)
-	{
-		QFileInfo info(topInfo.path() + "/" + topInfo.fileName() + "/" + strSubDir);
-		subDirs.append(info);
-	}
-	while(!subDirs.isEmpty())
-	{
-		QFileInfo info(subDirs.takeFirst());
-		QDir sub( info.path() + "/" + info.fileName());
-		/* get all files under sub */
-		sub.setFilter(fileFilter);
-		QStringList entList = sub.entryList();
-		foreach(QString file, entList)
+		if(!index(i,0).data(ValidRole).toBool())
 		{
-			QUrl url = FILE_MARCO + info.path() + "/" + info.fileName() + "/" + file;
-			retval << url;
-			//insertUrl(url);
+			Debug << "taking row" << i << "row count:" << rowCount() << "item list text:" << itemList.size();
+			takeRow(i);
+			Debug << "taking out of itemList";
+			delete itemList.takeAt(i -1 );
 		}
-		/* get all sub dirs add them to subDirs */
-		sub.setFilter(dirFilter);
-		sub.setSorting(dirSortFlags);
-		entList = sub.entryList();
-		Debug << "subdirs to be inserted" << entList.count() << info.path() + "/" + info.fileName();
-		if(!entList.isEmpty())
+	}
+}
+*/
+
+void PlaylistModel::insertDropData(QList<QUrl> urls, int startRow)
+{
+	foreach(QUrl url,urls)
+	{
+		if(url.scheme() == "file")
 		{
-			foreach(QString strSubDir, entList)
+			QFileInfo urlInfo(url.toLocalFile());
+			if(urlInfo.isDir())
 			{
-				QFileInfo subInfo( info.path() + "/" + info.fileName() + "/" + strSubDir);
-				subDirs.append(subInfo);
+				insertDir(url,startRow++,true);
+			}
+			else if(urlInfo.isFile())
+			{
+				insertFile(url,startRow++);
+			}
+			else
+			{
+				break;
+			}
+		}
+		else
+		{
+			PlaylistItem *item = new PlaylistItem(url,this);
+			insertRow(startRow++,item->itemList);
+			foreach(QStandardItem *child, item->itemList)
+			{
+				child->setData(url,Playlist::UrlRole);
 			}
 		}
 	}
-	return retval;
+}
+
+void PlaylistModel::insertDir(QUrl url, int row, bool recusive)
+{
+	if ((row < 0) || (row > rowCount()))
+		row = rowCount();
+	QDir rootDir(url.toLocalFile());
+	Debug << rootDir.absolutePath();
+	QList<QFileInfo> files = rootDir.entryInfoList(QDir::Files|QDir::NoDotAndDotDot,QDir::Name);
+	QList<QFileInfo> dirs = rootDir.entryInfoList(QDir::Dirs|QDir::NoDotAndDotDot,QDir::Name);
+
+	/* as long as we got files or dirs we continue */
+	while(files.isEmpty() != true || dirs.isEmpty() != true)
+	{
+		/* insert the files, on first run these are rootDir files */
+		while(!files.isEmpty())
+		{
+			QFileInfo file = files.takeFirst();
+			insertFile(QUrl(FILE_MARCO + file.path() + "/" + file.fileName()),row++);
+		}
+		/* insert subdirs */
+		while(!dirs.isEmpty())
+		{
+			/* if she is not going deep, I am sending her home. */
+			if(!recusive)
+			{
+				return;
+			}
+			QDir subDir(dirs.takeFirst().filePath());
+			QList<QFileInfo> subDirs = subDir.entryInfoList(QDir::Dirs|QDir::NoDotAndDotDot,QDir::Name);
+			foreach(QFileInfo subInfo, subDirs)
+			{
+				/* prepend subdirs into dirs, so we do not skrew up the order. */
+				dirs.prepend(subInfo);
+			}
+			QList<QFileInfo> subFiles = subDir.entryInfoList(QDir::Files|QDir::NoDotAndDotDot,QDir::Name);
+			foreach(QFileInfo subInfo, subFiles)
+			{
+				/* append files under curent subdir */
+				files.append(subInfo);
+			}
+		}
+	}
+}
+
+void PlaylistModel::insertFile(QUrl url, int row)
+{
+	if ((row < 0) || (row > rowCount()))
+		row = rowCount();
+	QString file(url.toString());
+	file.remove(FILE_MARCO);
+#ifndef Q_WS_X11
+	QByteArray ba(file.toLatin1());
+	const char *tFile = ba.data();
+#else
+	const char *tFile = file.toUtf8();
+#endif
+	TagLib::FileRef f(tFile);
+	if(!f.isNull() && f.tag())
+    {
+		TagLib::Tag *tag = f.tag();
+		TagLib::AudioProperties *ap = f.audioProperties();
+		QStandardItem *artist = new QStandardItem( QString::fromUtf8(tag->artist().toCString(true)));
+		QStandardItem *title = new QStandardItem( QString::fromUtf8(tag->title().toCString(true)));
+		QStandardItem *album = new QStandardItem( QString::fromUtf8(tag->album().toCString(true)));
+		QStandardItem *place = new QStandardItem(file);
+		QStandardItem *year = new QStandardItem( QString::number(tag->year()));
+		QStandardItem *track = new QStandardItem( QString::number(tag->track()));
+		QStandardItem *bitrate = new QStandardItem( QString::number(ap->bitrate()));
+		// convert track length to string
+		int length = ap->length();
+		int min = length / 60;
+		int sec = length % 60;
+		QStandardItem *itemLength = new QStandardItem();
+		if(sec < 10)
+			itemLength->setText(QString("%1:0%2").arg(min).arg(sec));
+		else
+			itemLength->setText(QString("%1:%2").arg(min).arg(sec));
+		QList<QStandardItem*> rowItem;
+		rowItem << artist << title << album << year << track << itemLength << bitrate << place;
+		insertRow(row,rowItem);
+//		setDataAll(Local,PlacementRole);
+//		setDataAll(true,ValidRole);
+		return;
+	}
+	Debug << "invalid local file (taglib data): " << tFile;
 }
