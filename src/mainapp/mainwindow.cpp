@@ -244,7 +244,7 @@ bool MainWindow::handleApplicationMessage(const QString &msg)
 	foreach(QString file, files)
 	{
 		file.prepend("file:///");
-//		m_playlistModel->insertUrl(QUrl(file));
+		m_playlistModel->insertFile(QUrl(file),-1);
 		Debug << "not implemented";
 	}
 	emit needToShow();
@@ -318,8 +318,11 @@ void MainWindow::setTime(qint64 time)
 		controlWidget->setTime(time);
 		return;
 	}
-	else 
+	else
+	{
+		Debug << "Player do not match current player";
 		return;
+	}
 }
 
 void MainWindow::setTotalTime(qint64 time)
@@ -333,8 +336,11 @@ void MainWindow::setTotalTime(qint64 time)
 	{
 		controlWidget->setTotalTime(time);
 	}
-	else 
+	else
+	{
+		Debug << "Player do not match current player";
 		return;
+	}
 }
 
 void MainWindow::setVideoQuality(QAction *a)

@@ -5,6 +5,7 @@
 #include <QWebPage>
 #include <QWebFrame>
 #include <QFile>
+#include <QTextStream>
 #include <QWebView>
 #include "debug.h"
 #include "player_global.h"
@@ -39,18 +40,22 @@ public slots:
 #ifndef FLASH_NO_RESIZE
 	void resizePlayer(int w, int h);
 #endif
+	/* slots called forn JS */
+	void setState(int state);
+	void setTotalTime(int time);
+	void setCurrentTime(int time);
+	void handlePlayerError(int errorCode);
+	void jsDebug(QVariant value);
+	/**/
 	void seek(int msec, bool seekAhead = true);
 	void setPlayQuality(enum PlayerQuality playerQuality = YoutubePlayer::Standard);
 	void cueVideoById(QString videoId);
 	void loadVideoById(QString videoId);
 private slots:
 	void addJavaScriptObject();
-	/* slots called forn JS */
-	void setState(int state);
-	void setTotalTime(double time);
-	void setCurrentTime(double time);
-	void handlePlayerError(int errorCode);
-	void jsDebug(QVariant value);
+	void dumpPage();
+	void onPageLoad();
+
 private:
 	qint64 m_totalTime;
 	qint64 m_currentTime;

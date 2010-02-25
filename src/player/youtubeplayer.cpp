@@ -15,6 +15,9 @@ YoutubePlayer::YoutubePlayer(QObject *parent)
 	m_state(-1),
 	m_playerQuality("default")
 {
+	QWebSettings::clearMemoryCaches();
+	QWebSettings::setMaximumPagesInCache(0);
+	QWebSettings::setObjectCacheCapacities(0,0,0);
 	/* enable plugins and javascript support */
 	settings()->setAttribute(QWebSettings::PluginsEnabled, true);
 	settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
@@ -105,11 +108,12 @@ void YoutubePlayer::seek(int msec, bool seekAhead)
 void YoutubePlayer::resizePlayer(int width, int height)
 {
 	/* pixel offset to avoid scrollbars */
-	int offset = 15;
 
+	int offset = 15;
 	QString js = "ytplayer.width = %1; ytplayer.height = %2;";
 	mainFrame()->evaluateJavaScript(js.arg( width ).arg( height ));
 	setViewportSize(QSize(width + offset, height+offset ));
+
 }
 
 #endif
@@ -152,12 +156,14 @@ void YoutubePlayer::loadVideoById( QString vidId )
 void YoutubePlayer::addJavaScriptObject()
 {
 	/* make this class an object on the js side */
+	Debug << "added clientApp";
 	mainFrame()->addToJavaScriptWindowObject("clientApp",this);
 }
 
 /* this slot is connected in javascript */
 void YoutubePlayer::setState(int state)
 {
+	Debug << "YT state change:" << state;
 	if(state == m_state)
 		return;
 	m_state = state;
@@ -166,24 +172,24 @@ void YoutubePlayer::setState(int state)
 	emit stateChanged(m_state);
 }
 
-void YoutubePlayer::setTotalTime(double time)
+void YoutubePlayer::setTotalTime(int time)
 {
 	qint64 temp = time * 1000;
-	qDebug() << "duration" << temp;
 	if(m_totalTime != temp)
 	{
 		m_totalTime = temp;
+		Debug << "YT duration change:" << time;
 		emit totalTimeChanged(m_totalTime);
 	}
 }
 
-void YoutubePlayer::setCurrentTime(double time)
+void YoutubePlayer::setCurrentTime(int time)
 {
 	qint64 temp = time * 1000;
-	qDebug() << "time" << temp;
 	if(m_currentTime != temp)
 	{
 		m_currentTime = temp;
+		Debug << "YT current pos change:" << time;
 		emit currentTimeChanged(m_currentTime);
 	}
 }
@@ -196,7 +202,7 @@ void YoutubePlayer::handlePlayerError(int errorCode)
 void YoutubePlayer::jsDebug(QVariant value)
 {
 	Q_UNUSED(value);
-//	qDebug() << "debug output from javascript:" << value.toString();
+	qDebug() << "debug output from javascript:" << value.toString();
 }
 
 /**
@@ -226,3 +232,4 @@ void YoutubePlayer::setPlayQuality(enum PlayerQuality playerQuality)
 	QString js = "ytplayer.setPlaybackQuality('%1');";
 	mainFrame()->evaluateJavaScript(js.arg(m_playerQuality));
 }
+

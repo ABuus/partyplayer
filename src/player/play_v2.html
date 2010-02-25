@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
-
+<title>Version 2</title>
 <script src="http://www.google.com/jsapi" type="text/javascript"></script>
 <script type="text/javascript">
 	google.load("swfobject", "2.1");
@@ -25,7 +25,6 @@ function onPlayerError(errorCode) {
  
 function onPlayerStateChange(newState) {
 	clientApp.setState(newState);
-	state = newState;
 }
  
 // Display information about the current state of the player
@@ -33,7 +32,7 @@ function onPlayerStateChange(newState) {
 function updatePlayerInfo() {
  	// Also check that at least one function exists since when IE unloads the
  	// page, it will destroy the SWF before clearing the interval.
- 	if(ytplayer && ytplayer.getDuration && state == 1) {
+ 	if(ytplayer && ytplayer.getDuration) {
 		clientApp.setTotalTime(ytplayer.getDuration());
 		clientApp.setCurrentTime(ytplayer.getCurrentTime());
 	}
@@ -47,6 +46,10 @@ function onYouTubePlayerReady(playerId) {
 	// get fresh data from the player
 	setInterval(updatePlayerInfo, 250);
 	updatePlayerInfo();
+	ytplayer.addEventListener("onStateChange", "onPlayerStateChange");
+	ytplayer.addEventListener("onError", "onPlayerError");
+	ytplayer.cueVideoById("oHg5SJYRHA0");
+	clientApp.jsDebug("player ready");
 }
       
 // The "main method" of this sample. Called when someone clicks "Run".
@@ -58,6 +61,7 @@ function loadPlayer() {
 	var atts = { id: "ytPlayer" };
 	// All of the magic handled by SWFObject (http://code.google.com/p/swfobject/)
 	swfobject.embedSWF("http://www.youtube.com/apiplayer?disablekb=1&enablejsapi=1","videoDiv", "100%", "100%", "8", null, null, params, atts);
+
 }
 
 function _run() {
@@ -67,6 +71,7 @@ function _run() {
 google.setOnLoadCallback(_run);
  
  </script>
-</head><body style="border: 0pt none ; font-family: Arial;">
+</head><body>
 <div id="videoDiv">Loading ... <br/>You need flashplayer.</div>
+<p>ver 2</p>
 </body></html>

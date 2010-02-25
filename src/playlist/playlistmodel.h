@@ -51,10 +51,10 @@ public:
 	bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
 	void setPlayRow(int row);
 	int getPlayRow();
+	void insertFile(QUrl url, int row);
 private:
 	void insertDropData(QList<QUrl> urls, int startRow);
 	void insertDir(QUrl url,int row,bool recusive);
-	void insertFile(QUrl url, int row);
 private slots:
 	
 };
