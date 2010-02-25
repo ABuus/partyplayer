@@ -53,9 +53,6 @@ public slots:
 	void loadVideoById(QString videoId);
 private slots:
 	void addJavaScriptObject();
-	void dumpPage();
-	void onPageLoad();
-
 private:
 	qint64 m_totalTime;
 	qint64 m_currentTime;
