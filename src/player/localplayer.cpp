@@ -120,10 +120,6 @@ void LocalPlayer::getTime()
 			}
 #endif
 		}
-		else
-		{
-			Debug << "current pos" << GST_TIME_AS_MSECONDS(pos) << "with total time" << GST_TIME_AS_MSECONDS(m_totaltime);
-		}
 	}
 	else
 	{
