@@ -25,6 +25,7 @@ LocalPlayer::LocalPlayer(QObject *parent)
 	m_canRunOut(true),
 	m_playTimer(this),
 	m_totaltime(0),
+	m_totalTimeSet(false),
 	m_state(0)
 {
 	// initialize gstreamer
@@ -85,6 +86,11 @@ void LocalPlayer::playUrl(const QUrl &url)
 
 void LocalPlayer::getTime()
 {
+	if(!m_totalTimeSet)
+	{
+		getTotalTime();
+		return;
+	}
 	GstFormat fmt = GST_FORMAT_TIME;
 	gint64 pos;
 	if( gst_element_query_position(m_pipeline, &fmt, &pos))
@@ -131,17 +137,21 @@ void LocalPlayer::getTotalTime()
 	gint64 tot;
 	if(!gst_element_query_duration(m_pipeline, &fmt, &tot))
 	{
-		Debug << "failed to get duration";
+
+		/* gstreamer did not deliver the duration we will try again on next timout event */
+		m_totalTimeSet = false;
 		return;
 	}
 	else 
 	{
+		/* we got the total time */
+		m_totalTimeSet = true;
 		/* if we quered gstreamer for the duration we are playing, so we can run out */
 		m_canRunOut = true;
 		if(m_totaltime == tot)
 			return;
-		m_totaltime = (qint64)tot;
-		emit totalTimeChanged( m_totaltime );
+		m_totaltime = tot;
+		emit totalTimeChanged( GST_TIME_AS_MSECONDS( tot ) );
 	}
 }
 

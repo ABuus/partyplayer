@@ -58,6 +58,7 @@ private:
 	bool m_canRunOut;
 	QTimer m_playTimer;
 	qint64 m_totaltime;
+	bool m_totalTimeSet;
 	int m_state; // 0=stop,1=playing,2=paused
 private slots:
 	void getTime();
