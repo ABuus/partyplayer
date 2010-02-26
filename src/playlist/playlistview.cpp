@@ -22,11 +22,9 @@
 using namespace Playlist;
 
 PlaylistView::PlaylistView(QWidget *parent)
-	: QTableView(parent)
+	: QTreeView(parent)
 {
 	// setup this
-	setShowGrid(false);
-	setSortingEnabled(true);
 	setSelectionBehavior(QAbstractItemView::SelectRows);
 	setSelectionMode(QAbstractItemView::ContiguousSelection);
 	setDragEnabled(true);
@@ -34,18 +32,22 @@ PlaylistView::PlaylistView(QWidget *parent)
 	setDropIndicatorShown(false);
 	setDragDropMode(QAbstractItemView::DragDrop);
 	setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-	verticalHeader()->setResizeMode(QHeaderView::Fixed);
-	verticalHeader()->setDefaultSectionSize(20);
-	verticalHeader()->setHighlightSections(false);
-	horizontalHeader()->setStretchLastSection(true);
-	horizontalHeader()->setStretchLastSection(false);
-	setColumnHidden(Playlist::Internal,true);
+//	verticalHeader()->setResizeMode(QHeaderView::Fixed);
+//	verticalHeader()->setDefaultSectionSize(20);
+//	verticalHeader()->setHighlightSections(false);
+//	horizontalHeader()->setStretchLastSection(true);
+//	horizontalHeader()->setStretchLastSection(false);
+	setSortingEnabled(true);
+	setRootIsDecorated(false);
+	setAlternatingRowColors(true);
 	setMouseTracking(true);
+	setAnimated(true);
+	setAutoExpandDelay(20);
 
 	contexMenu = new PlaylistContextMenu(this);
 
 	// delegate 
-	setItemDelegate(new PlaylistDelegate(this));
+//	setItemDelegate(new PlaylistDelegate(this));
 	
 	// connections
 	createConnections();
@@ -73,7 +75,7 @@ void PlaylistView::createConnections()
 void PlaylistView::setModel(Playlist::PlaylistModel *model)
 {
 	m_model = model;
-	QTableView::setModel(m_model);
+	QTreeView::setModel(m_model);
 }
 
 /*
@@ -83,13 +85,15 @@ void PlaylistView::setModel(Playlist::PlaylistModel *model)
 
 QUrl PlaylistView::next(bool set)
 {
+	collapseAll();
 	QUrl retval;
-	int currentRow = m_model->getPlayRow();
-	if(currentRow == -1 || (currentRow +1) > m_model->rowCount())
+	int currentRow = m_model->getPlayRow() + 1;
+	if(currentRow <= 0 || currentRow > m_model->rowCount())
 		retval = QUrl();
 	else
-		retval = m_model->index(++currentRow,0).data(UrlRole).toUrl();
+		retval = m_model->index(currentRow,0).data(UrlRole).toUrl();
 	if(set)
+		expand(m_model->index(currentRow,0));
 		m_model->setPlayRow(currentRow);
 	return retval;
 }
@@ -101,6 +105,7 @@ QUrl PlaylistView::next(bool set)
 
 QUrl PlaylistView::previous(bool set)
 {
+	collapseAll();
 	QUrl retval;
 	int currentRow = (m_model->getPlayRow() - 1);
 	if(currentRow < 0 )
@@ -108,6 +113,7 @@ QUrl PlaylistView::previous(bool set)
 	else
 		retval = m_model->index(currentRow,0).data(UrlRole).toUrl();
 	if(set)
+		expand(m_model->index(currentRow,0));
 		m_model->setPlayRow(currentRow);
 	return retval;
 }
@@ -226,6 +232,7 @@ void PlaylistView::dropEvent(QDropEvent *event)
 
 void PlaylistView::onDoubleClicked(const QModelIndex &index)
 {
+	expand(index);
 	m_model->setPlayRow(index.row());
 	const QUrl url = model()->data(index,UrlRole).toUrl();
 	if(!url.isValid())
@@ -236,7 +243,7 @@ void PlaylistView::onDoubleClicked(const QModelIndex &index)
 
 void PlaylistView::mouseMoveEvent(QMouseEvent *event)
 {
-	QTableView::mouseMoveEvent(event);
+	QTreeView::mouseMoveEvent(event);
 
 	int row = indexAt(event->pos()).row();
 	if(row == m_hoverRow)

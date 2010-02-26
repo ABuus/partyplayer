@@ -27,22 +27,24 @@ PlaylistItem::PlaylistItem(const QUrl url, QObject *parent)
 	m_isValid = false;
 
 	// create items
-	m_artist = new QStandardItem();
-	m_title = new QStandardItem();
-	m_album = new QStandardItem();
-	m_place = new QStandardItem();
-	m_year = new QStandardItem();
-	m_track = new QStandardItem();
-	m_length = new QStandardItem();
-	m_bitrate = new QStandardItem();
+	m_artist = new QStandardItem("data");
+	m_title = new QStandardItem("data");
+	m_album = new QStandardItem("data");
+	m_place = new QStandardItem("data");
+	m_year = new QStandardItem("data");
+	m_track = new QStandardItem("data");
+	m_length = new QStandardItem("data");
+	m_bitrate = new QStandardItem("data");
 	itemList.append(m_artist);
 	itemList.append(m_title);
 	itemList.append(m_album);
-	itemList.append(m_year);
 	itemList.append(m_track);
 	itemList.append(m_length);
-	itemList.append(m_bitrate);
-	itemList.append(m_place);
+	
+	m_artist->setChild(0,0,m_place);
+	m_artist->setChild(0,1,m_year);
+	m_artist->setChild(0,2,m_bitrate);
+	
 	m_year->setTextAlignment(Qt::AlignCenter);
 	m_track->setTextAlignment(Qt::AlignCenter);
 	m_bitrate->setTextAlignment(Qt::AlignCenter);

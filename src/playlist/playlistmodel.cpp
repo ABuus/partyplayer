@@ -28,11 +28,8 @@ PlaylistModel::PlaylistModel(QObject *parent)
 	headerLabels.insert( Playlist::Artist, tr("Artist") );
 	headerLabels.insert( Playlist::Title, tr("Title") );
 	headerLabels.insert( Playlist::Album, tr("Album") );
-	headerLabels.insert( Playlist::Year, tr("Year") );
 	headerLabels.insert( Playlist::Track, tr("Track") );
 	headerLabels.insert( Playlist::Length, tr("Length") );
-	headerLabels.insert( Playlist::Bitrate, tr("Bitrate") );
-	headerLabels.insert( Playlist::Place, tr("Directory") );
 	setHorizontalHeaderLabels(headerLabels);
 }
 
@@ -262,7 +259,10 @@ void PlaylistModel::insertFile(QUrl url, int row)
 		else
 			itemLength->setText(QString("%1:%2").arg(min).arg(sec));
 		QList<QStandardItem*> rowItem;
-		rowItem << artist << title << album << year << track << itemLength << bitrate << place;
+		artist->setChild(0,0,place);
+		artist->setChild(0,1,bitrate);
+		artist->setChild(0,2,year);
+		rowItem << artist << title << album << track << itemLength;
 		foreach(QStandardItem *item, rowItem)
 		{
 			item->setData(Local,PlacementRole);

@@ -20,7 +20,7 @@
 #ifndef PLAYLIST_H
 #define PLAYLIST_H
 
-#include <QTableView>
+#include <QTreeView>
 #include <QDragMoveEvent>
 #include <QUrl>
 #include <QPoint>
@@ -39,7 +39,7 @@
 
 namespace Playlist {
 
-class PLAYLIST_EXPORT PlaylistView : public QTableView
+class PLAYLIST_EXPORT PlaylistView : public QTreeView
 {
 	Q_OBJECT
 public:
