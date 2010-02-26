@@ -24,7 +24,7 @@
 #include <QLayout>
 #include "controlbutton.h"
 #include "controlslider.h"
-#include "debug.h"
+#include "../debug.h"
 
 class ControlWidget : public QWidget // , public Ui::controlWidget
 {

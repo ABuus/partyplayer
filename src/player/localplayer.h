@@ -29,9 +29,9 @@
 #include <gst/gst.h>
 
 #include "player_global.h"
-#include "debug.h"
+#include "../debug.h"
 
-#define TIMER_INTERVAL 200
+#define TIMER_INTERVAL 50
 
 class PLAYER_EXPORT LocalPlayer : public QObject
 {
@@ -39,6 +39,7 @@ class PLAYER_EXPORT LocalPlayer : public QObject
 public:
 	LocalPlayer(QObject *parent = 0);
 	~LocalPlayer();
+	static gboolean cb_gst_bus(GstBus* bus,GstMessage* message,gpointer data);
 public slots:
 	void playUrl(const QUrl &url);
 	void seek( int time );

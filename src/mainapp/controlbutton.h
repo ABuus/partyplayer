@@ -5,7 +5,7 @@
 #include <QPainter>
 #include <QTimer>
 #include <QStyle>
-#include "debug.h"
+#include "../debug.h"
 
 class ControlButton : public QAbstractButton
 {

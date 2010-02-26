@@ -196,13 +196,13 @@ void YoutubePlayer::setCurrentTime(int time)
 
 void YoutubePlayer::handlePlayerError(int errorCode)
 {
-	qDebug() << "Youtube player error:" << errorCode;
+	Debug << "Youtube player error:" << errorCode;
 }
 
 void YoutubePlayer::jsDebug(QVariant value)
 {
 	Q_UNUSED(value);
-	qDebug() << "debug output from javascript:" << value.toString();
+	Debug << "debug output from javascript:" << value.toString();
 }
 
 /**

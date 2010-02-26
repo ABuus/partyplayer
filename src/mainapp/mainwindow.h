@@ -47,7 +47,7 @@
 #include "../player/youtubeplayer.h"
 #include "../player/localplayer.h"
 // self
-#include "debug.h"
+#include "../debug.h"
 #include "ui_mainwindow.h"
 #include "youtubesearchview.h"
 #include "youtubesearchmodel.h"

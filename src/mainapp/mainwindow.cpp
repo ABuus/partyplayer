@@ -238,7 +238,7 @@ void MainWindow::handlePlayRequests(const QUrl url)
 
 bool MainWindow::handleApplicationMessage(const QString &msg)
 {
-	qDebug() << "message recived by new App instance" << msg;
+	Debug << "message recived by new App instance" << msg;
 	QStringList files = msg.split("* *");
 	files.removeFirst();
 	foreach(QString file, files)

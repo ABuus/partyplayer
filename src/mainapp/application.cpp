@@ -32,10 +32,9 @@ Application::Application(int &argc, char * argv[])
 	arg.removeFirst();
 	QString message = arg.join("* *");
 
-	qDebug() << arg.count() -1;
 	if(isRunning())
 	{
-		qDebug() << "sending message to existing procces";
+		Debug << "sending message to existing procces";
 		sendMessage(message);
 		return;
 	}

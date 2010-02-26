@@ -4,7 +4,6 @@
 #include <QMenu>
 #include <QDesktopServices>
 #include <QUrl>
-#include <QDebug>
 #include "playlist_export.h"
 #include "playlist_global.h"
 

@@ -37,8 +37,8 @@ LocalPlayer::LocalPlayer(QObject *parent)
 	}
 	
 	// create gst elemente
-	m_sink = gst_element_factory_make("autoaudiosink", "player");
-	m_pipeline = gst_element_factory_make("playbin",NULL);
+	m_sink = gst_element_factory_make("autoaudiosink", "sink");
+	m_pipeline = gst_element_factory_make("playbin","pipeline");
 	// link elements
 	gst_element_link(m_pipeline, m_sink);
 //	g_timeout_add (TIMER_INTERVAL, NULL, m_pipeline);
@@ -73,6 +73,10 @@ void LocalPlayer::playUrl(const QUrl &url)
 	const gchar *uri = baUrl.constData();
 	g_object_set(G_OBJECT(m_pipeline), "uri", uri, NULL);
 	gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
+	
+	GstBus *bus = gst_pipeline_get_bus(GST_PIPELINE(m_pipeline));
+	gst_bus_add_watch(bus,cb_gst_bus,this);
+	g_object_unref(bus);
 
 	// get time
 	getTotalTime();
@@ -95,14 +99,17 @@ void LocalPlayer::getTime()
 		// check if we are running out
 		if( ( GST_TIME_AS_MSECONDS( m_totaltime ) - GST_TIME_AS_MSECONDS( pos ) ) < 1000 )
 		{
+//			Debug << "inside run out:" << (GST_TIME_AS_MSECONDS( m_totaltime ) - GST_TIME_AS_MSECONDS( pos ));
 			if(m_canRunOut)
 			{
 				m_canRunOut = false;
 				Debug << "running out with:" << ( GST_TIME_AS_MSECONDS( m_totaltime ) - GST_TIME_AS_MSECONDS( pos ) );
 				emit runningOut();
 			}
-			// check if we are at end
-			if( ( GST_TIME_AS_MSECONDS( m_totaltime ) - GST_TIME_AS_MSECONDS( pos ) ) <= 0 )
+		}
+			// check if we are at end :: 50 msec gstreamer can be at EOS with 18 msec to end ??
+/*
+			if( ( GST_TIME_AS_MSECONDS( m_totaltime ) - GST_TIME_AS_MSECONDS( pos ) ) <= 50 ) 
 			{
 				Debug << "EOS";
 				m_playTimer.stop();
@@ -111,7 +118,11 @@ void LocalPlayer::getTime()
 				emit finished();
 			}
 		}
-		
+		else
+		{
+			Debug << "current pos" << GST_TIME_AS_MSECONDS(pos) << "with total time" << GST_TIME_AS_MSECONDS(m_totaltime);
+		}
+*/		
 	}
 	else
 	{
@@ -121,10 +132,12 @@ void LocalPlayer::getTime()
 
 void LocalPlayer::getTotalTime()
 {
+
 	GstFormat fmt = GST_FORMAT_TIME;
 	gint64 tot;
 	if(!gst_element_query_duration(m_pipeline, &fmt, &tot))
 	{
+
 		/* gstreamer did not deliver the duration we will try again on next timout event */
 		m_totalTimeSet = false;
 		return;
@@ -192,4 +205,21 @@ void LocalPlayer::checkState()
 		emit stateChanged(m_state);
 		return;
 	}
+}
+
+gboolean LocalPlayer::cb_gst_bus(GstBus* bus,GstMessage* message,gpointer data)
+{
+	Q_UNUSED(bus);
+	LocalPlayer *m_this = static_cast<LocalPlayer*>(data);
+	switch(GST_MESSAGE_TYPE(message)) {
+		case GST_MESSAGE_EOS:
+			emit m_this->finished();
+			break;
+		case GST_MESSAGE_DURATION: 
+			QMetaObject::invokeMethod(m_this,"getTotalTime",Qt::QueuedConnection);
+			break;
+		default:
+			break;
+	}
+	return true;
 }

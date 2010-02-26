@@ -26,7 +26,7 @@
 #include <QModelIndex>
 #include <QBrush>
 #include <QRect>
-#include "debug.h"
+#include "../debug.h"
 #include "playlist_global.h"
 #include "playlist_export.h"
 

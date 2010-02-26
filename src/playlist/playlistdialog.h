@@ -10,7 +10,6 @@
 #include <QMessageBox>
 #include <QFile>
 #include <QDir>
-#include <QDebug>
 #include "playlist_export.h"
 #include "savedplaylistmodel.h"
 #include "ui_playlistdialog.h"
