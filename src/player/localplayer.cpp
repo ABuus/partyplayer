@@ -73,10 +73,11 @@ void LocalPlayer::playUrl(const QUrl &url)
 	const gchar *uri = baUrl.constData();
 	g_object_set(G_OBJECT(m_pipeline), "uri", uri, NULL);
 	gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
-	
+#ifndef Q_WS_WIN
 	GstBus *bus = gst_pipeline_get_bus(GST_PIPELINE(m_pipeline));
 	gst_bus_add_watch(bus,cb_gst_bus,this);
 	g_object_unref(bus);
+#endif
 
 	// get time
 	getTotalTime();
@@ -105,10 +106,10 @@ void LocalPlayer::getTime()
 				m_canRunOut = false;
 				Debug << "running out with:" << ( GST_TIME_AS_MSECONDS( m_totaltime ) - GST_TIME_AS_MSECONDS( pos ) );
 				emit runningOut();
-			}
-		}
+			}		
+#ifdef Q_WS_WIN
+			// on windows we use this to get total time on linux bus_callback Q: why? A: The usual, gstreamer is fucked without GTK mainloop.
 			// check if we are at end :: 50 msec gstreamer can be at EOS with 18 msec to end ??
-/*
 			if( ( GST_TIME_AS_MSECONDS( m_totaltime ) - GST_TIME_AS_MSECONDS( pos ) ) <= 50 ) 
 			{
 				Debug << "EOS";
@@ -117,12 +118,12 @@ void LocalPlayer::getTime()
 				checkState();
 				emit finished();
 			}
+#endif
 		}
 		else
 		{
 			Debug << "current pos" << GST_TIME_AS_MSECONDS(pos) << "with total time" << GST_TIME_AS_MSECONDS(m_totaltime);
 		}
-*/		
 	}
 	else
 	{
@@ -207,6 +208,8 @@ void LocalPlayer::checkState()
 	}
 }
 
+#ifndef Q_WS_WIN
+
 gboolean LocalPlayer::cb_gst_bus(GstBus* bus,GstMessage* message,gpointer data)
 {
 	Q_UNUSED(bus);
@@ -223,3 +226,5 @@ gboolean LocalPlayer::cb_gst_bus(GstBus* bus,GstMessage* message,gpointer data)
 	}
 	return true;
 }
+
+#endif

@@ -39,7 +39,9 @@ class PLAYER_EXPORT LocalPlayer : public QObject
 public:
 	LocalPlayer(QObject *parent = 0);
 	~LocalPlayer();
+#ifndef Q_WS_WIN
 	static gboolean cb_gst_bus(GstBus* bus,GstMessage* message,gpointer data);
+#endif
 public slots:
 	void playUrl(const QUrl &url);
 	void seek( int time );
