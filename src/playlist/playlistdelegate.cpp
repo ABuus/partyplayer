@@ -21,8 +21,15 @@
 
 using namespace Playlist;
 
+PlaylistDelegate::PlaylistDelegate(QObject *parent)
+	: QStyledItemDelegate(parent)
+{
+	m_parentWidget = qobject_cast<QWidget*>( this->parent() );
+}
+
 void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+	Debug << index.parent().isValid();
 	QStyleOptionViewItemV4 opt(option);
 	QRect rect = opt.rect;
 	bool playing = index.data(PlayRole).toBool();
@@ -64,7 +71,7 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 		goto drawtext;
 	}
 	/* mouse hover */
-	if(index.data(Qt::UserRole +5).toBool())
+	if(index.data(HoverRole).toBool())
 	{
 		QLinearGradient gradient(0,0,0,1);
 		gradient.setCoordinateMode(QGradient::ObjectBoundingMode);
@@ -85,5 +92,19 @@ drawtext:
 	rect.adjust(2,2,-2,-2);
 	QFlags<Qt::Alignment> flags( index.data(Qt::TextAlignmentRole).toInt() );
 	painter->drawText(rect.left(),rect.top(),rect.width(),rect.height(),flags,index.data().toString());	
+}
+
+QSize PlaylistDelegate::sizeHint( const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+	if(!index.parent().isValid())
+	{
+		const QSize size(option.rect.width(), 20);
+		return size;
+	}
+	else
+	{
+		const QSize size(option.rect.width(), 50);
+		return size;
+	}
 }
 

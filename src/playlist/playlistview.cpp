@@ -47,7 +47,7 @@ PlaylistView::PlaylistView(QWidget *parent)
 	contexMenu = new PlaylistContextMenu(this);
 
 	// delegate 
-//	setItemDelegate(new PlaylistDelegate(this));
+	setItemDelegate(new PlaylistDelegate(this));
 	
 	// connections
 	createConnections();
@@ -244,10 +244,15 @@ void PlaylistView::onDoubleClicked(const QModelIndex &index)
 void PlaylistView::mouseMoveEvent(QMouseEvent *event)
 {
 	QTreeView::mouseMoveEvent(event);
-
-	int row = indexAt(event->pos()).row();
+	QModelIndex index = indexAt(event->pos());
+	int row = index.row();
 	if(row == m_hoverRow)
 		return;
+	if(!index.parent().isValid())
+	{
+		collapseAll();
+		expand(index);
+	}
 	for(int i = 0; i < model()->columnCount(); i++)
 	{
 		QModelIndex newIndex = m_model->index(row,i);

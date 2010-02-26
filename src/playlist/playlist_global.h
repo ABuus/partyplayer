@@ -55,6 +55,7 @@ namespace Playlist {
 		PlayRole,
 		PlacementRole,
 		ValidRole,
+		HoverRole,
 		ImageRole
 	};
 
