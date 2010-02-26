@@ -27,6 +27,8 @@ int main(int argc, char *argv[])
 	app.addLibraryPath(app.applicationDirPath() + "/bin/taglib");
 	app.addLibraryPath(app.applicationDirPath() + "/bin/gstreamer/bin");
 	app.addLibraryPath(app.applicationDirPath() + "/bin/plugins");
+#elif defined Q_WS_X11
+	app.addLibraryPath("./");
 #endif
 	return app.exec();
 }

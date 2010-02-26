@@ -29,7 +29,7 @@
 #include <QFile>
 #include <QHeaderView>
 #include <QDir>
-#include "debug.h"
+#include "../debug.h"
 #include "playlist_global.h"
 #include "playlist_export.h"
 #include "playlistmodel.h"

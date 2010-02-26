@@ -1,3 +1,8 @@
+
+CONFIG(debug) {
+DEFINES += DEBUG_BUILD
+}
+
 unix {
     isEmpty(PREFIX) {
         PREFIX = /usr/local
@@ -16,7 +21,8 @@ unix {
 	OBJECTS_DIR = $$DATADIR
 	DESTDIR = $$PWD/../build
 	DEPENDPATH += $$DESTDIR $$DATADIR
-	INCLUDEPATH += $$PWD
+	INCLUDEPATH += .
+	QMAKE_RPATH += $$DESTDIR
 }
 
 win32 {

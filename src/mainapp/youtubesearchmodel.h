@@ -34,7 +34,7 @@
 #include <QDomElement>
 #include <QDomNode>
 #include <QDomNodeList>
-#include "debug.h"
+#include "../debug.h"
 
 // google developer id of Anders Buus
 #define dev_id "AI39si61cUdAWBI2eFoGoRKodF3zuFDyUTTFHyK_X85TDEpjIv6EgeJokdy6UiuG4bq1zri9l4gExE6oEb_xwyAXuxuUgdwdRg"

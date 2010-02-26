@@ -8,7 +8,6 @@
 #include <QRadialGradient>
 #include <QStyle>
 #include <QMouseEvent>
-#include <QDebug>
 
 class ControlSlider : public QAbstractSlider
 {

@@ -7,10 +7,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QWebView>
-#include "debug.h"
+#include "../debug.h"
 #include "player_global.h"
-
-#define TIMER_INTERVAL 200
 
 /**
  * \brief This class provides provides support for playing YouTube videos.

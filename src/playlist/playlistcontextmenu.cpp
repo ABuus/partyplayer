@@ -50,7 +50,6 @@ void PlaylistContextMenu::openUrl()
 		QString strUrl = m_url.toString();
 		strUrl = strUrl.remove(strUrl.lastIndexOf("/"),strUrl.size());
 		m_url = strUrl;
-		qDebug() << m_url;
 		QDesktopServices::openUrl(m_url);
 	}
 }

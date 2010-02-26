@@ -31,7 +31,7 @@
 
 #include "playlist_export.h"
 #include "playlist_global.h"
-#include "debug.h"
+#include "../debug.h"
 
 namespace Playlist {
 

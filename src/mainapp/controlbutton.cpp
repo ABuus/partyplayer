@@ -13,12 +13,6 @@ ControlButton::ControlButton(enum ButtonStyle style, QWidget *parent)
 	m_fadeTimer.setInterval(20);
 	connect(&m_fadeTimer,SIGNAL(timeout()),this,SLOT(updateFadeTick()));
 	connect(&m_fadeTimer,SIGNAL(timeout()),this,SLOT(update()));
-	/*
-	QPixmap stopPix(":/images/control_stop.png");
-	QLabel *lab = new QLabel(this);
-	lab->setPixmap(stopPix);
-	lab->show();
-	*/
 }
 
 void ControlButton::setButtonStyle(enum ButtonStyle style)
