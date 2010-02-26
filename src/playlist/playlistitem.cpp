@@ -79,43 +79,31 @@ PlaylistItem::~PlaylistItem()
 
 void PlaylistItem::youtubeFile(QNetworkReply *reply)
 {
-	QByteArray data = reply->readAll();
-	Debug << "Youtube data: ";
-
-	int entryStart = data.indexOf("entry");
-	int entryEnd = data.indexOf("entry",entryStart +1);
 	
-	QString entry = data.mid(entryStart,entryEnd - entryStart);
+	QByteArray ba = reply->readAll();
+	QString html(ba);
 
-	int titleStart = entry.indexOf("<title type='text'>") + 19;
-	int titleEnd = entry.indexOf("</title>");
-
-	int decStart = entry.indexOf("<media:description type='plain'>") +32;
-	int decEnd = entry.indexOf("</media:description>");
+	QDomDocument doc;
+	doc.setContent(html);
+	QDomElement entry = doc.documentElement();
 	
-	int idStart = entry.indexOf("<id>") +4;
-	int idEnd = entry.indexOf("</id>", idStart);
+	
+	QString title = entry.elementsByTagName("title").at(0).firstChild().nodeValue();
+	QString description = entry.elementsByTagName("media:description").at(0).firstChild().nodeValue();
+	
+	QString url = entry.elementsByTagName("id").at(0).firstChild().nodeValue();
+	url.replace("http://gdata.youtube.com/feeds/api/videos/","http://www.youtube.com/watch?v=");
 
-	int durationStart = entry.indexOf("<yt:duration seconds='") +22;
-	int durationEnd = entry.indexOf("'/>", durationStart);
+	// mg is a media:group see http://code.google.com/apis/youtube/2.0/reference.html#youtube_data_api_tag_media:group
+	QDomElement mg = entry.elementsByTagName("media:group").at(0).toElement();
+	QString duration = mg.elementsByTagName("yt:duration").at(0).toElement().attributeNode("seconds").value();
+	
+	QString thumbnail = mg.elementsByTagName("media:thumbnail").at(0).toElement().attributeNode("url").value();
 
-	QString title = entry.mid(titleStart, (titleEnd - titleStart));
-	QString dec = entry.mid(decStart, (decEnd - decStart));
-	QString id = entry.mid(idStart, (idEnd - idStart));
-	QString duration = entry.mid(durationStart, (durationEnd - durationStart));
-
-	id.remove("http://gdata.youtube.com/feeds/api/videos/");
-
-	Debug << title << id << duration;
-
-	QString url("http://www.youtube.com/watch?v=");
-	url.append(id);
-
-	title.replace("&amp;","&");
-	dec.replace("&amp;","&");
-
+	Debug << title << description << url << duration << thumbnail;
+		
 	m_artist->setText(title);
-	m_title->setText(dec);
+	m_title->setText(description);
 	m_place->setText(url);
 	
 	// convert track length to string
@@ -130,6 +118,7 @@ void PlaylistItem::youtubeFile(QNetworkReply *reply)
 	m_isValid = true;
 	setDataAll(Youtube,PlacementRole);
 	setDataAll(true,ValidRole);
+	setDataAll(thumbnail,ImageRole);
 }
 
 void PlaylistItem::setFlags(QStandardItem *item)

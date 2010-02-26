@@ -54,7 +54,8 @@ namespace Playlist {
 		UrlRole = Qt::UserRole +1,
 		PlayRole,
 		PlacementRole,
-		ValidRole
+		ValidRole,
+		ImageRole
 	};
 
 	enum PLAYLIST_EXPORT InternalData {

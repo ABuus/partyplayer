@@ -28,7 +28,8 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
-
+#include <QDomDocument>
+#include <QDomNode>
 #include "playlist_export.h"
 #include "playlist_global.h"
 #include "../debug.h"

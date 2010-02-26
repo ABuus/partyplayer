@@ -256,6 +256,7 @@ void PlaylistView::mouseMoveEvent(QMouseEvent *event)
 			m_model->setData(oldIndex,false,Qt::UserRole +5);
 		}
 	}
+	event->accept();
 }
 
 void PlaylistView::leaveEvent(QEvent *)

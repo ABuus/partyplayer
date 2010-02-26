@@ -1,7 +1,7 @@
 TEMPLATE = lib
 TARGET = playlist
 
-QT += network
+QT += network xml
 
 include(../common.pri)
 

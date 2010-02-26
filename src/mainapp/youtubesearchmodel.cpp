@@ -95,7 +95,6 @@ void YoutubeSearchModel::searchMore()
 void YoutubeSearchModel::queryFinished(QNetworkReply *reply)
 {
 	QByteArray ba = reply->readAll();
-	Debug << ba.data();
 	QString html(ba);
 
 	QDomDocument doc;
