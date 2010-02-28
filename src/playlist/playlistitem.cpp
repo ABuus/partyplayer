@@ -24,30 +24,25 @@ using namespace Playlist;
 PlaylistItem::PlaylistItem(const QUrl url, QObject *parent)
 	:QObject(parent)
 {
+	netAccessManager = new QNetworkAccessManager(this);
 	m_isValid = false;
 
 	// create items
-	m_artist = new QStandardItem("data");
-	m_title = new QStandardItem("data");
-	m_album = new QStandardItem("data");
-	m_place = new QStandardItem("data");
-	m_year = new QStandardItem("data");
-	m_track = new QStandardItem("data");
-	m_length = new QStandardItem("data");
-	m_bitrate = new QStandardItem("data");
+	m_artist = new QStandardItem();
+	m_title = new QStandardItem();
+	m_album = new QStandardItem();
+	m_track = new QStandardItem();
+	m_length = new QStandardItem();
+	m_dropDownInfo = new QStandardItem();
 	itemList.append(m_artist);
 	itemList.append(m_title);
 	itemList.append(m_album);
 	itemList.append(m_track);
 	itemList.append(m_length);
+
+	m_artist->setChild(0,0,m_dropDownInfo);
 	
-	m_artist->setChild(0,0,m_place);
-	m_artist->setChild(0,1,m_year);
-	m_artist->setChild(0,2,m_bitrate);
-	
-	m_year->setTextAlignment(Qt::AlignCenter);
 	m_track->setTextAlignment(Qt::AlignCenter);
-	m_bitrate->setTextAlignment(Qt::AlignCenter);
 	m_length->setTextAlignment(Qt::AlignCenter);
 	foreach(QStandardItem *item, itemList)
 	{
@@ -88,25 +83,19 @@ void PlaylistItem::youtubeFile(QNetworkReply *reply)
 	QDomDocument doc;
 	doc.setContent(html);
 	QDomElement entry = doc.documentElement();
+	QDomElement mediaGroup = entry.firstChildElement("media:group");
 	
-	
-	QString title = entry.elementsByTagName("title").at(0).firstChild().nodeValue();
-	QString description = entry.elementsByTagName("media:description").at(0).firstChild().nodeValue();
-	
-	QString url = entry.elementsByTagName("id").at(0).firstChild().nodeValue();
-	url.replace("http://gdata.youtube.com/feeds/api/videos/","http://www.youtube.com/watch?v=");
+	QString title = entry.firstChildElement("title").text();
+	m_decription = mediaGroup.firstChildElement("media:description").text();
+	m_location = entry.firstChildElement("id").text();
+	QString duration = mediaGroup.firstChildElement("yt:duration").attribute("seconds");
+	m_thumbnailUrl = mediaGroup.firstChildElement("media:thumbnail").attribute("url");
 
-	// mg is a media:group see http://code.google.com/apis/youtube/2.0/reference.html#youtube_data_api_tag_media:group
-	QDomElement mg = entry.elementsByTagName("media:group").at(0).toElement();
-	QString duration = mg.elementsByTagName("yt:duration").at(0).toElement().attributeNode("seconds").value();
-	
-	QString thumbnail = mg.elementsByTagName("media:thumbnail").at(0).toElement().attributeNode("url").value();
+	m_location.replace("http://gdata.youtube.com/feeds/api/videos/","http://www.youtube.com/watch?v=");
 
-	Debug << title << description << url << duration << thumbnail;
-		
+	m_decription = m_decription.simplified();
 	m_artist->setText(title);
-	m_title->setText(description);
-	m_place->setText(url);
+//	m_title->setText(m_decription);
 	
 	// convert track length to string
 	int length = duration.toInt();
@@ -120,7 +109,12 @@ void PlaylistItem::youtubeFile(QNetworkReply *reply)
 	m_isValid = true;
 	setDataAll(Youtube,PlacementRole);
 	setDataAll(true,ValidRole);
-	setDataAll(thumbnail,ImageRole);
+//	setDataAll(thumbnail,ImageRole);
+
+	netAccessManager->disconnect(this);
+	connect(netAccessManager,SIGNAL(finished( QNetworkReply *)),this,SLOT(extendedInfoReply(QNetworkReply *)));
+	netAccessManager->get( QNetworkRequest(QUrl(m_thumbnailUrl)));
+	
 }
 
 void PlaylistItem::setFlags(QStandardItem *item)
@@ -134,4 +128,28 @@ void PlaylistItem::setDataAll(QVariant value, int role)
 	{
 		item->setData(value,role);
 	}
+}
+
+void PlaylistItem::extendedInfoReply(QNetworkReply *reply)
+{
+
+	QString extendedInfo = "<?xml version=\"1.0\" encoding=\"utf-8\"?><extended>\
+						   <description>%1</description>\
+						   <bitrate></bitrate>\
+						   <year></year>\
+						   <location>%2</location>\
+						   <imagedata dt:dt=\"binary.base64\">%3</imagedata>\
+						   </extended>";
+	/*
+	QByteArray imageData = reply->readAll().toBase64();
+	QPixmap pixmap;
+	pixmap.loadFromData( imageData.fromBase64(imageData));
+	
+	m_dropDownInfo->setBackground( QBrush( pixmap));
+	*/
+
+	extendedInfo = extendedInfo.arg(m_decription,m_location,reply->readAll().toBase64());
+	
+
+	m_dropDownInfo->setData(extendedInfo, Playlist::ExtendedData);
 }

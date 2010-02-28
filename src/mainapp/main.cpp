@@ -17,10 +17,22 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#ifdef NO_SPLASH
+#include <QApplication>
+#include "mainwindow.h"
+#else
 #include "application.h"
+#endif
+
 
 int main(int argc, char *argv[])
 {
+#ifdef NO_SPLASH
+	QApplication app(argc,argv);
+	MainWindow w;
+	w.show();
+	return app.exec();
+#else
 	Application app(argc,argv);
 #ifdef Q_WS_WIN 
 	app.addLibraryPath(app.applicationDirPath());
@@ -31,5 +43,6 @@ int main(int argc, char *argv[])
 	app.addLibraryPath("./");
 #endif
 	return app.exec();
+#endif
 }
 

@@ -26,6 +26,10 @@
 #include <QUrl>
 #include <QTimer>
 #include <QDir>
+#include <QBuffer>
+
+#include <QLabel>
+
 #include "../debug.h"
 #include "playlist_global.h"
 #include "playlist_export.h"

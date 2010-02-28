@@ -32,22 +32,21 @@ PlaylistView::PlaylistView(QWidget *parent)
 	setDropIndicatorShown(false);
 	setDragDropMode(QAbstractItemView::DragDrop);
 	setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-//	verticalHeader()->setResizeMode(QHeaderView::Fixed);
-//	verticalHeader()->setDefaultSectionSize(20);
-//	verticalHeader()->setHighlightSections(false);
-//	horizontalHeader()->setStretchLastSection(true);
-//	horizontalHeader()->setStretchLastSection(false);
+	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 	setSortingEnabled(true);
 	setRootIsDecorated(false);
-	setAlternatingRowColors(true);
-	setMouseTracking(true);
+//	setMouseTracking(true);
+	/* we let the delegate take care of that */
+	setIndentation(0);
 	setAnimated(true);
-	setAutoExpandDelay(20);
+	setExpandsOnDoubleClick(false);
+//	setAlternatingRowColors(true);
 
 	contexMenu = new PlaylistContextMenu(this);
 
-	// delegate 
-	setItemDelegate(new PlaylistDelegate(this));
+	// delegate
+	m_delegate = new PlaylistDelegate(this);
+	setItemDelegate(m_delegate);
 	
 	// connections
 	createConnections();
@@ -76,6 +75,7 @@ void PlaylistView::setModel(Playlist::PlaylistModel *model)
 {
 	m_model = model;
 	QTreeView::setModel(m_model);
+	connect(m_model,SIGNAL(rowsInserted(const QModelIndex &,int,int)),this,SLOT(rowsInserted(const QModelIndex &,int,int)));
 }
 
 /*
@@ -85,7 +85,7 @@ void PlaylistView::setModel(Playlist::PlaylistModel *model)
 
 QUrl PlaylistView::next(bool set)
 {
-	collapseAll();
+//	collapseAll();
 	QUrl retval;
 	int currentRow = m_model->getPlayRow() + 1;
 	if(currentRow <= 0 || currentRow > m_model->rowCount())
@@ -93,8 +93,10 @@ QUrl PlaylistView::next(bool set)
 	else
 		retval = m_model->index(currentRow,0).data(UrlRole).toUrl();
 	if(set)
-		expand(m_model->index(currentRow,0));
+	{
+//		expand(m_model->index(currentRow,0));
 		m_model->setPlayRow(currentRow);
+	}
 	return retval;
 }
 
@@ -105,7 +107,7 @@ QUrl PlaylistView::next(bool set)
 
 QUrl PlaylistView::previous(bool set)
 {
-	collapseAll();
+//	collapseAll();
 	QUrl retval;
 	int currentRow = (m_model->getPlayRow() - 1);
 	if(currentRow < 0 )
@@ -113,8 +115,10 @@ QUrl PlaylistView::previous(bool set)
 	else
 		retval = m_model->index(currentRow,0).data(UrlRole).toUrl();
 	if(set)
-		expand(m_model->index(currentRow,0));
+	{
+//		expand(m_model->index(currentRow,0));
 		m_model->setPlayRow(currentRow);
+	}
 	return retval;
 }
 
@@ -232,7 +236,6 @@ void PlaylistView::dropEvent(QDropEvent *event)
 
 void PlaylistView::onDoubleClicked(const QModelIndex &index)
 {
-	expand(index);
 	m_model->setPlayRow(index.row());
 	const QUrl url = model()->data(index,UrlRole).toUrl();
 	if(!url.isValid())
@@ -244,28 +247,33 @@ void PlaylistView::onDoubleClicked(const QModelIndex &index)
 void PlaylistView::mouseMoveEvent(QMouseEvent *event)
 {
 	QTreeView::mouseMoveEvent(event);
+
 	QModelIndex index = indexAt(event->pos());
 	int row = index.row();
 	if(row == m_hoverRow)
 		return;
+/*
 	if(!index.parent().isValid())
 	{
+		return;
 		collapseAll();
-		expand(index);
+		expand(index);		
 	}
+*/
+
 	for(int i = 0; i < model()->columnCount(); i++)
 	{
 		QModelIndex newIndex = m_model->index(row,i);
 		QModelIndex oldIndex = m_model->index(m_hoverRow,i);
 		if(newIndex.isValid())
 		{
-			m_model->setData(newIndex,true,Qt::UserRole +5);
+			m_model->setData(newIndex,true,HoverRole);
 			if( i == ( model()->columnCount() -1 ) )
 				m_hoverRow = row;
 		}
 		if(oldIndex.isValid())
 		{
-			m_model->setData(oldIndex,false,Qt::UserRole +5);
+			m_model->setData(oldIndex,false,HoverRole);
 		}
 	}
 	event->accept();
@@ -308,4 +316,53 @@ void PlaylistView::removeSelected()
 	{
 		m_model->removeRow(rows.takeLast());
 	}
+}
+
+void PlaylistView::resizeEvent(QResizeEvent *event)
+{
+	/*
+	int newWidth = event->size().width();
+	setColumnWidth(0, newWidth / 4);
+	setColumnWidth(1, newWidth / 4);
+	setColumnWidth(2, newWidth / 4);
+	setColumnWidth(3, newWidth / 9);
+	setColumnWidth(4, newWidth / 9);
+	*/
+}
+
+//------ BUG HERE OR IN THE MODEL IT IS SOME INDEX FUCK --//
+//------ QTreeView::rowsInserted internal representation of the model has been corrupted, resetting. --//
+void PlaylistView::rowsInserted(const QModelIndex &parent, int start, int end)
+{
+	QTreeView::rowsInserted(parent,start,end);
+	/* merge celles of child indexes */
+	QModelIndex index = model()->index(start,0);
+	setFirstColumnSpanned(0,index,true);
+}
+
+void PlaylistView::mousePressEvent(QMouseEvent *event)
+{
+	if(event->button() != Qt::LeftButton)
+	{
+		QTreeView::mousePressEvent(event);
+		return;
+	}
+	/* check if we pressed the drop down handle */
+	const QRect indexRect = visualRect(indexAt(event->pos()));
+	const QRectF handleRect = m_delegate->extendedHandleRect();
+	QPoint pressedOffset = event->pos();
+	pressedOffset.setY( pressedOffset.y() - indexRect.y());
+
+	if(handleRect.contains(pressedOffset))
+	{
+		const QModelIndex index = indexAt(event->pos());
+		if(isExpanded(index))
+			collapse(index);
+		else
+		{
+			expand(index);
+			Debug << "expanding row";
+		}
+	}
+	QTreeView::mousePressEvent(event);
 }

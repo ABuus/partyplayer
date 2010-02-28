@@ -48,11 +48,12 @@ private:
 	QStandardItem *m_artist;
 	QStandardItem *m_title;
 	QStandardItem *m_album;
-	QStandardItem *m_place;
-	QStandardItem *m_year;
 	QStandardItem *m_track;
 	QStandardItem *m_length;
-	QStandardItem *m_bitrate;
+	QStandardItem *m_dropDownInfo;
+	QString m_decription;
+	QString m_thumbnailUrl;
+	QString m_location;
 	bool m_localFile;
 	bool m_isValid;
 	QNetworkAccessManager *netAccessManager;
@@ -61,6 +62,7 @@ private:
 	void setDataAll(QVariant value,int role);
 private slots:
 	void youtubeFile(QNetworkReply *reply);
+	void extendedInfoReply(QNetworkReply *reply);
 signals:
 };
 

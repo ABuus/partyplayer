@@ -58,6 +58,7 @@ private:
 	PlaylistModel *m_model;
 	int m_hoverRow;
 	PlaylistContextMenu *contexMenu;
+	PlaylistDelegate *m_delegate;
 private slots:
 	void onDoubleClicked(const QModelIndex &index);
 	void removeSelected();
@@ -67,6 +68,10 @@ protected:
 	void mouseMoveEvent(QMouseEvent *event);
 	void leaveEvent(QEvent *);
 	void contextMenuEvent(QContextMenuEvent *event);
+	void resizeEvent(QResizeEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+protected slots:
+	void rowsInserted(const QModelIndex &parent, int start, int end);
 };
 
 }; // namespace Playlist

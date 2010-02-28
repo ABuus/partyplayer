@@ -240,28 +240,62 @@ void PlaylistModel::insertFile(QUrl url, int row)
 	TagLib::FileRef f(tFile);
 	if(!f.isNull() && f.tag())
     {
+		// set row data
 		TagLib::Tag *tag = f.tag();
 		TagLib::AudioProperties *ap = f.audioProperties();
 		QStandardItem *artist = new QStandardItem( QString::fromUtf8(tag->artist().toCString(true)));
 		QStandardItem *title = new QStandardItem( QString::fromUtf8(tag->title().toCString(true)));
 		QStandardItem *album = new QStandardItem( QString::fromUtf8(tag->album().toCString(true)));
-		QStandardItem *place = new QStandardItem(file);
-		QStandardItem *year = new QStandardItem( QString::number(tag->year()));
 		QStandardItem *track = new QStandardItem( QString::number(tag->track()));
-		QStandardItem *bitrate = new QStandardItem( QString::number(ap->bitrate()));
+		QStandardItem *itemLength = new QStandardItem();
+		track->setTextAlignment(Qt::AlignCenter);
+		itemLength->setTextAlignment(Qt::AlignCenter);
+		
 		// convert track length to string
 		int length = ap->length();
 		int min = length / 60;
 		int sec = length % 60;
-		QStandardItem *itemLength = new QStandardItem();
 		if(sec < 10)
 			itemLength->setText(QString("%1:0%2").arg(min).arg(sec));
 		else
 			itemLength->setText(QString("%1:%2").arg(min).arg(sec));
+
+		// set drop daow data
+		QString extendedInfo = "<?xml version=\"1.0\" encoding=\"utf-8\"?><extended>\
+						   <description>%1</description>\
+						   <bitrate>%2</bitrate>\
+						   <year>%3</year>\
+						   <location>%4</location>\
+						   <imagedata dt:dt=\"binary.base64\">%5</imagedata>\
+						   </extended>";
+
+		QString description = QString::fromUtf8(tag->comment().toCString(true));
+		QString bitrate = QString::number(ap->bitrate());
+		QString year = QString::number(tag->year());
+		
+		QByteArray imageData;
+		QFile coverFile(":/testcover");
+		if(!coverFile.open(QIODevice::ReadOnly))
+		{
+			Debug << "file error";
+		}
+		else
+		{
+			imageData = coverFile.readAll().toBase64();
+		}
+		
+        
+		Debug << imageData;
+
+		QStandardItem *dropDownInfo = new QStandardItem();
+		extendedInfo = extendedInfo.arg(description,bitrate,year,file,imageData);
+		dropDownInfo->setData(extendedInfo,ExtendedData);
+
+		Debug << extendedInfo;
+
+		artist->setChild(0,0,dropDownInfo);
+
 		QList<QStandardItem*> rowItem;
-		artist->setChild(0,0,place);
-		artist->setChild(0,1,bitrate);
-		artist->setChild(0,2,year);
 		rowItem << artist << title << album << track << itemLength;
 		foreach(QStandardItem *item, rowItem)
 		{

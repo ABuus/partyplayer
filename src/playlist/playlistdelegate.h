@@ -22,15 +22,19 @@
 
 #include <QStyledItemDelegate>
 #include <QPainter>
+#include <QPainterPath>
 #include <QStyleOptionViewItem>
 #include <QModelIndex>
 #include <QBrush>
 #include <QRect>
-#include <QWidget>
+#include <QTreeView>
+#include <QDomDocument>
+#include <QDomElement>
 #include "../debug.h"
 #include "playlist_global.h"
 #include "playlist_export.h"
 
+#define EXTENDED_INFO_HEIGHT 80
 
 namespace Playlist {
 
@@ -41,8 +45,11 @@ public:
 	PlaylistDelegate(QObject *parent);
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+	QRectF extendedHandleRect() { return m_handleRect; };
 private:
-	QWidget *m_parentWidget;
+	QPixmap handleLess;
+	QPixmap handleMore;
+	QRectF m_handleRect;
 };
 
 }; // namespace Playlist
