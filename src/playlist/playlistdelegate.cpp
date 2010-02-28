@@ -23,9 +23,9 @@ using namespace Playlist;
 
 PlaylistDelegate::PlaylistDelegate(QObject *parent)
 	: QStyledItemDelegate(parent),
-	handleLess(":/handle_less"),
-	handleMore(":/handle_more"),
-	m_handleRect(5.0,5.0,10.0,10.0)
+	bgTexture(":/texture"),
+	m_handleRect(5.0,5.0,10.0,10.0),
+	m_locationRect(500,(EXTENDED_INFO_HEIGHT/4)*3,280,8)
 {}
 
 void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -35,41 +35,39 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 	bool playing = index.data(PlayRole).toBool();   // the item is in play state
 	bool expanded = opt.state & QStyle::State_Open; // the item is expanded
 	
+	/* ---- background painting -------- */
 	
 	painter->save();
 	painter->setPen(Qt::NoPen);
-	QPainterPath backgroundPath;
-	QPixmap bgTexture(":/texture");
-	
-	backgroundPath.addRect(rectF);
+//	QPixmap bgTexture(":/texture");
 
 	/* setup background bruches */
 	if(!index.parent().isValid())
 	{
 		painter->fillRect(rectF,Qt::black);
 		painter->setBrush(bgTexture.scaledToHeight(rectF.height()));
+		
+		if(playing)
+		{
+			painter->setOpacity(0.65);
+		}
+		/* paint selected */
+		else if(opt.state & QStyle::State_Selected)
+		{
+			painter->setOpacity(0.8);
+		}
 	}
 	else
 	{
 		painter->setBrush(QColor(0,0,0,55));
 	}
 	
-	if(playing)
-	{
-		if(!index.parent().isValid())
-			painter->setOpacity(0.9);
-	}
-	/* paint selected */
-	else if(opt.state & QStyle::State_Selected)
-	{
-		if(!index.parent().isValid())
-			painter->setOpacity(0.8);
-	}
-
 	/* Paint background */
 	
-	painter->drawPath(backgroundPath);
+	painter->drawRect(rectF);
 	painter->restore();
+
+	/* ---- dropdown handle painting -------- */
 
 	/* draw drop down handle, only parents have handles */
 	if(!index.parent().isValid() && index.column() == 0)
@@ -87,22 +85,20 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 		painter->restore();
 	}
 
+	/* ---- forground painting -------- */
+
 	/* drop down */
 	if(index.parent().isValid())
 	{
 		// draw forground
-		QDomDocument doc;
-		doc.setContent(index.data(Playlist::ExtendedData).toString());
-		QDomElement entry = doc.firstChildElement("extended");
-		QString description = entry.firstChildElement("description").text();
-		QString bitrate = entry.firstChildElement("bitrate").text();
-		QString year = entry.firstChildElement("year").text();
-		QString location = entry.firstChildElement("location").text();
-		QPixmap pixmap;
-		QString imageStr = entry.firstChildElement("imagedata").text();
-		QByteArray imagedata = imageStr.toAscii();
-		pixmap.loadFromData( imagedata.fromBase64(imagedata));
+		
+		QPixmap pixmap = qvariant_cast<QPixmap>( index.data(ExtendedDataImage));
 
+		QString description,bitrate,year,location;
+		description = index.data(ExtendedDataDescription).toString();
+		bitrate = index.data(ExtendedDataBitrate).toString();
+		year = index.data(ExtendedDataYear).toString();
+		location = index.data(UrlRole).toString();
 		description.prepend(tr("Description: "));
 		bitrate.prepend(tr("Bitrate: "));
 		year.prepend(tr("Year: "));
@@ -142,7 +138,7 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 		if(opt.viewItemPosition == QStyleOptionViewItemV4::Beginning)
 			rectF.adjust(22,0,0,0);
 		/* draw text parent items */
-		rectF.adjust(2,2,-2,-2);
+		rectF.adjust(2,3,-2,-2);
 		
 		painter->save();
 		QFont font("Times", 10, QFont::Bold);

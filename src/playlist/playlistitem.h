@@ -34,6 +34,7 @@
 #include "playlist_global.h"
 #include "../debug.h"
 
+
 namespace Playlist {
 
 class PLAYLIST_EXPORT PlaylistItem : public QObject

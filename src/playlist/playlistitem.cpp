@@ -132,24 +132,14 @@ void PlaylistItem::setDataAll(QVariant value, int role)
 
 void PlaylistItem::extendedInfoReply(QNetworkReply *reply)
 {
-
-	QString extendedInfo = "<?xml version=\"1.0\" encoding=\"utf-8\"?><extended>\
-						   <description>%1</description>\
-						   <bitrate></bitrate>\
-						   <year></year>\
-						   <location>%2</location>\
-						   <imagedata dt:dt=\"binary.base64\">%3</imagedata>\
-						   </extended>";
-	/*
-	QByteArray imageData = reply->readAll().toBase64();
+	/* convert reply data into pixmap */
 	QPixmap pixmap;
-	pixmap.loadFromData( imageData.fromBase64(imageData));
-	
-	m_dropDownInfo->setBackground( QBrush( pixmap));
-	*/
+	QByteArray imageData = reply->readAll().toBase64();
+	pixmap.loadFromData( imageData.fromBase64(imageData) );	
+	/* set data */ 
+	m_dropDownInfo->setData(Playlist::Youtube,Playlist::PlacementRole);
+	m_dropDownInfo->setData(pixmap, Playlist::ExtendedDataImage);
+	m_dropDownInfo->setData(m_decription, Playlist::ExtendedDataDescription);
+	m_dropDownInfo->setData(m_location, Playlist::UrlRole);
 
-	extendedInfo = extendedInfo.arg(m_decription,m_location,reply->readAll().toBase64());
-	
-
-	m_dropDownInfo->setData(extendedInfo, Playlist::ExtendedData);
 }

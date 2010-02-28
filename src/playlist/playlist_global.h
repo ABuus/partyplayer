@@ -56,7 +56,10 @@ namespace Playlist {
 		PlacementRole,
 		ValidRole,
 		HoverRole,
-		ExtendedData
+		ExtendedDataImage,
+		ExtendedDataDescription,
+		ExtendedDataYear,
+		ExtendedDataBitrate
 	};
 
 	enum PLAYLIST_EXPORT InternalData {

@@ -27,9 +27,6 @@
 #include <QModelIndex>
 #include <QBrush>
 #include <QRect>
-#include <QTreeView>
-#include <QDomDocument>
-#include <QDomElement>
 #include "../debug.h"
 #include "playlist_global.h"
 #include "playlist_export.h"
@@ -46,10 +43,12 @@ public:
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	QRectF extendedHandleRect() { return m_handleRect; };
+	QRectF extendedUrlRect() { return m_locationRect; };
 private:
-	QPixmap handleLess;
+	const QPixmap bgTexture;
 	QPixmap handleMore;
 	QRectF m_handleRect;
+	QRectF m_locationRect;
 };
 
 }; // namespace Playlist

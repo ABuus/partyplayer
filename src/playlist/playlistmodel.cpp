@@ -260,15 +260,6 @@ void PlaylistModel::insertFile(QUrl url, int row)
 		else
 			itemLength->setText(QString("%1:%2").arg(min).arg(sec));
 
-		// set drop daow data
-		QString extendedInfo = "<?xml version=\"1.0\" encoding=\"utf-8\"?><extended>\
-						   <description>%1</description>\
-						   <bitrate>%2</bitrate>\
-						   <year>%3</year>\
-						   <location>%4</location>\
-						   <imagedata dt:dt=\"binary.base64\">%5</imagedata>\
-						   </extended>";
-
 		QString description = QString::fromUtf8(tag->comment().toCString(true));
 		QString bitrate = QString::number(ap->bitrate());
 		QString year = QString::number(tag->year());
@@ -285,13 +276,14 @@ void PlaylistModel::insertFile(QUrl url, int row)
 		}
 		
         
-		Debug << imageData;
+		QPixmap pixmap;
+		pixmap.loadFromData(imageData.fromBase64(imageData));
 
 		QStandardItem *dropDownInfo = new QStandardItem();
-		extendedInfo = extendedInfo.arg(description,bitrate,year,file,imageData);
-		dropDownInfo->setData(extendedInfo,ExtendedData);
-
-		Debug << extendedInfo;
+		dropDownInfo->setData(pixmap, ExtendedDataImage);
+		dropDownInfo->setData(bitrate, ExtendedDataBitrate);
+		dropDownInfo->setData(year, ExtendedDataYear);
+		dropDownInfo->setData(file, UrlRole);
 
 		artist->setChild(0,0,dropDownInfo);
 

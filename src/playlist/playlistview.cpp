@@ -31,7 +31,7 @@ PlaylistView::PlaylistView(QWidget *parent)
 	setAcceptDrops(true);
 	setDropIndicatorShown(false);
 	setDragDropMode(QAbstractItemView::DragDrop);
-	setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+//	setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 	setSortingEnabled(true);
 	setRootIsDecorated(false);
@@ -347,21 +347,47 @@ void PlaylistView::mousePressEvent(QMouseEvent *event)
 		QTreeView::mousePressEvent(event);
 		return;
 	}
+
+	const QModelIndex index = indexAt(event->pos());
+	
 	/* check if we pressed the drop down handle */
-	const QRect indexRect = visualRect(indexAt(event->pos()));
+	const QRect indexRect = visualRect(index);
 	const QRectF handleRect = m_delegate->extendedHandleRect();
 	QPoint pressedOffset = event->pos();
 	pressedOffset.setY( pressedOffset.y() - indexRect.y());
 
 	if(handleRect.contains(pressedOffset))
 	{
-		const QModelIndex index = indexAt(event->pos());
 		if(isExpanded(index))
 			collapse(index);
 		else
 		{
 			expand(index);
-			Debug << "expanding row";
+		}
+	}
+
+	/* check if extended info url was clicked */
+	if(!index.parent().isValid())
+	{
+		QTreeView::mousePressEvent(event);
+		return;
+	}
+	else
+	{
+		const QRectF urlRect = m_delegate->extendedUrlRect();
+		pressedOffset = event->pos();
+		pressedOffset.setY( pressedOffset.y() - indexRect.y());
+		if(urlRect.contains(pressedOffset))
+		{
+			QString urlString = index.data(Playlist::UrlRole).toString();
+			if(index.data(Playlist::PlacementRole).toInt() == Playlist::Local)
+			{
+				urlString.remove(urlString.lastIndexOf("/"),urlString.size());
+				urlString.prepend(FILE_MARCO);
+			}
+			Debug << urlString;
+			QDesktopServices::openUrl(QUrl(urlString));
+			return;
 		}
 	}
 	QTreeView::mousePressEvent(event);

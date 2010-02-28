@@ -27,9 +27,8 @@
 #include <QTimer>
 #include <QDir>
 #include <QBuffer>
-
-#include <QLabel>
-
+#include <QDomDocument>
+#include <QDomElement>
 #include "../debug.h"
 #include "playlist_global.h"
 #include "playlist_export.h"
@@ -38,6 +37,9 @@
 #include <fileref.h>
 #include <tag.h>
 #include <audioproperties.h>
+
+
+#include <QLabel>
 
 namespace Playlist {
 
