@@ -59,6 +59,13 @@ private:
 	int m_hoverRow;
 	PlaylistContextMenu *contexMenu;
 	PlaylistDelegate *m_delegate;
+	enum ExtendedInfoElement {
+		NoElement = 0,
+		HandleElement,
+		UrlElement
+	};
+	int extendedElementAt(const QPoint &point);
+	void openExternalUrl( const QModelIndex & index);
 private slots:
 	void onDoubleClicked(const QModelIndex &index);
 	void removeSelected();
@@ -66,7 +73,6 @@ protected:
 	void startDrag(Qt::DropActions supportenDropActions);
 	void dropEvent(QDropEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
-	void leaveEvent(QEvent *);
 	void contextMenuEvent(QContextMenuEvent *event);
 	void resizeEvent(QResizeEvent *event);
 	void mousePressEvent(QMouseEvent *event);

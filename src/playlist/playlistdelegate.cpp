@@ -19,11 +19,15 @@
 
 #include "playlistdelegate.h"
 
+#include <QLabel>
+
 using namespace Playlist;
 
 PlaylistDelegate::PlaylistDelegate(QObject *parent)
 	: QStyledItemDelegate(parent),
 	bgTexture(":/texture"),
+	handleLess(":/less"),
+	handleMore(":/more"),
 	m_handleRect(5.0,5.0,10.0,10.0),
 	m_locationRect(500,(EXTENDED_INFO_HEIGHT/4)*3,280,8)
 {}
@@ -72,17 +76,11 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 	/* draw drop down handle, only parents have handles */
 	if(!index.parent().isValid() && index.column() == 0)
 	{
-		painter->save();
 		QRectF handleOffsetRect = m_handleRect.adjusted(0,rectF.y(),0,rectF.y());
-		painter->drawEllipse(handleOffsetRect);
-		painter->drawLine(handleOffsetRect.left()+3,handleOffsetRect.center().y(), 
-				handleOffsetRect.right()-3, handleOffsetRect.center().y());
-		if(!expanded)
-		{
-			painter->drawLine(handleOffsetRect.center().x(),handleOffsetRect.top()+3, 
-				handleOffsetRect.height(), handleOffsetRect.bottom()-3);
-		}
-		painter->restore();
+		if(expanded)
+			painter->drawPixmap(handleOffsetRect,handleLess,handleLess.rect());
+		else
+			painter->drawPixmap(handleOffsetRect,handleMore,handleMore.rect());
 	}
 
 	/* ---- forground painting -------- */

@@ -3,5 +3,7 @@
         <file alias="playing" >images/playing.png</file>
         <file alias="testcover" >images/testcover.jpg</file>
         <file alias="texture" >images/testtexture2.jpg</file>
+        <file alias="less" >images/less.png</file>
+        <file alias="more" >images/more.png</file>
     </qresource>
 </RCC>

@@ -35,7 +35,7 @@ PlaylistView::PlaylistView(QWidget *parent)
 	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 	setSortingEnabled(true);
 	setRootIsDecorated(false);
-//	setMouseTracking(true);
+	setMouseTracking(true);
 	/* we let the delegate take care of that */
 	setIndentation(0);
 	setAnimated(true);
@@ -247,48 +247,17 @@ void PlaylistView::onDoubleClicked(const QModelIndex &index)
 void PlaylistView::mouseMoveEvent(QMouseEvent *event)
 {
 	QTreeView::mouseMoveEvent(event);
-
-	QModelIndex index = indexAt(event->pos());
-	int row = index.row();
-	if(row == m_hoverRow)
-		return;
-/*
-	if(!index.parent().isValid())
+	int element = extendedElementAt(event->pos());
+	if(!element)
 	{
+		unsetCursor();
 		return;
-		collapseAll();
-		expand(index);		
 	}
-*/
-
-	for(int i = 0; i < model()->columnCount(); i++)
+	else
 	{
-		QModelIndex newIndex = m_model->index(row,i);
-		QModelIndex oldIndex = m_model->index(m_hoverRow,i);
-		if(newIndex.isValid())
-		{
-			m_model->setData(newIndex,true,HoverRole);
-			if( i == ( model()->columnCount() -1 ) )
-				m_hoverRow = row;
-		}
-		if(oldIndex.isValid())
-		{
-			m_model->setData(oldIndex,false,HoverRole);
-		}
+		setCursor(Qt::PointingHandCursor);
 	}
 	event->accept();
-}
-
-void PlaylistView::leaveEvent(QEvent *)
-{
-	for(int i = 0; i < model()->columnCount(); i++)
-	{
-		QModelIndex index = m_model->index(m_hoverRow,i);
-		if(!index.isValid())
-			return;
-		model()->setData(index,false,Qt::UserRole + 5);
-	}
-	m_hoverRow = -1;
 }
 
 void PlaylistView::contextMenuEvent(QContextMenuEvent *event)
@@ -349,46 +318,63 @@ void PlaylistView::mousePressEvent(QMouseEvent *event)
 	}
 
 	const QModelIndex index = indexAt(event->pos());
-	
-	/* check if we pressed the drop down handle */
-	const QRect indexRect = visualRect(index);
-	const QRectF handleRect = m_delegate->extendedHandleRect();
-	QPoint pressedOffset = event->pos();
-	pressedOffset.setY( pressedOffset.y() - indexRect.y());
+	int element = extendedElementAt(event->pos());
 
-	if(handleRect.contains(pressedOffset))
-	{
-		if(isExpanded(index))
-			collapse(index);
-		else
-		{
-			expand(index);
-		}
-	}
-
-	/* check if extended info url was clicked */
-	if(!index.parent().isValid())
-	{
-		QTreeView::mousePressEvent(event);
-		return;
-	}
-	else
-	{
-		const QRectF urlRect = m_delegate->extendedUrlRect();
-		pressedOffset = event->pos();
-		pressedOffset.setY( pressedOffset.y() - indexRect.y());
-		if(urlRect.contains(pressedOffset))
-		{
-			QString urlString = index.data(Playlist::UrlRole).toString();
-			if(index.data(Playlist::PlacementRole).toInt() == Playlist::Local)
-			{
-				urlString.remove(urlString.lastIndexOf("/"),urlString.size());
-				urlString.prepend(FILE_MARCO);
-			}
-			Debug << urlString;
-			QDesktopServices::openUrl(QUrl(urlString));
-			return;
-		}
+	switch (element) {
+		case NoElement:
+			break;
+		case UrlElement:
+			openExternalUrl(index);
+			break;
+		case HandleElement:
+			if(isExpanded(index))
+				collapse(index);
+			else
+				expand(index);
+			break;
+		default:
+			break;
 	}
 	QTreeView::mousePressEvent(event);
+}
+
+int PlaylistView::extendedElementAt(const QPoint &point)
+{
+	const QModelIndex index = indexAt(point);
+	const QRect indexRect = visualRect(index);
+	const QRectF handleRect = m_delegate->extendedHandleRect();
+	QPoint pressedOffset = point;
+	pressedOffset.setY( pressedOffset.y() - indexRect.y());
+	
+	/* handle */
+	if(handleRect.contains(pressedOffset))
+	{
+		return PlaylistView::HandleElement;
+	}
+
+	/* only handle have parent index */
+	if(!index.parent().isValid())
+	{
+		return NoElement;
+	}
+
+	/* url */
+	const QRectF urlRect = m_delegate->extendedUrlRect();
+	if(urlRect.contains(pressedOffset))
+	{
+		return UrlElement;
+	}
+	return NoElement;
+}
+
+void PlaylistView::openExternalUrl(const QModelIndex &index)
+{
+	QString urlString = index.data(Playlist::UrlRole).toString();
+	if(index.data(Playlist::PlacementRole).toInt() == Playlist::Local)
+	{
+		urlString.remove(urlString.lastIndexOf("/"),urlString.size());
+		urlString.prepend(FILE_MARCO);
+	}
+	Debug << urlString;
+	QDesktopServices::openUrl(QUrl(urlString));
 }

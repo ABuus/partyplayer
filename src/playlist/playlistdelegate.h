@@ -46,9 +46,10 @@ public:
 	QRectF extendedUrlRect() { return m_locationRect; };
 private:
 	const QPixmap bgTexture;
-	QPixmap handleMore;
+	const QPixmap handleLess;
+	const QPixmap handleMore;
 	QRectF m_handleRect;
-	QRectF m_locationRect;
+	QRectF m_locationRect; // see paint for real value
 };
 
 }; // namespace Playlist
