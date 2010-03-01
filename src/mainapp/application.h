@@ -26,8 +26,9 @@
 #include <QTimer>
 #include <QDesktopWidget>
 #include <QProcess>
-#include "mainwindow.h"
-#include "svgsplashscreen.h"
+
+class MainWindow;
+class SvgSplashScreen;
 
 class Application : public QtSingleApplication
 {
@@ -36,8 +37,10 @@ class Application : public QtSingleApplication
 public:
 	Application( int &argc, char *argv[]);
 	~Application();
+	static MainWindow * mainWindow();
+	bool loadOnlineInfo;
 private:
-	MainWindow *win;
+	MainWindow *m_mainWindow;
 	SvgSplashScreen *splash;
 	QTimer *splashTimer;
 };

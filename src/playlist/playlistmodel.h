@@ -32,14 +32,10 @@
 #include "../debug.h"
 #include "playlist_global.h"
 #include "playlist_export.h"
-#include "playlistitem.h"
-// taglib
-#include <fileref.h>
-#include <tag.h>
-#include <audioproperties.h>
+//#include "playlistitem.h"
+#include "../playlistitem/playlistitem.h"
+#include "../playlistitem/localitem.h"
 
-
-#include <QLabel>
 
 namespace Playlist {
 

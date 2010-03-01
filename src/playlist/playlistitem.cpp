@@ -16,7 +16,7 @@
 ** along with this program; if not, write to the Free Software
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
+/*
 #include "playlistitem.h"
 
 using namespace Playlist;
@@ -132,14 +132,19 @@ void PlaylistItem::setDataAll(QVariant value, int role)
 
 void PlaylistItem::extendedInfoReply(QNetworkReply *reply)
 {
+*/
 	/* convert reply data into pixmap */
+/*
 	QPixmap pixmap;
 	QByteArray imageData = reply->readAll().toBase64();
 	pixmap.loadFromData( imageData.fromBase64(imageData) );	
+*/
 	/* set data */ 
+/*
 	m_dropDownInfo->setData(Playlist::Youtube,Playlist::PlacementRole);
 	m_dropDownInfo->setData(pixmap, Playlist::ExtendedDataImage);
 	m_dropDownInfo->setData(m_decription, Playlist::ExtendedDataDescription);
 	m_dropDownInfo->setData(m_location, Playlist::UrlRole);
 
 }
+*/

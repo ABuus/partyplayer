@@ -19,7 +19,7 @@
 
 #ifndef PLAYLISTITEM_H
 #define PLAYLISTITEM_H
-
+/*
 // Qt
 #include <QStandardItem>
 #include <QVariant>
@@ -68,5 +68,5 @@ signals:
 };
 
 }; // namespace Playlist
-
+*/
 #endif // PLAYLISTITEM_H

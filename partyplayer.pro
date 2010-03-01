@@ -2,17 +2,20 @@
 
 TEMPLATE = subdirs
 CONFIG += orderd
+SUBDIRS += src/playlistitem \
+	src/playlist \
+	src/player \
+	src/mainapp
+	
 unix {
-SUBDIRS += 	src/playlist/playlist.pro \
-			src/player/player.pro \
-			src/3rdparty/3rdparty.pro \
-    		src/mainapp/mainapp.pro
+SUBDIRS += src/3rdparty
+src/mainapp.depends += src/3rdparty
 }
 
 win32 {
-SUBDIRS += 	src/3rdparty/qtsingleapplication-2.6_1-opensource/buildlib/buildlib.pro \
-			src/playlist/playlist.pro \
-			src/player/player.pro \
-			src/mainapp/mainapp.pro
+SUBDIRS += 	src/3rdparty/qtsingleapplication-2.6_1-opensource/buildlib
+src/mainapp.depends += src/3rdparty/qtsingleapplication-2.6_1-opensource/buildlib
 }
 
+src/playlist.depends += src/playlistitem
+src/mainapp.depends += src/playlist src/player

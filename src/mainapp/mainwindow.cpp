@@ -18,7 +18,7 @@
 */
 
 #include "mainwindow.h"
-
+#include "application.h"
 
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags),
@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	m_playlistModel = new Playlist::PlaylistModel(this);
 	m_playlist->setModel(m_playlistModel);
 	playlistContainer->addWidget(m_playlist);
-	m_playlist->show();
+	//m_playlist->show();
 
 	// control widget
 	controlWidget = new ControlWidget(this);

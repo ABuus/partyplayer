@@ -19,8 +19,6 @@
 
 #include "playlistdelegate.h"
 
-#include <QLabel>
-
 using namespace Playlist;
 
 PlaylistDelegate::PlaylistDelegate(QObject *parent)
@@ -132,7 +130,7 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 	}
 	else
 	{
-		/* handle offset */
+		/* handle offset in column 0 */
 		if(opt.viewItemPosition == QStyleOptionViewItemV4::Beginning)
 			rectF.adjust(22,0,0,0);
 		/* draw text parent items */

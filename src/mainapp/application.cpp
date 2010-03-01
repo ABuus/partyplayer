@@ -18,15 +18,20 @@
 */
 
 #include "application.h"
+#include "mainwindow.h"
+#include "svgsplashscreen.h"
+
 
 Application::Application(int &argc, char * argv[])
 	: QtSingleApplication(argc,argv)
 {
+	loadOnlineInfo = true;
+
 	setApplicationName("PartyPlayer");
 	setOrganizationName("PartyPlayer");
 	splash = new SvgSplashScreen(":/mainwindow/splash.svg");
 	splashTimer = new QTimer(this);
-	win = new MainWindow;
+	m_mainWindow = new MainWindow();
 
 	QStringList arg(arguments());
 	arg.removeFirst();
@@ -43,19 +48,19 @@ Application::Application(int &argc, char * argv[])
 	splashTimer->setSingleShot(true);
 	
 	connect(splashTimer,SIGNAL(timeout()),splash,SLOT(fadeOut()));
-	connect(splashTimer,SIGNAL(timeout()),win,SLOT(show()));
+	connect(splashTimer,SIGNAL(timeout()),m_mainWindow,SLOT(show()));
 	splashTimer->start(5000);
-	win->handleApplicationMessage(message);
+	m_mainWindow->handleApplicationMessage(message);
 
 	connect(this,SIGNAL(messageReceived(const QString&)),
-					win,SLOT(handleApplicationMessage(const QString &)));
+					m_mainWindow,SLOT(handleApplicationMessage(const QString &)));
 
-	setActivationWindow(win, false);
-	connect(win, SIGNAL(needToShow()), this, SLOT(activateWindow()));
+	setActivationWindow(m_mainWindow, false);
+	connect(m_mainWindow, SIGNAL(needToShow()), this, SLOT(activateWindow()));
 }
 
 Application::~Application()
 {
-	win->deleteLater();
+	delete m_mainWindow;
 }
 
