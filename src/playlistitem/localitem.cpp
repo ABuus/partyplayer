@@ -1,5 +1,5 @@
 #include "localitem.h"
-
+#include <typeinfo>
 #include <fileref.h>
 #include <tag.h>
 #include <audioproperties.h>
@@ -77,7 +77,7 @@ void LocalItem::readMpegImage()
 	{
 		byteArray.remove(0,sizeof(FILE_MARCO)-1);
 	}
-	TagLib::MPEG::File tFile = byteArray.constData();
+	TagLib::MPEG::File tFile(byteArray.constData());
 	if(!tFile.isValid() || !tFile.isOpen())
 	{
 		Debug << "invalid mpeg";
@@ -89,14 +89,22 @@ void LocalItem::readMpegImage()
 		Debug << "empty tag";
 		return;
 	}
-	TagLib::ID3v2::FrameList frameList = tag->frameList();
+	TagLib::ID3v2::FrameList frameList = tag->frameListMap()["APIC"];
 	if(frameList.isEmpty())
 		return;
-	Debug << frameList.front();
-	TagLib::ID3v2::AttachedPictureFrame *attachedPictureFrame = static_cast<TagLib::ID3v2::AttachedPictureFrame*>(frameList.front());
-	QByteArray imageData;
-	imageData.fromBase64(attachedPictureFrame->picture().data());
-	m_image.loadFromData(imageData.fromBase64(imageData));
+	TagLib::ID3v2::AttachedPictureFrame *picFrame;
+	for(TagLib::ID3v2::FrameList::ConstIterator it = frameList.begin(); it != frameList.end(); ++it)
+	{
+	  picFrame = (TagLib::ID3v2::AttachedPictureFrame *)(*it);
+	  if(picFrame->type() == TagLib::ID3v2::AttachedPictureFrame::FrontCover)
+	  {
+	    TagLib::ID3v2::AttachedPictureFrame *attachedPictureFrame = static_cast<TagLib::ID3v2::AttachedPictureFrame*>(*it);
+	    QByteArray imageData;
+	    imageData.fromBase64(attachedPictureFrame->picture().data());
+	    m_image.loadFromData(imageData.fromBase64(imageData));
+	    return;
+	  }
+	}
 }
 
 }; // namespace PlaylistItem
