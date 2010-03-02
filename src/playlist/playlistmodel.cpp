@@ -200,7 +200,8 @@ void PlaylistModel::insertDir(QUrl url, int row, bool recusive)
 		while(!files.isEmpty())
 		{
 			QFileInfo file = files.takeFirst();
-			insertFile(QUrl(FILE_MARCO + file.path() + "/" + file.fileName()),row++);
+			if(!insertFile(QUrl(FILE_MARCO + file.path() + "/" + file.fileName()),row++))
+				--row;
 		}
 		/* insert subdirs */
 		while(!dirs.isEmpty())
@@ -227,14 +228,14 @@ void PlaylistModel::insertDir(QUrl url, int row, bool recusive)
 	}
 }
 
-void PlaylistModel::insertFile(QUrl url, int row)
+bool PlaylistModel::insertFile(QUrl url, int row)
 {
 	if ((row < 0) || (row > rowCount()))
 		row = rowCount();
 
 	PlaylistItem::LocalItem playlistItem(url);
 	if(!playlistItem.isValid())
-		return;
+		return false;
 	QStandardItem *artist = new QStandardItem( playlistItem.artist() );
 	QStandardItem *title = new QStandardItem( playlistItem.title() );
 	QStandardItem *album = new QStandardItem( playlistItem.album());
@@ -244,6 +245,7 @@ void PlaylistModel::insertFile(QUrl url, int row)
 	dropDownInfo->setData( playlistItem.image() , ExtendedDataImage);
 	dropDownInfo->setData( playlistItem.bitrate(), ExtendedDataBitrate);
 	dropDownInfo->setData( playlistItem.year(), ExtendedDataYear);
+	dropDownInfo->setData( playlistItem.comment(), ExtendedDataDescription);
 	dropDownInfo->setData( playlistItem.url(), UrlRole);
 	artist->setChild(0,0,dropDownInfo);
 
@@ -256,77 +258,5 @@ void PlaylistModel::insertFile(QUrl url, int row)
 		item->setData(true,ValidRole);
 	}
 	insertRow(row,rowItem);
-	return;
-	/*
-	QString file(url.toString());
-	file.remove(FILE_MARCO);
-#ifndef Q_WS_X11
-	QByteArray ba(file.toLatin1());
-	const char *tFile = ba.data();
-#else
-	const char *tFile = file.toUtf8();
-#endif
-	TagLib::FileRef f(tFile);
-	if(!f.isNull() && f.tag())
-    {
-		// set row data
-		TagLib::Tag *tag = f.tag();
-		TagLib::AudioProperties *ap = f.audioProperties();
-		QStandardItem *artist = new QStandardItem( QString::fromUtf8(tag->artist().toCString(true)));
-		QStandardItem *title = new QStandardItem( QString::fromUtf8(tag->title().toCString(true)));
-		QStandardItem *album = new QStandardItem( QString::fromUtf8(tag->album().toCString(true)));
-		QStandardItem *track = new QStandardItem( QString::number(tag->track()));
-		QStandardItem *itemLength = new QStandardItem();
-		track->setTextAlignment(Qt::AlignCenter);
-		itemLength->setTextAlignment(Qt::AlignCenter);
-		
-		// convert track length to string
-		int length = ap->length();
-		int min = length / 60;
-		int sec = length % 60;
-		if(sec < 10)
-			itemLength->setText(QString("%1:0%2").arg(min).arg(sec));
-		else
-			itemLength->setText(QString("%1:%2").arg(min).arg(sec));
-
-		QString description = QString::fromUtf8(tag->comment().toCString(true));
-		QString bitrate = QString::number(ap->bitrate());
-		QString year = QString::number(tag->year());
-		
-		QByteArray imageData;
-		QFile coverFile(":/testcover");
-		if(!coverFile.open(QIODevice::ReadOnly))
-		{
-			Debug << "file error";
-		}
-		else
-		{
-			imageData = coverFile.readAll().toBase64();
-		}
-		
-        
-		QPixmap pixmap;
-		pixmap.loadFromData(imageData.fromBase64(imageData));
-
-		QStandardItem *dropDownInfo = new QStandardItem();
-		dropDownInfo->setData(pixmap, ExtendedDataImage);
-		dropDownInfo->setData(bitrate, ExtendedDataBitrate);
-		dropDownInfo->setData(year, ExtendedDataYear);
-		dropDownInfo->setData(file, UrlRole);
-
-		artist->setChild(0,0,dropDownInfo);
-
-		QList<QStandardItem*> rowItem;
-		rowItem << artist << title << album << track << itemLength;
-		foreach(QStandardItem *item, rowItem)
-		{
-			item->setData(Local,PlacementRole);
-			item->setData(url,UrlRole);
-			item->setData(true,ValidRole);
-		}
-		insertRow(row,rowItem);
-		return;
-	}
-	Debug << "invalid local file (taglib data): " << tFile;
-	*/
+	return true;
 }
