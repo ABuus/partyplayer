@@ -134,22 +134,6 @@ int PlaylistModel::getPlayRow()
 	return -1;
 }
 
-/*
-void PlaylistModel::removeDirty()
-{
-	for(int i = rowCount(); i > 0; i--)
-	{
-		if(!index(i,0).data(ValidRole).toBool())
-		{
-			Debug << "taking row" << i << "row count:" << rowCount() << "item list text:" << itemList.size();
-			takeRow(i);
-			Debug << "taking out of itemList";
-			delete itemList.takeAt(i -1 );
-		}
-	}
-}
-*/
-
 void PlaylistModel::insertDropData(QList<QUrl> urls, int startRow)
 {
 	foreach(QUrl url,urls)
@@ -172,14 +156,11 @@ void PlaylistModel::insertDropData(QList<QUrl> urls, int startRow)
 		}
 		else
 		{
-			/*
-			PlaylistItem *item = new PlaylistItem(url,this);
-			insertRow(startRow++,item->itemList);
-			foreach(QStandardItem *child, item->itemList)
-			{
-				child->setData(url,Playlist::UrlRole);
-			}
-			*/
+			PlaylistItem::YoutubeItem *playlistItem = new PlaylistItem::YoutubeItem(url,this);
+			QModelIndex index = createIndex(startRow++,0,playlistItem);
+			playlistItem->setIndex(QPersistentModelIndex(index));
+			connect(playlistItem,SIGNAL(dataRecived()),this,SLOT(insertPlaylistItemData()));
+			playlistItem->fetchData();
 		}
 	}
 }
@@ -232,21 +213,37 @@ bool PlaylistModel::insertFile(QUrl url, int row)
 {
 	if ((row < 0) || (row > rowCount()))
 		row = rowCount();
+	PlaylistItem::LocalItem *playlistItem = new PlaylistItem::LocalItem(url);
+	QModelIndex index = createIndex(row,0,playlistItem);
+	playlistItem->setIndex(QPersistentModelIndex(index));
+	connect(playlistItem,SIGNAL(dataRecived()),this,SLOT(insertPlaylistItemData()));
+	playlistItem->fetchData();
+	return true;
+}
 
-	PlaylistItem::LocalItem playlistItem(url);
-	if(!playlistItem.isValid())
-		return false;
-	QStandardItem *artist = new QStandardItem( playlistItem.artist() );
-	QStandardItem *title = new QStandardItem( playlistItem.title() );
-	QStandardItem *album = new QStandardItem( playlistItem.album());
-	QStandardItem *track = new QStandardItem( playlistItem.track());
-	QStandardItem *itemLength = new QStandardItem( PlaylistItem::PlaylistItem::lengthAsPrittyPrint(playlistItem.length()) );
+void PlaylistModel::insertPlaylistItemData()
+{
+	PlaylistItem::PlaylistItem *playlistItem = static_cast<PlaylistItem::PlaylistItem*>(sender());
+	QPersistentModelIndex index = playlistItem->index();
+	if(!playlistItem->isValid())
+	{
+		// remove the row
+		
+		delete playlistItem;
+		return;
+	}
+	
+	QStandardItem *artist = new QStandardItem( playlistItem->artist() );
+	QStandardItem *title = new QStandardItem( playlistItem->title() );
+	QStandardItem *album = new QStandardItem( playlistItem->album());
+	QStandardItem *track = new QStandardItem( playlistItem->track());
+	QStandardItem *itemLength = new QStandardItem( PlaylistItem::PlaylistItem::lengthAsPrittyPrint(playlistItem->length()) );
 	QStandardItem *dropDownInfo = new QStandardItem();
-	dropDownInfo->setData( playlistItem.image() , ExtendedDataImage);
-	dropDownInfo->setData( playlistItem.bitrate(), ExtendedDataBitrate);
-	dropDownInfo->setData( playlistItem.year(), ExtendedDataYear);
-	dropDownInfo->setData( playlistItem.comment(), ExtendedDataDescription);
-	dropDownInfo->setData( playlistItem.url(), UrlRole);
+	dropDownInfo->setData( playlistItem->image() , ExtendedDataImage);
+	dropDownInfo->setData( playlistItem->bitrate(), ExtendedDataBitrate);
+	dropDownInfo->setData( playlistItem->year(), ExtendedDataYear);
+	dropDownInfo->setData( playlistItem->comment(), ExtendedDataDescription);
+	dropDownInfo->setData( playlistItem->url(), UrlRole);
 	artist->setChild(0,0,dropDownInfo);
 
 	QList<QStandardItem*> rowItem;
@@ -254,9 +251,10 @@ bool PlaylistModel::insertFile(QUrl url, int row)
 	foreach(QStandardItem *item, rowItem)
 	{
 		item->setData(Local,PlacementRole);
-		item->setData(url,UrlRole);
+		item->setData(playlistItem->url(),UrlRole);
 		item->setData(true,ValidRole);
 	}
-	insertRow(row,rowItem);
-	return true;
+	insertRow(index.row(),rowItem);
+	delete playlistItem;
 }
+

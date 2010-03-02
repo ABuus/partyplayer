@@ -4,16 +4,17 @@
 namespace PlaylistItem {
 
 PlaylistItem::PlaylistItem(const QString &location,QObject *parent)
-	:QObject(parent),
-	m_url(location)
+	:QObject(parent)
 {
+	m_url = location.startsWith(FILE_MARCO) ? QString(location).remove(0,sizeof(FILE_MARCO)-1) : location;
 	init();
 }
 
 PlaylistItem::PlaylistItem(const QUrl &url,QObject *parent)
-	:QObject(parent),
-	m_url(url.toString())
+	:QObject(parent)
 {
+	m_url = url.toString();
+	m_url = m_url.startsWith(FILE_MARCO) ? m_url.remove(0,sizeof(FILE_MARCO)-1) : m_url;
 	init();
 }
 

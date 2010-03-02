@@ -17,23 +17,19 @@ using namespace TagLib;
 LocalItem::LocalItem(const QString &url,QObject *parent)
 	: PlaylistItem(url,parent)
 {
-	init();
 }
 
 LocalItem::LocalItem(const QUrl &url,QObject *parent)
 	:PlaylistItem(url,parent)
 {
-	init();
 }
 
 LocalItem::~LocalItem()
 {
 }
 
-void LocalItem::init()
+void LocalItem::fetchData()
 {
-	readMpegImage();
-	
 	QByteArray byteArray = url().toLocal8Bit();
 	if(byteArray.startsWith(FILE_MARCO))
 	{
@@ -46,9 +42,10 @@ void LocalItem::init()
 
 	if(!tFileRef.isNull() && tFileRef.tag())
 	{
+		bool image = false;
 		if(typeid(*tFile) == typeid(MPEG::File) )
 		{
-			readMpegImage();
+			image = readMpegImage();
 		}
 
 		Tag *tTag = tFileRef.tag();
@@ -69,11 +66,16 @@ void LocalItem::init()
 			m_channels = tAudioProperties->channels();
 		}
 		setValid(true);
+
+		if(!image && loadInfoOnline())
+		{
+			loadImageOnline();
+		}
 	}
-	
+	emit dataRecived();
 }
 
-void LocalItem::readMpegImage()
+bool LocalItem::readMpegImage()
 {
 	QByteArray byteArray = url().toLocal8Bit();
 	if(byteArray.startsWith(FILE_MARCO))
@@ -84,23 +86,39 @@ void LocalItem::readMpegImage()
 	
 	ID3v2::Tag *id3v2tag = file.ID3v2Tag();
 
-    if(id3v2tag) {
-      ID3v2::FrameList::ConstIterator it = id3v2tag->frameList().begin();
-      for(; it != id3v2tag->frameList().end(); it++)
-	  {
-		  Debug << (*it)->frameID().data() << " - \"" << (*it)->toString().toCString() << "\"" << endl;
-		  if((*it)->frameID() == "APIC")
-		  {
+    if(id3v2tag) 
+	{
+		ID3v2::FrameList frame = id3v2tag->frameListMap()["APIC"];
+		ID3v2::AttachedPictureFrame *pic = static_cast<TagLib::ID3v2::AttachedPictureFrame*>(frame.front());
+		m_image.loadFromData( (const unsigned char *) pic->picture().data(), pic->picture().size());
+		return true;
+		/*
+
+		/// this works !!!!!!!!
+		ID3v2::FrameList::ConstIterator it = id3v2tag->frameList().begin();
+		for(; it != id3v2tag->frameList().end(); it++)
+		{
+			Debug << (*it)->frameID().data() << " - \"" << (*it)->toString().toCString() << "\"" << endl;
+			if((*it)->frameID() == "APIC")
+			{
 			  ID3v2::AttachedPictureFrame *pic = static_cast<TagLib::ID3v2::AttachedPictureFrame*>((*it));
 			  m_image.loadFromData( (const unsigned char *) pic->picture().data(), pic->picture().size());
-		  }
-	  }
-
-    }
-	else
-	{
-		Debug << "No ID3v2 tag";
+			  return true;
+			}
+		}
+		*/
 	}
+	return false;
+}
+
+void LocalItem::loadImageOnline()
+{
+	Debug << "UNIMPLEMENTED";
+}
+
+bool LocalItem::isAsync() const
+{
+	return loadInfoOnline();
 }
 
 }; // namespace PlaylistItem

@@ -27,9 +27,13 @@ public:
 	uint channels() const { return m_channels; };
 	uint samplerate() const { return m_samplerate; };
 	QPixmap image() const { return m_image; };
+	int type() const { return PlaylistItem::Local; };
+	bool isAsync() const;
+	void fetchData();
 private:
 	void init();
-	void readMpegImage();
+	bool readMpegImage();
+	void loadImageOnline();
 	bool readDefault();
 	QString m_artist;
 	QString m_title;

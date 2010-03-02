@@ -26,7 +26,8 @@ unix {
 }
 
 win32 {
+TAGLIBDIR = "C:\dev\taglib"
 DESTDIR = ../../build
-DEPENDPATH += $$DESTDIR $$DATADIR
+DEPENDPATH += $$DESTDIR
 INCLUDEPATH += .
 }

@@ -24,7 +24,7 @@ LIBS += -L$$DESTDIR \
 		-Lsrc/3rdparty/qtsingleapplication-2.6_1-opensource/lib/ \
 		-lplaylist \
 		-lplayer
-INCLUDEPATH += C:/dev/include/taglib \
+INCLUDEPATH += $$TAGLIBDIR/include/taglib \
 	C:/gstreamer-dev/include/gstreamer-0.10 \
 	C:/gstreamer-dev/include/glib-2.0 \
 	C:/gstreamer-dev/include/libxml2 \

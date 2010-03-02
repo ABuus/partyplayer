@@ -9,8 +9,9 @@ INCLUDEPATH += .
 DEPENDPATH += .
 
 win32 {
-INCLUDEPATH += c:/dev/include/taglib
-LIBS += c:/dev/lib/tag.lib
+INCLUDEPATH += $$TAGLIBDIR/include/taglib
+LIBS += -L$$TAGLIBDIR/lib \
+	-ltag
 }
 
 unix {

@@ -35,6 +35,7 @@
 //#include "playlistitem.h"
 #include "../playlistitem/playlistitem.h"
 #include "../playlistitem/localitem.h"
+#include "../playlistitem/youtubeitem.h"
 
 
 namespace Playlist {
@@ -58,7 +59,7 @@ private:
 	void insertDropData(QList<QUrl> urls, int startRow);
 	void insertDir(QUrl url,int row,bool recusive);
 private slots:
-	
+	void insertPlaylistItemData();
 };
 
 }; // namespace Playlist

@@ -12,8 +12,9 @@ LIBS += -L$$DESTDIR \
 
 win32 {
 INCLUDEPATH += $(QTDIR)/mkspecs/win32-msvc2008 \
-			c:/dev/include/taglib
-LIBS += c:/dev/lib/tag.lib
+			$$TAGLIBDIR/include/taglib
+LIBS += -L$$TAGLIBDIR/lib \
+		-ltag
 }
 
 unix {
