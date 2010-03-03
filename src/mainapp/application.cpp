@@ -25,10 +25,14 @@
 Application::Application(int &argc, char * argv[])
 	: QtSingleApplication(argc,argv)
 {
+	
 	loadOnlineInfo = true;
 
 	setApplicationName("PartyPlayer");
 	setOrganizationName("PartyPlayer");
+
+	settings = new QSettings(organizationName(),applicationName(),this);
+	settings->setDefaultFormat(QSettings::IniFormat);
 	splash = new SvgSplashScreen(":/mainwindow/splash.svg");
 	splashTimer = new QTimer(this);
 	m_mainWindow = new MainWindow();

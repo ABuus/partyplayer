@@ -24,8 +24,7 @@
 #include <../3rdparty/qtsingleapplication-2.6_1-opensource/src/qtsingleapplication.h>
 #include <../3rdparty/qtsingleapplication-2.6_1-opensource/src/qtlocalpeer.h>
 #include <QTimer>
-#include <QDesktopWidget>
-#include <QProcess>
+#include <QSettings>
 
 class MainWindow;
 class SvgSplashScreen;
@@ -39,6 +38,8 @@ public:
 	~Application();
 	static MainWindow * mainWindow();
 	bool loadOnlineInfo;
+	QSettings *settings;
+	static Application * instance() { return static_cast<Application*>(QApplication::instance()); };
 private:
 	MainWindow *m_mainWindow;
 	SvgSplashScreen *splash;

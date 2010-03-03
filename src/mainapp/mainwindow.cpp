@@ -28,10 +28,12 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	setupUi(this);
 	
 	// restore geometry and states
-	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
-	settings.setDefaultFormat(QSettings::IniFormat);
-	restoreGeometry(settings.value("mainwindow/geometry").toByteArray());
-	restoreState(settings.value("mainwindow/windowState").toByteArray());
+//	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
+	
+	Application *application = static_cast<Application*>(Application::instance());
+	
+	restoreGeometry(application->settings->value("mainwindow/geometry").toByteArray());
+	restoreState(application->settings->value("mainwindow/windowState").toByteArray());
 
 	// youtube searcher
 	youtubeSearchView = new YoutubeSearchView(this);
@@ -96,9 +98,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	fileView->scrollTo(musicIndex,QAbstractItemView::PositionAtCenter);
 
 	
-	webView->restoreGeometry(settings.value("mainwindow/webView").toByteArray());
-	m_playlist->restoreGeometry(settings.value("mainwindow/playlist").toByteArray());
-	videoSplitter->restoreGeometry(settings.value("mainwindow/videoSplitter").toByteArray());
+	webView->restoreGeometry(application->settings->value("mainwindow/webView").toByteArray());
+	m_playlist->restoreGeometry(application->settings->value("mainwindow/playlist").toByteArray());
+	videoSplitter->restoreGeometry(application->settings->value("mainwindow/videoSplitter").toByteArray());
 	
 	QList<int> sizes;
 	sizes << 0 << 1;
@@ -118,13 +120,12 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 
 MainWindow::~MainWindow()
 {
-	QSettings settings(QApplication::organizationName(), QApplication::applicationName());
-	settings.setDefaultFormat(QSettings::IniFormat);
-	settings.setValue("mainwindow/geometry",saveGeometry());
-	settings.setValue("mainwindow/windowState", saveState());
-	settings.setValue("mainwindow/playlist", videoSplitter->saveGeometry());
-	settings.setValue("mainwindow/webView", videoSplitter->saveGeometry());
-	settings.setValue("mainwindow/videoSplitter", videoSplitter->saveGeometry());
+	Application *application = static_cast<Application*>(Application::instance());
+	application->settings->setValue("mainwindow/geometry",saveGeometry());
+	application->settings->setValue("mainwindow/windowState", saveState());
+	application->settings->setValue("mainwindow/playlist", videoSplitter->saveGeometry());
+	application->settings->setValue("mainwindow/webView", videoSplitter->saveGeometry());
+	application->settings->setValue("mainwindow/videoSplitter", videoSplitter->saveGeometry());
 	controlWidget->deleteLater();
 }
 

@@ -18,6 +18,7 @@
 */
 
 #include "playlistview.h"
+#include "../mainapp/application.h"
 #include <QScrollBar>
 
 using namespace Playlist;
@@ -48,11 +49,20 @@ PlaylistView::PlaylistView(QWidget *parent)
 	
 	// connections
 	createConnections();
+
+
 }
 
 PlaylistView::~PlaylistView()
 {
-
+	Application *app = static_cast<Application*>(Application::instance());
+	app->settings->beginWriteArray("playlist/urls");
+	for(int i = 0; i < model()->rowCount(); i++)
+	{
+		app->settings->setArrayIndex(i);
+		app->settings->setValue( "url", model()->index(i,0).data(Playlist::UrlRole));
+	}
+	app->settings->endArray();
 }
 
 /*
@@ -74,6 +84,15 @@ void PlaylistView::setModel(Playlist::PlaylistModel *model)
 	m_model = model;
 	QTreeView::setModel(m_model);
 	connect(m_model,SIGNAL(rowsInserted(const QModelIndex &,int,int)),this,SLOT(setChildSpanned(const QModelIndex &,int)));
+
+	Application *app = static_cast<Application*>( Application::instance());
+	int size = app->settings->beginReadArray("playlist/urls");
+	for(int i = 0; i < size; i++)
+	{
+		app->settings->setArrayIndex(i);
+		m_model->insertFile(app->settings->value("url").toUrl(),i);
+	}
+	app->settings->endArray();
 }
 
 /*
@@ -319,6 +338,8 @@ void PlaylistView::mousePressEvent(QMouseEvent *event)
 				collapse(index);
 			else
 				expand(index);
+			clearSelection();
+			return;
 			break;
 		default:
 			break;
