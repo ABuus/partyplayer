@@ -237,8 +237,9 @@ void PlaylistView::dropEvent(QDropEvent *event)
 
 void PlaylistView::onDoubleClicked(const QModelIndex &index)
 {
-	m_model->setPlayRow(index.row());
-	const QUrl url = model()->data(index,UrlRole).toUrl();
+	QModelIndex playIndex = index.parent().isValid() ? index.parent() : index;
+	m_model->setPlayRow(playIndex.row());
+	const QUrl url = model()->data(playIndex,UrlRole).toUrl();
 	if(!url.isValid())
 		return;
 	emit playRequest(url);

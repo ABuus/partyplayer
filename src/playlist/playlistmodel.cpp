@@ -45,10 +45,13 @@ Qt::DropActions PlaylistModel::supportedDropActions() const
 
 Qt::ItemFlags PlaylistModel::flags(const QModelIndex &index) const
 {
-	Qt::ItemFlags retval = Qt::ItemIsSelectable | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
+	Qt::ItemFlags retval = Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
 	if(index.isValid())
 	{
-		return Qt::ItemIsDragEnabled | retval;
+		if(!index.parent().isValid())
+			return Qt::ItemIsDragEnabled | Qt::ItemIsSelectable | retval;
+		else
+			return Qt::ItemIsDragEnabled | retval;
 	}
 	return retval;
 }
