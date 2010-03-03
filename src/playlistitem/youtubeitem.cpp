@@ -54,13 +54,15 @@ void YoutubeItem::phraseXmlData(const QByteArray &xmlData)
 	m_length = mediaGroup.firstChildElement("yt:duration").attribute("seconds").toInt();
 	m_thumbnailUrl = mediaGroup.firstChildElement("media:thumbnail").attribute("url");
 
+	Debug << m_thumbnailUrl;
+
 	m_replyType = ThumbnailType;
 	manager->get(QNetworkRequest(m_thumbnailUrl));
 }
 
 void YoutubeItem::saveToImage(const QByteArray &data)
 {
-	m_image.loadFromData(data.fromBase64(data));
+	m_image.loadFromData(data.fromBase64(data.toBase64()));
 	setValid(true);
 	emit dataRecived();
 }

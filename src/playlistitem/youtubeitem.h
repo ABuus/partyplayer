@@ -23,10 +23,10 @@ public:
 	YoutubeItem(const QString &url,QObject *parent = 0);
 	YoutubeItem(const QUrl &url,QObject *parent = 0);
 	~YoutubeItem();
-	QString artist() { return m_artist; };
-	QString comments() { return m_comments; };
-	uint length() { return m_length; };
-	QPixmap image() { return m_image; };
+	QString artist() const { return m_artist; };
+	QString comment() const { return m_comments; };
+	uint length() const { return m_length; };
+	QPixmap image() const { return m_image; };
 	bool isAsync() const { return true; };
 	void fetchData();
 private:

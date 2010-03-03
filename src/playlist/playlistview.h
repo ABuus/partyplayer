@@ -69,6 +69,7 @@ private:
 private slots:
 	void onDoubleClicked(const QModelIndex &index);
 	void removeSelected();
+	void setChildSpanned(const QModelIndex &,int);
 protected:
 	void startDrag(Qt::DropActions supportenDropActions);
 	void dropEvent(QDropEvent *event);
@@ -76,8 +77,7 @@ protected:
 	void contextMenuEvent(QContextMenuEvent *event);
 	void resizeEvent(QResizeEvent *event);
 	void mousePressEvent(QMouseEvent *event);
-protected slots:
-	void rowsInserted(const QModelIndex &parent, int start, int end);
+
 };
 
 }; // namespace Playlist

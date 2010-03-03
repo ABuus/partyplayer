@@ -25,8 +25,6 @@ public:
 	QString url() const;
 	bool loadInfoOnline() const { return m_loadInfoOnline; };
 	bool isValid() const { return m_isValid; };
-	qint64 modelId() { return m_modelId; };
-	void setModelId(qint64 modelId) { m_modelId = modelId; };
 	static QString lengthAsPrittyPrint(uint length);
 	virtual QString artist() const { return 0; };
 	virtual QString title() const { return 0; };
@@ -51,7 +49,6 @@ private:
 	bool m_loadInfoOnline;
 	bool m_isValid;
 	void init();
-	qint64 m_modelId;
 	QPersistentModelIndex m_index;
 protected:
 	void setValid(bool valid) { m_isValid = valid; };

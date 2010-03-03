@@ -75,7 +75,7 @@ void PlaylistView::setModel(Playlist::PlaylistModel *model)
 {
 	m_model = model;
 	QTreeView::setModel(m_model);
-	connect(m_model,SIGNAL(rowsInserted(const QModelIndex &,int,int)),this,SLOT(rowsInserted(const QModelIndex &,int,int)));
+	connect(m_model,SIGNAL(rowsInserted(const QModelIndex &,int,int)),this,SLOT(setChildSpanned(const QModelIndex &,int)));
 }
 
 /*
@@ -299,11 +299,8 @@ void PlaylistView::resizeEvent(QResizeEvent *event)
 	*/
 }
 
-//------ BUG HERE OR IN THE MODEL IT IS SOME INDEX FUCK --//
-//------ QTreeView::rowsInserted internal representation of the model has been corrupted, resetting. --//
-void PlaylistView::rowsInserted(const QModelIndex &parent, int start, int end)
+void PlaylistView::setChildSpanned(const QModelIndex &, int start)
 {
-	QTreeView::rowsInserted(parent,start,end);
 	/* merge celles of child indexes */
 	QModelIndex index = model()->index(start,0);
 	setFirstColumnSpanned(0,index,true);

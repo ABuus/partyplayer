@@ -91,7 +91,6 @@ bool LocalItem::readMpegImage()
 		ID3v2::FrameList::ConstIterator it = id3v2tag->frameList().begin();
 		for(; it != id3v2tag->frameList().end(); it++)
 		{
-			Debug << (*it)->frameID().data() << " - \"" << (*it)->toString().toCString() << "\"" << endl;
 			if((*it)->frameID() == "APIC")
 			{
 			  ID3v2::AttachedPictureFrame *pic = static_cast<TagLib::ID3v2::AttachedPictureFrame*>((*it));

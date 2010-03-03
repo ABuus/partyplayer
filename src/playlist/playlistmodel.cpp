@@ -227,8 +227,6 @@ void PlaylistModel::insertPlaylistItemData()
 	QPersistentModelIndex index = playlistItem->index();
 	if(!playlistItem->isValid())
 	{
-		// remove the row
-		
 		delete playlistItem;
 		return;
 	}
@@ -255,6 +253,7 @@ void PlaylistModel::insertPlaylistItemData()
 		item->setData(true,ValidRole);
 	}
 	insertRow(index.row(),rowItem);
-	delete playlistItem;
+	Debug << playlistItem->url();
+	playlistItem->deleteLater();
 }
 
