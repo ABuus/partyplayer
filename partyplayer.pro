@@ -6,7 +6,9 @@ src/mainapp.depends += src/3rdparty/3rdparty.pro
 }
 
 win32 {
-SUBDIRS += 	src/3rdparty/qtsingleapplication-2.6_1-opensource/buildlib
+src/playlistitem.depends += src/3rdparty/taglib-1.6.1/taglib
+SUBDIRS += 	src/3rdparty/qtsingleapplication-2.6_1-opensource/buildlib \
+			src/3rdparty/taglib-1.6.1/taglib
 src/mainapp.depends += src/3rdparty/qtsingleapplication-2.6_1-opensource/buildlib
 }
 

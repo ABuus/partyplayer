@@ -88,13 +88,6 @@ bool LocalItem::readMpegImage()
 
     if(id3v2tag) 
 	{
-		ID3v2::FrameList frame = id3v2tag->frameListMap()["APIC"];
-		ID3v2::AttachedPictureFrame *pic = static_cast<TagLib::ID3v2::AttachedPictureFrame*>(frame.front());
-		m_image.loadFromData( (const unsigned char *) pic->picture().data(), pic->picture().size());
-		return true;
-		/*
-
-		/// this works !!!!!!!!
 		ID3v2::FrameList::ConstIterator it = id3v2tag->frameList().begin();
 		for(; it != id3v2tag->frameList().end(); it++)
 		{
@@ -106,7 +99,6 @@ bool LocalItem::readMpegImage()
 			  return true;
 			}
 		}
-		*/
 	}
 	return false;
 }

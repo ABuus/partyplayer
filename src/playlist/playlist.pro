@@ -11,10 +11,7 @@ LIBS += -L$$DESTDIR \
 		-lplaylistitem
 
 win32 {
-INCLUDEPATH += $(QTDIR)/mkspecs/win32-msvc2008 \
-			$$TAGLIBDIR/include/taglib
-LIBS += -L$$TAGLIBDIR/lib \
-		-ltag
+INCLUDEPATH += $(QTDIR)/mkspecs/win32-msvc2008
 }
 
 unix {

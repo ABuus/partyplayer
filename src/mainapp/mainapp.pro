@@ -32,6 +32,7 @@ INCLUDEPATH += $$TAGLIBDIR/include/taglib \
 	C:/gstreamer-dev/include \
 	../3rdparty/qtsingleapplication/src
 
+	
 RESOURCES     = mainwindow.qrc	
 RC_FILE = partyplayer.rc
 }

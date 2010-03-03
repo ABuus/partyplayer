@@ -26,7 +26,7 @@ unix {
 }
 
 win32 {
-TAGLIBDIR = "C:\dev\taglib"
+TAGLIBDIR = ../3rdparty/taglib-1.6.1/taglib
 DESTDIR = ../../build
 DEPENDPATH += $$DESTDIR
 INCLUDEPATH += .

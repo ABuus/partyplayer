@@ -9,9 +9,29 @@ INCLUDEPATH += .
 DEPENDPATH += .
 
 win32 {
-INCLUDEPATH += $$TAGLIBDIR/include/taglib
-LIBS += -L$$TAGLIBDIR/lib \
-	-ltag
+INCLUDEPATH += $$TAGLIBDIR \
+              $$TAGLIBDIR/ape \
+              $$TAGLIBDIR/flac \
+              $$TAGLIBDIR/mpc \
+              $$TAGLIBDIR/mp4 \
+              $$TAGLIBDIR/mpeg \
+              $$TAGLIBDIR/ogg \
+              $$TAGLIBDIR/ogg/speex \
+              $$TAGLIBDIR/toolkit \
+              $$TAGLIBDIR/trueaudio \
+              $$TAGLIBDIR/wavpack \
+              $$TAGLIBDIR/mpeg/id3v1 \
+              $$TAGLIBDIR/mpeg/id3v2 \
+              $$TAGLIBDIR/ogg/flac \
+              $$TAGLIBDIR/ogg/vorbis \
+              $$TAGLIBDIR/mpeg/id3v2/frames \
+			  $$TAGLIBDIR/riff \
+			  $$TAGLIBDIR/riff/aiff \
+			  $$TAGLIBDIR/riff/wav \
+			  $$TAGLIBDIR/asf
+			  
+LIBS += -L$$DESTDIR \
+		-lTagLib1
 }
 
 unix {
