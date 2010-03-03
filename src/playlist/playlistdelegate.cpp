@@ -27,8 +27,8 @@ PlaylistDelegate::PlaylistDelegate(QObject *parent)
 	handleLess(":/less"),
 	handleMore(":/more"),
 	m_handleRect(5.0,5.0,10.0,10.0),
-	timesFont("Times",10,QFont::Bold),
-	monoFont("monospace", 8)
+	monoFont("monospace", 8),	
+	timesFont("Times",10,QFont::Bold)
 {
 	monoFont.setUnderline(true);
 }
