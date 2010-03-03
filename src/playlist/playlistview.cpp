@@ -18,6 +18,7 @@
 */
 
 #include "playlistview.h"
+#include <QScrollBar>
 
 using namespace Playlist;
 
@@ -32,7 +33,7 @@ PlaylistView::PlaylistView(QWidget *parent)
 	setDropIndicatorShown(false);
 	setDragDropMode(QAbstractItemView::DragDrop);
 //	setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+//	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 	setSortingEnabled(true);
 	setRootIsDecorated(false);
 	setMouseTracking(true);
@@ -291,18 +292,6 @@ void PlaylistView::removeSelected()
 	}
 }
 
-void PlaylistView::resizeEvent(QResizeEvent *event)
-{
-	/*
-	int newWidth = event->size().width();
-	setColumnWidth(0, newWidth / 4);
-	setColumnWidth(1, newWidth / 4);
-	setColumnWidth(2, newWidth / 4);
-	setColumnWidth(3, newWidth / 9);
-	setColumnWidth(4, newWidth / 9);
-	*/
-}
-
 void PlaylistView::setChildSpanned(const QModelIndex &, int start)
 {
 	/* merge celles of child indexes */
@@ -342,7 +331,7 @@ void PlaylistView::mousePressEvent(QMouseEvent *event)
 int PlaylistView::extendedElementAt(const QPoint &point)
 {
 	const QModelIndex index = indexAt(point);
-	const QRect indexRect = visualRect(index);
+	QRect indexRect = visualRect(index);
 	const QRectF handleRect = m_delegate->extendedHandleRect();
 	QPoint pressedOffset = point;
 	pressedOffset.setY( pressedOffset.y() - indexRect.y());
@@ -350,7 +339,7 @@ int PlaylistView::extendedElementAt(const QPoint &point)
 	/* handle */
 	if(handleRect.contains(pressedOffset))
 	{
-		return PlaylistView::HandleElement;
+		return HandleElement;
 	}
 
 	/* only handle have parent index */
@@ -360,12 +349,7 @@ int PlaylistView::extendedElementAt(const QPoint &point)
 	}
 
 	/* url */
-	const QRectF urlRect = m_delegate->extendedUrlRect();
-	if(urlRect.contains(pressedOffset))
-	{
-		return UrlElement;
-	}
-	return NoElement;
+	return m_delegate->extendedUrl(indexRect.width(),pressedOffset) ? UrlElement : NoElement;
 }
 
 void PlaylistView::openExternalUrl(const QModelIndex &index)

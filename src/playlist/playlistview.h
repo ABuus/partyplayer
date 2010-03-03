@@ -75,7 +75,6 @@ protected:
 	void dropEvent(QDropEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
 	void contextMenuEvent(QContextMenuEvent *event);
-	void resizeEvent(QResizeEvent *event);
 	void mousePressEvent(QMouseEvent *event);
 
 };

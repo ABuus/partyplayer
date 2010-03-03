@@ -27,11 +27,13 @@
 #include <QModelIndex>
 #include <QBrush>
 #include <QRect>
+#include <QFont>
 #include "../debug.h"
 #include "playlist_global.h"
 #include "playlist_export.h"
 
 #define EXTENDED_INFO_HEIGHT 80
+#define EXTENDED_INFO_INDENTATION 22
 
 namespace Playlist {
 
@@ -40,16 +42,19 @@ class PLAYLIST_EXPORT PlaylistDelegate : public QStyledItemDelegate
 	Q_OBJECT
 public:
 	PlaylistDelegate(QObject *parent);
+	~PlaylistDelegate();
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	QRectF extendedHandleRect() { return m_handleRect; };
-	QRectF extendedUrlRect() { return m_locationRect; };
+	bool extendedUrl(int myWidth, QPoint p );
 private:
 	const QPixmap bgTexture;
 	const QPixmap handleLess;
 	const QPixmap handleMore;
 	QRectF m_handleRect;
 	QRectF m_locationRect; // see paint for real value
+	QFont monoFont;
+	const QFont timesFont;
 };
 
 }; // namespace Playlist

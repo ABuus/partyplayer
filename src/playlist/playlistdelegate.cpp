@@ -27,8 +27,15 @@ PlaylistDelegate::PlaylistDelegate(QObject *parent)
 	handleLess(":/less"),
 	handleMore(":/more"),
 	m_handleRect(5.0,5.0,10.0,10.0),
-	m_locationRect(500,(EXTENDED_INFO_HEIGHT/4)*3,280,8)
-{}
+	timesFont("Times",10,QFont::Bold),
+	monoFont("monospace", 8)
+{
+	monoFont.setUnderline(true);
+}
+
+PlaylistDelegate::~PlaylistDelegate()
+{
+}
 
 void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -41,10 +48,9 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 	
 	painter->save();
 	painter->setPen(Qt::NoPen);
-//	QPixmap bgTexture(":/texture");
 
 	/* setup background bruches */
-	if(!index.parent().isValid())
+	if(!index.parent().isValid()) // main info
 	{
 		painter->fillRect(rectF,Qt::black);
 		painter->setBrush(bgTexture.scaledToHeight(rectF.height()));
@@ -59,7 +65,7 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 			painter->setOpacity(0.8);
 		}
 	}
-	else
+	else // extended info(drop down)
 	{
 		painter->setBrush(QColor(0,0,0,55));
 	}
@@ -87,45 +93,36 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 	if(index.parent().isValid())
 	{
 		// draw forground
-		
+		const qreal yAlign = rectF.topLeft().y()+5;
+		const qreal rightMargin = rectF.right()-EXTENDED_INFO_INDENTATION;
 		QPixmap pixmap = qvariant_cast<QPixmap>( index.data(ExtendedDataImage));
 
-		QString description,bitrate,year,location;
-		description = index.data(ExtendedDataDescription).toString();
-		bitrate = index.data(ExtendedDataBitrate).toString();
-		year = index.data(ExtendedDataYear).toString();
-		location = index.data(UrlRole).toString();
-		description.prepend(tr("Description: "));
-		bitrate.prepend(tr("Bitrate: "));
-		year.prepend(tr("Year: "));
-
 		double WHoffset = (double)pixmap.width() / pixmap.height();
-		QRectF imageRectF(rectF.topLeft().x(),rectF.topLeft().y(),(EXTENDED_INFO_HEIGHT*WHoffset) - 10,EXTENDED_INFO_HEIGHT -10);
-		imageRectF.adjust(70,5,70,5);
-
-		QRectF descriptionRectF(rectF.adjusted(200,0,0,0));
-		descriptionRectF.setWidth(250);
-
-		QRectF locationRectF(rectF.adjusted(500,rectF.height()-(EXTENDED_INFO_HEIGHT/4),0,0));
-		locationRectF.setWidth(280);
-
-		QRectF bitrateRectF(rectF.adjusted(500,rectF.height()- 2*(EXTENDED_INFO_HEIGHT/4),0,0));
-		bitrateRectF.setWidth(280);
+		QRectF imageRectF(EXTENDED_INFO_INDENTATION,yAlign,(EXTENDED_INFO_HEIGHT*WHoffset) - 10,EXTENDED_INFO_HEIGHT -10);
+		/* the x width offset(300-280=20px) is so we line up with the values of year,bitrate & samplerate */
+		QRectF locationRectF(rightMargin-280,yAlign+EXTENDED_INFO_HEIGHT-20,300,15);
+		QRectF yearRectF(rightMargin-120,yAlign,120,15);
 		
-		QRectF yearRectF(rectF.adjusted(500,rectF.height()- 3*(EXTENDED_INFO_HEIGHT/4),0,0));
-		yearRectF.setWidth(280);
-		
+		/* draw description */
 		painter->drawPixmap(imageRectF,pixmap,pixmap.rect());
-		painter->drawText(descriptionRectF,Qt::AlignLeft|Qt::TextWordWrap,description);
-		painter->drawText(bitrateRectF,Qt::AlignLeft|Qt::TextWordWrap,bitrate);
-		painter->drawText(yearRectF,Qt::AlignLeft|Qt::TextWordWrap,year);
-		
+		painter->drawText(QRectF(EXTENDED_INFO_INDENTATION+imageRectF.width()+10,yAlign,300,EXTENDED_INFO_HEIGHT -5),Qt::AlignLeft|Qt::TextWordWrap,index.data(ExtendedDataDescription).toString());
+		/* draw year,bitrate & samplerate */
+		painter->drawText(yearRectF,tr("Year:"));
+		painter->drawText(yearRectF.adjusted(40,0,20,0),Qt::AlignRight,index.data(ExtendedDataYear).toString());
+		painter->drawText(yearRectF.adjusted(0,15,0,15),tr("Bitrate:"));
+		painter->drawText(yearRectF.adjusted(40,15,20,15),Qt::AlignRight,index.data(ExtendedDataBitrate).toString());
+		painter->drawText(yearRectF.adjusted(0,30,0,30),tr("Sample rate:"));
+		painter->drawText(yearRectF.adjusted(40,30,20,30),Qt::AlignRight,index.data(ExtendedDataBitrate).toString());
+		/* draw url */
 		painter->save();
-		QFont monoFont("monospace", 8);
-		monoFont.setUnderline(true);
 		painter->setPen(Qt::blue);
 		painter->setFont(monoFont);
-		painter->drawText(locationRectF,Qt::AlignLeft,location);
+		QFontMetrics foo(monoFont);
+		QString location = index.data(UrlRole).toString();
+		if(location.startsWith(FILE_MARCO)) // this should be moved out of paint
+			location.remove(FILE_MARCO);
+		location = foo.elidedText(location,Qt::ElideMiddle,locationRectF.width(),Qt::AlignRight);
+		painter->drawText(locationRectF,Qt::AlignRight,location);
 		painter->restore();
 	}
 	else
@@ -137,9 +134,8 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 		rectF.adjust(2,3,-2,-2);
 		
 		painter->save();
-		QFont font("Times", 10, QFont::Bold);
 		painter->setPen(QColor(0,0,0,200));
-		painter->setFont(font);
+		painter->setFont(timesFont);
 		QFlags<Qt::Alignment> flags( index.data(Qt::TextAlignmentRole).toInt() );
 		painter->drawText(rectF.left(),rectF.top(),rectF.width(),rectF.height(),flags,index.data().toString());
 		painter->restore();
@@ -151,7 +147,12 @@ QSize PlaylistDelegate::sizeHint( const QStyleOptionViewItem &option, const QMod
 {
 	if(!index.parent().isValid())
 	{
-		const QSize size(option.rect.width(), 20);
+		QFontMetrics fontMetrics(QFont("Times", 10, QFont::Bold));
+		QSize size(fontMetrics.width(index.data().toString()) + 10, 20);
+		if(index.column() == 0)
+		{
+			size.setWidth(size.width() +22);
+		}
 		return size;
 	}
 	else
@@ -161,3 +162,8 @@ QSize PlaylistDelegate::sizeHint( const QStyleOptionViewItem &option, const QMod
 	}
 }
 
+bool PlaylistDelegate::extendedUrl(int myWidth, QPoint point)
+{
+	QRectF urlRect(myWidth-300,EXTENDED_INFO_HEIGHT-20,300,15);
+	return urlRect.contains(point);
+}
