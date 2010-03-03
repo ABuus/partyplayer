@@ -255,6 +255,10 @@ void PlaylistView::mouseMoveEvent(QMouseEvent *event)
 	}
 	else
 	{
+		if(indexAt(event->pos()).parent().isValid() && element == HandleElement)
+		{
+			return;
+		}
 		setCursor(Qt::PointingHandCursor);
 	}
 	event->accept();
@@ -370,7 +374,6 @@ void PlaylistView::openExternalUrl(const QModelIndex &index)
 	if(index.data(Playlist::PlacementRole).toInt() == Playlist::Local)
 	{
 		urlString.remove(urlString.lastIndexOf("/"),urlString.size());
-		urlString.prepend(FILE_MARCO);
 	}
 	Debug << urlString;
 	QDesktopServices::openUrl(QUrl(urlString));
