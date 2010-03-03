@@ -59,7 +59,8 @@ namespace Playlist {
 		ExtendedDataImage,
 		ExtendedDataDescription,
 		ExtendedDataYear,
-		ExtendedDataBitrate
+		ExtendedDataBitrate,
+		ExtendedDataSampleRate
 	};
 
 	enum PLAYLIST_EXPORT InternalData {

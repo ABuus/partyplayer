@@ -237,13 +237,14 @@ void PlaylistModel::insertPlaylistItemData()
 	QStandardItem *artist = new QStandardItem( playlistItem->artist() );
 	QStandardItem *title = new QStandardItem( playlistItem->title() );
 	QStandardItem *album = new QStandardItem( playlistItem->album());
-	QStandardItem *track = new QStandardItem( playlistItem->track());
+	QStandardItem *track = new QStandardItem( QString::number(playlistItem->track()));
 	QStandardItem *itemLength = new QStandardItem( PlaylistItem::PlaylistItem::lengthAsPrittyPrint(playlistItem->length()) );
 	QStandardItem *dropDownInfo = new QStandardItem();
 	dropDownInfo->setData( playlistItem->image() , ExtendedDataImage);
 	dropDownInfo->setData( playlistItem->bitrate(), ExtendedDataBitrate);
 	dropDownInfo->setData( playlistItem->year(), ExtendedDataYear);
 	dropDownInfo->setData( playlistItem->comment(), ExtendedDataDescription);
+	dropDownInfo->setData(playlistItem->samplerate(), ExtendedDataSampleRate);
 	dropDownInfo->setData( playlistItem->url(), UrlRole);
 	artist->setChild(0,0,dropDownInfo);
 

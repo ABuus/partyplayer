@@ -32,8 +32,6 @@ PlaylistView::PlaylistView(QWidget *parent)
 	setAcceptDrops(true);
 	setDropIndicatorShown(false);
 	setDragDropMode(QAbstractItemView::DragDrop);
-//	setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-//	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 	setSortingEnabled(true);
 	setRootIsDecorated(false);
 	setMouseTracking(true);
@@ -41,7 +39,6 @@ PlaylistView::PlaylistView(QWidget *parent)
 	setIndentation(0);
 	setAnimated(true);
 	setExpandsOnDoubleClick(false);
-//	setAlternatingRowColors(true);
 
 	contexMenu = new PlaylistContextMenu(this);
 

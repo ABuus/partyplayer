@@ -112,7 +112,7 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 		painter->drawText(yearRectF.adjusted(0,15,0,15),tr("Bitrate:"));
 		painter->drawText(yearRectF.adjusted(40,15,20,15),Qt::AlignRight,index.data(ExtendedDataBitrate).toString());
 		painter->drawText(yearRectF.adjusted(0,30,0,30),tr("Sample rate:"));
-		painter->drawText(yearRectF.adjusted(40,30,20,30),Qt::AlignRight,index.data(ExtendedDataBitrate).toString());
+		painter->drawText(yearRectF.adjusted(40,30,20,30),Qt::AlignRight,index.data(ExtendedDataSampleRate).toString());
 		/* draw url */
 		painter->save();
 		painter->setPen(Qt::blue);
