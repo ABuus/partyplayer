@@ -92,7 +92,7 @@ bool QGstPlayer::enqueueNext(const QUrl &url)
 
 QGstPlayerPrivate::QGstPlayerPrivate()
 {
-	Q_Q(QGstPlayer);
+//	Q_Q(QGstPlayer);
 	/* initialise gstreamer */
 	GError **err = NULL;
 	if(!gst_init_check(NULL,NULL,err))

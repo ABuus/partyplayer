@@ -3,11 +3,11 @@
 
 #include <qobject.h>
 #include <qurl.h>
-#include "qtdirectaudio_global.h"
+#include "../player_global.h"
 
 class QtDirectAudioPrivate;
 
-class QTDIRECTAUDIO_EXPORT QtDirectAudio : public QObject
+class PLAYER_EXPORT QtDirectAudio : public QObject
 {
 	Q_OBJECT
 public:

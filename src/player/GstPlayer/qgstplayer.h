@@ -22,7 +22,7 @@
 
 #include <QThread>
 #include <QUrl>
-#include "player_global.h"
+#include "../player_global.h"
 
 class QGstPlayerPrivate;
 

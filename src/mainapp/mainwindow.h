@@ -45,7 +45,11 @@
 #include "../playlist/savedplaylistmodel.h"
 // player
 #include "../player/youtubeplayer.h"
+#ifdef Q_WS_WIN
+#include "../player/QtDirectAudio.h"
+#else
 #include "../player/localplayer.h"
+#endif
 // self
 #include "../debug.h"
 #include "ui_mainwindow.h"
@@ -73,7 +77,11 @@ private:
 	ControlWidget *controlWidget;
 	YoutubeSearchView *youtubeSearchView;
 	YoutubeSearchModel *youtubeSearchModel;
+#ifdef Q_WS_WIN
+	QtDirectAudio *localPlayer;
+#else
 	LocalPlayer *localPlayer;
+#endif
 	YoutubePlayer *youtubePlayer;
 	YoutubeViewer *webView;
 	QList<int> oldVSplitter;

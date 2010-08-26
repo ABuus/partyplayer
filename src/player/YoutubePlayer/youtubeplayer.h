@@ -8,7 +8,7 @@
 #include <QTextStream>
 #include <QWebView>
 #include "../debug.h"
-#include "player_global.h"
+#include "../player_global.h"
 
 /**
  * \brief This class provides provides support for playing YouTube videos.
