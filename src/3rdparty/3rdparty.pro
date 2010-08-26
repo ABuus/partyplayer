@@ -7,9 +7,11 @@ unix {
 
 	QT += network
 
-	SOURCES += 	src/3rdparty/qtsingleapplication-2.6_1-opensource/src/qtsingleapplication.cpp \
-			src/3rdparty/qtsingleapplication-2.6_1-opensource/src/qtlocalpeer.cpp
-	HEADERS += 	src/3rdparty/qtsingleapplication-2.6_1-opensource/src/qtsingleapplication.h \
-			src/3rdparty/qtsingleapplication-2.6_1-opensource/src/qtlocalpeer.h
+	include(../common.pri)
+
+	SOURCES += 	./qtsingleapplication-2.6_1-opensource/src/qtsingleapplication.cpp \
+			./qtsingleapplication-2.6_1-opensource/src/qtlocalpeer.cpp
+	HEADERS += 	./qtsingleapplication-2.6_1-opensource/src/qtsingleapplication.h \
+			./qtsingleapplication-2.6_1-opensource/src/qtlocalpeer.h
 }
 			
