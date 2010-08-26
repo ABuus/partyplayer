@@ -21,8 +21,8 @@
 #define APPLICATION_H
 
 #include <QApplication>
-#include <QtSingleApplication>
-//#include <QtLocalpeer>
+#include <../3rdparty/qtsingleapplication-2.6_1-opensource/src/qtsingleapplication.h>
+#include <../3rdparty/qtsingleapplication-2.6_1-opensource/src/qtlocalpeer.h>
 #include <QTimer>
 #include <QSettings>
 
