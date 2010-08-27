@@ -44,11 +44,11 @@
 #include "../playlist/playlistmodel.h"
 #include "../playlist/savedplaylistmodel.h"
 // player
-#include "../player/youtubeplayer.h"
+#include "../player/YoutubePlayer/youtubeplayer.h"
 #ifdef Q_WS_WIN
-#include "../player/QtDirectAudio.h"
+#include "../player/QtDirectAudio/qtdirectaudio.h"
 #else
-#include "../player/localplayer.h"
+#include "../player/GstPlayer/qgstplayer.h"
 #endif
 // self
 #include "../debug.h"
@@ -80,7 +80,7 @@ private:
 #ifdef Q_WS_WIN
 	QtDirectAudio *localPlayer;
 #else
-	LocalPlayer *localPlayer;
+	QGstPlayer *localPlayer;
 #endif
 	YoutubePlayer *youtubePlayer;
 	YoutubeViewer *webView;

@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	controlLayout->addWidget(controlWidget);
 
 	// locale player
-	localPlayer = new LocalPlayer(this);
+	localPlayer = new QGstPlayer(this);
 
 	// youtube player
 	webView = new YoutubeViewer(this); // in youtubeplayer.h

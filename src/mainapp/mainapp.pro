@@ -13,6 +13,7 @@ INCLUDEPATH += /usr/include \
 LIBS += -L$(DESTDIR) \
 	-lplaylist \
 	-lplayer \
+	-lplaylistitem \
 	-lQtSolutions_SingleApplication-2.6 
 CONFIG += link_pkgconfig
 PKGCONFIG += gstreamer-0.10 taglib
@@ -42,3 +43,4 @@ RC_FILE = partyplayer.rc
 #Include file(s)
 include(mainapp.pri)
 win32:include(../3rdparty/qtsingleapplication-2.6_1-opensource/src/qtsingleapplication.pri)
+
