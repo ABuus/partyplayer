@@ -113,17 +113,22 @@ gboolean QtGstPlayerPrivate::bus_callback(GstBus *bus,GstMessage *message, gpoin
 	Q_ASSERT(thisPtr);
 	switch(GST_MESSAGE_TYPE(message)) {
 		case GST_MESSAGE_EOS:
+                        qDebug() << "bus callback EOS";
 			thisPtr->emitFinished();
+                        thisPtr->m_playTimer->stop();
 			break;
 		case GST_MESSAGE_DURATION:
+                        qDebug() << "bus callback duration";
 			thisPtr->updateDuration();
 			break;
-/*		case GST_MESSAGE_STATE_CHANGED:
+                case GST_MESSAGE_STATE_CHANGED:
 			GstState state;
                         gst_element_get_state(thisPtr->m_pipeline,&state,NULL,GST_CLOCK_TIME_NONE);
-			thisPtr->setState(state);
+                        if(state == GST_STATE_PLAYING) {
+                            thisPtr->updateDuration();
+                        }
+//			thisPtr->setState(state);
 			break;
-*/
 		default:
 			break;
 	}
@@ -149,13 +154,13 @@ bool QtGstPlayerPrivate::playUrl(const QUrl &url)
 	const gchar *uri = baUrl.constData();
 	qDebug() << "QGstreamer play valid url:" << uri;
         g_object_set(G_OBJECT(m_pipeline), "uri", uri, NULL);
-//	updateDuration();
+        m_playTimer->start();
         return gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
 }
 
 bool QtGstPlayerPrivate::play()
 {
-//	updateDuration();
+        m_playTimer->start();
         return gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
 }
 
@@ -183,7 +188,7 @@ void QtGstPlayerPrivate::getTime()
         if(!m_durationSet)
         {
 //                getTotalTime();
-                return;
+//                return;
         }
         GstFormat fmt = GST_FORMAT_TIME;
         gint64 pos;
@@ -212,6 +217,7 @@ void QtGstPlayerPrivate::getTime()
 void QtGstPlayerPrivate::updateDuration()
 {
         Q_Q(QtGstPlayer);
+        qDebug() << "duration update";
 	GstFormat format = GST_FORMAT_TIME;
 	gint64 dur;
         if(gst_element_query_duration(m_pipeline,&format,&dur))

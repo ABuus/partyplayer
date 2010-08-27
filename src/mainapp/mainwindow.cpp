@@ -308,7 +308,6 @@ void MainWindow::handlePlayerState(int state)
 
 void MainWindow::setTime(qint64 time)
 {
-	qDebug() << "Duration: " << time;
 	QObject *player = qobject_cast<QObject *>( sender() );
 	if(player == localPlayer && m_currentPlayer == MainWindow::Loacal)
 	{
