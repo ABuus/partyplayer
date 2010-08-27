@@ -55,10 +55,9 @@ void QtDirectAudio::seek(qint64 time)
 
 QtDirectAudioPrivate::QtDirectAudioPrivate(QtDirectAudio *parent)
 	:q_ptr(parent),
-	playTimer(new QTimer),
+        playTimer(new QTimer(this)),
 	durationSet(false)
 {
-	Q_Q(QtDirectAudio);
 	HRESULT hr;
 	// Initialise DirectShow
 	hr = CoCreateInstance(CLSID_FilterGraph,NULL,CLSCTX_INPROC_SERVER,IID_IGraphBuilder, (void**) &m_mediaGraph);
@@ -90,7 +89,6 @@ QtDirectAudioPrivate::QtDirectAudioPrivate(QtDirectAudio *parent)
 QtDirectAudioPrivate::~QtDirectAudioPrivate()
 {
 	CoUninitialize();
-	playTimer->deleteLater();
 }
 
 bool QtDirectAudioPrivate::play(const QUrl &url)

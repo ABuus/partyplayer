@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	controlLayout->addWidget(controlWidget);
 
 	// locale player
-	localPlayer = new QGstPlayer(this);
+        localPlayer = new QtGstPlayer(this);
 
 	// youtube player
 	webView = new YoutubeViewer(this); // in youtubeplayer.h
@@ -144,8 +144,8 @@ void MainWindow::createConnections()
 	connect(m_playlist,SIGNAL(playRequest(const QUrl )),this,SLOT(handlePlayRequests(const QUrl)));
 
 	// gst player
-	connect(localPlayer,SIGNAL(timeChanged(qint64)),this,SLOT(setTime(qint64)));
-	connect(localPlayer,SIGNAL(totalTimeChanged(qint64)),this,SLOT(setTotalTime(qint64)));
+	connect(localPlayer,SIGNAL(positionChanged(qint64)),this,SLOT(setTime(qint64)));
+	connect(localPlayer,SIGNAL(durationChanged(qint64)),this,SLOT(setTotalTime(qint64)));
 	connect(localPlayer,SIGNAL(stateChanged(int)),this,SLOT(handlePlayerState(int)));
 	connect(localPlayer,SIGNAL(finished()),this,SLOT(playNextTrack()));
 	
@@ -308,6 +308,7 @@ void MainWindow::handlePlayerState(int state)
 
 void MainWindow::setTime(qint64 time)
 {
+	qDebug() << "Duration: " << time;
 	QObject *player = qobject_cast<QObject *>( sender() );
 	if(player == localPlayer && m_currentPlayer == MainWindow::Loacal)
 	{
@@ -328,6 +329,7 @@ void MainWindow::setTime(qint64 time)
 
 void MainWindow::setTotalTime(qint64 time)
 {
+	qDebug() << "Total time: " << time;
 	QObject *player = qobject_cast<QObject *>( sender() );
 	if(player == localPlayer && m_currentPlayer == MainWindow::Loacal)
 	{

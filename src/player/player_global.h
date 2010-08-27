@@ -22,6 +22,8 @@
 
 #include <Qt/qglobal.h>
 
+#define PLAYER_TIMERINTERVAL 50 // 50 msec playTimer intervals, used to set the current position on streams.
+
 #ifdef PLAYER_LIB
 #	define PLAYER_EXPORT Q_DECL_EXPORT
 #else

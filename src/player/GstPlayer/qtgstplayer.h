@@ -20,40 +20,40 @@
 #ifndef QGSTPLAYER_H
 #define QGSTPLAYER_H
 
-#include <QThread>
-#include <QUrl>
+#include <qobject.h>
+#include <qurl.h>
 #include "../player_global.h"
 
-class QGstPlayerPrivate;
+class QtGstPlayerPrivate;
 
-class PLAYER_EXPORT QGstPlayer : public QObject
+class PLAYER_EXPORT QtGstPlayer : public QObject
 {
 	Q_OBJECT
 public:
-	explicit QGstPlayer(QObject *parent = 0);
-	~QGstPlayer();
-	void run();
+        explicit QtGstPlayer(QObject *parent = 0);
+        ~QtGstPlayer();
 public slots:
 	bool playUrl(const QUrl &url);
-	bool stop();
 	bool play();
+	bool stop();
 	bool pause();
-	bool enqueueNext(const QUrl &url);
-	void seek(const qint64 msec);
+        void seek(const qint64 time);
 signals:
 	/** This signal is emmitted when the the position in the stream changes. */
-	void timeChanged(qint64 time);
+	void positionChanged(qint64 time);
 	/** This signal is emmitted when the duration of a stream changes */
 	void durationChanged(qint64 time);
 	/** This signal is emmitted when the player changes state. */
-	void stateChanged( int state );
+//	void stateChanged( int state );
 	/** This signal is emmitted just before the current stream ends */
 	void runningOut();
+        /** This signal is emitted when, current stream ends */
+        void finished();
 protected:  
-	QGstPlayerPrivate * const d_ptr;
-	QGstPlayer(QGstPlayerPrivate &dd, QObject * parent);
+        QtGstPlayerPrivate * const d_ptr;
+        QtGstPlayer(QtGstPlayerPrivate &dd, QObject * parent);
 private:
-	Q_DECLARE_PRIVATE(QGstPlayer);
+        Q_DECLARE_PRIVATE(QtGstPlayer);
 };
 
 #endif // QGSTPLAYER_H

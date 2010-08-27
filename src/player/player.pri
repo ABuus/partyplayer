@@ -8,12 +8,12 @@ SOURCES += 	./YoutubePlayer/youtubeplayer.cpp
 
 win32 {
 	HEADERS += 	./DShowPlayer/qtdirectaudio.h \
-			./DShowPlayer/qtdirectaudio_p
+                        ./DShowPlayer/qtdirectaudio_p.h
 	SOURCES += 	./DShowPlayer/qtdirectaudio.cpp
 }
 
 unix {	
-	HEADERS += 	./GstPlayer/qgstplayer.h \
-			./GstPlayer/qgstplayer_p
-	SOURCES += 	./GstPlayer/qgstplayer.cpp
+        HEADERS += 	./GstPlayer/qtgstplayer.h \
+                        ./GstPlayer/qtgstplayer_p.h
+        SOURCES += 	./GstPlayer/qtgstplayer.cpp
 }

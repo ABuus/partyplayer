@@ -9,13 +9,11 @@
 #include <atlbase.h>
 #include <windows.h>
 #include <dshow.h>
-
-#define TIMER_INTERVAL 50
 #define DSHOWTIMETOSEC(time) ((time) / (1e7))
 
 class QtDirectAudioPrivate : public QObject
 {
-	Q_OBJECT
+        Q_OBJECT
 	Q_DECLARE_PUBLIC(QtDirectAudio)
 public:
 	QtDirectAudioPrivate(QtDirectAudio *parent);	
@@ -24,6 +22,7 @@ public:
 	bool play(const QUrl &url);
 	bool play();
 	void stop();
+        void pause() {}; // TODO
 	void seek(qint64 pos);
 private:
 	void clearFilters();

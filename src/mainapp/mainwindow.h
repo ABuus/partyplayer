@@ -48,7 +48,7 @@
 #ifdef Q_WS_WIN
 #include "../player/QtDirectAudio/qtdirectaudio.h"
 #else
-#include "../player/GstPlayer/qgstplayer.h"
+#include "../player/GstPlayer/qtgstplayer.h"
 #endif
 // self
 #include "../debug.h"
@@ -80,7 +80,7 @@ private:
 #ifdef Q_WS_WIN
 	QtDirectAudio *localPlayer;
 #else
-	QGstPlayer *localPlayer;
+        QtGstPlayer *localPlayer;
 #endif
 	YoutubePlayer *youtubePlayer;
 	YoutubeViewer *webView;

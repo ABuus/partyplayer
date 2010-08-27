@@ -20,41 +20,40 @@
 #ifndef QGSTPLAYER_P_H
 #define QGSTPLAYER_P_H
 
-#include <QDebug>
-#include <QUrl>
-#include <QEventLoop>
+#include "qtgstplayer.h"
+#include <qobject.h>
+#include <qurl.h>
+#include <qtimer.h>
+
 #include <gst/gst.h>
 #include <glib.h>
-#include "qgstplayer.h"
 
-class QGstPlayerPrivate
+class QtGstPlayerPrivate : public QObject
 {
-	Q_DECLARE_PUBLIC(QGstPlayer);
+        Q_OBJECT
+        Q_DECLARE_PUBLIC(QtGstPlayer);
 public:
-	QGstPlayerPrivate();
-	virtual ~QGstPlayerPrivate();
-	void init();
+        QtGstPlayerPrivate(QtGstPlayer *parent);
+        ~QtGstPlayerPrivate();
+        QtGstPlayer * const q_ptr;
 	bool playUrl(const QUrl &url);
 	bool play();
 	bool stop();
 	bool pause();
 	void seek(const qint64 msec);
-	bool enqueue(const QUrl &url);
-	void setState(GstState state);
-	void emitFinished();
-	void updateDuration();
-	void updatePosision();
-	GstElement *pipeline;
-	GstElement *sink;
-	QGstPlayer * q_ptr;
-	int m_state;
-	bool durationSet;
 private:
-	static gboolean syncEventloop( gpointer ptr );
-	static gboolean bus_callback(GstBus *bus, GstMessage *message, gpointer ptr );
-	qint64 m_posision;
+        GstElement *m_pipeline;
+        GstElement *sink;
+	qint64 m_position;
 	qint64 m_duration;
-	GMainLoop *gLoop;
+        QTimer *m_playTimer;
+        bool m_durationSet;
+        bool m_canRunout;
+        static gboolean bus_callback(GstBus *bus,GstMessage *message, gpointer ptr);
+        void updateDuration();
+        void emitFinished();
+private slots:
+        void getTime();
 };
 
 #endif // QGSTPLAYER_P_H
